@@ -18,7 +18,7 @@ type Stats = {
   promotions: Record<string, number>;
 };
 type Version = {
-  id: number; name: string; status: string;
+  id: number; name: string; status: string; track: string | null;
   field_f1: number | null; valid_rate: number | null;
   decision: string | null; margin: number | null; reason: string | null;
   dataset_size: number | null;
@@ -271,7 +271,10 @@ export default function Page() {
         )}
       </Panel>
 
-      <Panel title="model lineage & gate decisions">
+      <Panel
+        title="model lineage & gate decisions"
+        note="tracks are gated separately — a local LoRA is never compared against the Baseten incumbent"
+      >
         {versions.length === 0 ? (
           <div className="empty">no model versions yet</div>
         ) : (
@@ -279,8 +282,9 @@ export default function Page() {
             <thead>
               <tr>
                 {([
-                  ["id", "#"], ["name", "version"], ["dataset_size", "dataset"],
-                  ["valid_rate", "valid"], ["field_f1", "field f1"],
+                  ["id", "#"], ["track", "track"], ["name", "version"],
+                  ["dataset_size", "dataset"],
+                  ["valid_rate", "valid"], ["field_f1", "score"],
                   ["margin", "margin"], ["decision", "decision"],
                 ] as [keyof Version, string][]).map(([k, label]) => (
                   <th key={k} className="sortable" onClick={() => sortBy(k)}>
@@ -294,6 +298,11 @@ export default function Page() {
               {sortedVersions.map((v) => (
                 <tr key={v.id}>
                   <td className="dim">{v.id}</td>
+                  <td>
+                    <span className={`track track-${v.track ?? "baseten"}`}>
+                      {v.track ?? "baseten"}
+                    </span>
+                  </td>
                   <td>{v.name}</td>
                   <td className="dim">{v.dataset_size ?? "—"}</td>
                   <td>{v.valid_rate != null ? `${(v.valid_rate * 100).toFixed(1)}%` : "—"}</td>

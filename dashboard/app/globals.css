@@ -151,6 +151,13 @@ tr:last-child td { border-bottom: none; }
 .chip:hover { color: var(--text); }
 .chip.on { background: rgba(57, 135, 229, 0.16); border-color: var(--accent); color: var(--text); }
 
+.track {
+  display: inline-block; padding: 1px 7px; border-radius: 3px;
+  font-size: 10px; letter-spacing: 0.04em; border: 1px solid var(--line);
+}
+.track-baseten { color: var(--accent); border-color: rgba(57, 135, 229, 0.35); }
+.track-local { color: #199e70; border-color: rgba(25, 158, 112, 0.35); }
+
 th.sortable { cursor: pointer; user-select: none; }
 th.sortable:hover { color: var(--text); }
 

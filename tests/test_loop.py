@@ -116,6 +116,28 @@ def test_policy_boundary_is_strictly_greater():
     assert registry.terms_for("Northwind Logistics Ltd", "5000.01") == "NET_45"
 
 
+def test_policy_v2_is_harder_to_guess(monkeypatch):
+    """v2 exists because v1 was mostly satisfiable by guessing NET_30.
+
+    Its tier-B branch is deliberately INVERTED (bigger invoice, shorter terms)
+    and tier C depends on currency -- neither follows from any prior.
+    """
+    monkeypatch.setenv("POLICY_VERSION", "2")
+    assert registry.terms_for("Meridian Tooling GmbH", "8000.00") == "NET_60"   # A over
+    assert registry.terms_for("Meridian Tooling GmbH", "100.00") == "NET_45"    # A under
+    assert registry.terms_for("Northwind Logistics Ltd", "9000.00") == "NET_30"  # B over
+    assert registry.terms_for("Northwind Logistics Ltd", "100.00") == "NET_60"   # B under
+    assert registry.terms_for("Cascadia Print Works", "10.00", "USD") == "NET_15"
+    assert registry.terms_for("Cascadia Print Works", "10.00", "EUR") == "DUE_ON_RECEIPT"
+
+
+def test_policy_v1_is_the_default(monkeypatch):
+    monkeypatch.delenv("POLICY_VERSION", raising=False)
+    assert registry.policy_version() == 1
+    # v1 ignores currency entirely
+    assert registry.terms_for("Cascadia Print Works", "10.00", "USD") == "DUE_ON_RECEIPT"
+
+
 # --- registry consistency -------------------------------------------------
 
 def test_every_vendor_has_an_address():

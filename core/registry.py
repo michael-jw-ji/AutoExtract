@@ -19,7 +19,16 @@ information, and training is how information gets injected.
 
 from __future__ import annotations
 
+import os
 from decimal import Decimal
+
+
+def policy_version() -> int:
+    """1 (default) or 2. Read at call time so tests can flip it."""
+    try:
+        return int(os.getenv("POLICY_VERSION", "1").strip())
+    except ValueError:
+        return 1
 
 # --- Vendor registry: legal name -> internal id + commercial tier ---
 VENDORS: dict[str, dict[str, str]] = {
@@ -92,6 +101,25 @@ derived from the vendor's tier and the invoice total:
   tier B: total >  5000 -> NET_45, otherwise NET_15
   tier C: always DUE_ON_RECEIPT"""
 
+# --- Policy v2 -------------------------------------------------------------
+# v1 turned out to be a weak rule: it scored 78% at baseline but only ~6 of 300
+# documents actually FAILED on it, because NET_30 is both the model's default
+# guess and v1's answer for the most common case (tier A under 10k). A rule the
+# model gets right by luck teaches the LoRA nothing.
+#
+# v2 is deliberately unguessable: non-round thresholds, an INVERTED tier-B
+# branch (larger invoices get shorter terms, which no prior would predict), and
+# a currency dependence for tier C.
+#
+# Gated behind POLICY_VERSION=2 because switching it invalidates the gold of
+# every existing document -- a corpus built under v1 will not validate under
+# v2. Set it, then REGENERATE the corpus and re-freeze the holdout.
+POLICY_V2_DESCRIPTION = """Payment terms are NOT printed on the invoice. They
+are derived from the vendor's tier, the invoice total, and the currency:
+  tier A: total > 7500 -> NET_60, otherwise NET_45
+  tier B: total > 2500 -> NET_30, otherwise NET_60   (note: inverted)
+  tier C: currency USD -> NET_15, otherwise DUE_ON_RECEIPT"""
+
 
 def vendor_id_for(name: str | None) -> str | None:
     if not name:
@@ -113,7 +141,12 @@ def category_for(description: str | None) -> str | None:
     return CATEGORIES.get(description.strip())
 
 
-def terms_for(vendor_name: str | None, total: Decimal | float | str) -> str | None:
+def terms_for(
+    vendor_name: str | None,
+    total: Decimal | float | str,
+    currency: str | None = None,
+) -> str | None:
+    """Payment terms from the policy table. Honours POLICY_VERSION."""
     tier = tier_for(vendor_name)
     if tier is None:
         return None
@@ -121,6 +154,14 @@ def terms_for(vendor_name: str | None, total: Decimal | float | str) -> str | No
         amount = Decimal(str(total))
     except Exception:
         return None
+
+    if policy_version() == 2:
+        if tier == "A":
+            return "NET_60" if amount > Decimal("7500") else "NET_45"
+        if tier == "B":
+            return "NET_30" if amount > Decimal("2500") else "NET_60"
+        return "NET_15" if (currency or "").upper() == "USD" else "DUE_ON_RECEIPT"
+
     if tier == "A":
         return "NET_60" if amount > Decimal("10000") else "NET_30"
     if tier == "B":
@@ -137,8 +178,9 @@ def registry_prompt() -> str:
     cats = "\n".join(
         f"  {desc}  ->  {code}" for desc, code in sorted(CATEGORIES.items())
     )
+    policy = POLICY_V2_DESCRIPTION if policy_version() == 2 else POLICY_DESCRIPTION
     return (
         f"VENDOR REGISTRY (name -> internal id, tier):\n{vendors}\n\n"
         f"LINE-ITEM TAXONOMY (product -> category code):\n{cats}\n\n"
-        f"PAYMENT POLICY:\n{POLICY_DESCRIPTION}"
+        f"PAYMENT POLICY:\n{policy}"
     )

@@ -69,7 +69,9 @@ def check_rules(payload: dict) -> list[dict]:
 
     # --- payment policy ---
     if vendor_name and payload.get("total") is not None:
-        expected_terms = registry.terms_for(vendor_name, payload["total"])
+        expected_terms = registry.terms_for(
+            vendor_name, payload["total"], payload.get("currency")
+        )
         if expected_terms and payload.get("payment_terms") != expected_terms:
             errors.append({
                 "type": "policy_payment_terms",

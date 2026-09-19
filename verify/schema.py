@@ -138,7 +138,9 @@ class Invoice(BaseModel):
                 {"got": self.vendor_id, "name": self.vendor.name, "want": expected_id},
             )
 
-        expected_terms = registry.terms_for(self.vendor.name, self.total)
+        expected_terms = registry.terms_for(
+            self.vendor.name, self.total, self.currency.value
+        )
         if expected_terms is not None and self.payment_terms.value != expected_terms:
             raise PydanticCustomError(
                 "policy_payment_terms",

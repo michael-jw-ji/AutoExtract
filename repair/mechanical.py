@@ -170,7 +170,9 @@ def repair(payload: dict) -> dict:
     vendor_id = registry.vendor_id_for(vendor_name)
     if vendor_id is not None:
         doc["vendor_id"] = vendor_id
-        terms = registry.terms_for(vendor_name, doc.get("total", "0"))
+        terms = registry.terms_for(
+            vendor_name, doc.get("total", "0"), doc.get("currency")
+        )
         if terms is not None:
             doc["payment_terms"] = terms
 

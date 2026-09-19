@@ -156,8 +156,12 @@ def make_invoice(rng: random.Random) -> Invoice:
         else Decimal("0.00")
     total = (subtotal + tax - discount).quantize(CENT)
 
+    # Currency is picked BEFORE terms: policy v2 makes tier-C terms depend on
+    # it, so the order matters.
+    currency = rng.choice(list(Currency))
+
     # Terms follow from policy, not from the document.
-    terms = PaymentTerms(registry.terms_for(vendor_name, total))
+    terms = PaymentTerms(registry.terms_for(vendor_name, total, currency.value))
     offset = {"NET_15": 15, "NET_30": 30, "NET_45": 45, "NET_60": 60,
               "DUE_ON_RECEIPT": 0}[terms.value]
 
@@ -165,7 +169,7 @@ def make_invoice(rng: random.Random) -> Invoice:
         invoice_number=number,
         issue_date=issue,
         due_date=issue + timedelta(days=offset),
-        currency=rng.choice(list(Currency)),
+        currency=currency,
         payment_terms=terms,
         vendor_id=registry.VENDORS[vendor_name]["id"],
         vendor=Party(name=vendor_name, address=vendor_addr,
