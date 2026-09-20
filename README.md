@@ -13,6 +13,40 @@ documents, identical volume, identical output format, rule knowledge removed —
 gained only +8.13pp. The **+11.97pp difference is attributable to the repairs**.
 Full numbers and caveats in [RESULTS.md](RESULTS.md).
 
+### Documents
+
+| File | What it's for |
+|---|---|
+| [DEMO.md](DEMO.md) | 3-minute demo script, 9 beats, browser-only |
+| [USECASES.md](USECASES.md) | both use cases with runnable commands |
+| [RESULTS.md](RESULTS.md) | every measured number and its caveats |
+| [PITCH.md](PITCH.md) | big idea + the 9-stage workflow |
+| [DEVPOST.md](DEVPOST.md) | submission writeup |
+
+---
+
+## See it work in 30 seconds
+
+```powershell
+.\run_api.ps1 ; .\run_dashboard.ps1          # :8000 and :3000
+```
+
+Open `http://127.0.0.1:3000`, click **missing totals** in *try it yourself*,
+click **extract**. You get, in one panel: the model inventing `VND-00001` and
+five category codes, code deriving the correct values, the pre-enrichment
+errors in English, and a ground-truth check saying *valid and still wrong* on
+two fields.
+
+Terminal equivalent, if you prefer:
+
+```powershell
+python scripts\demo_case.py examples\invoice_missing_totals.txt --both
+python scripts\demo_case.py examples\invoice_missing_totals.txt --raw   # enrichment off
+```
+
+`examples/` holds three real documents with their gold. `scripts/preflight.ps1`
+verifies everything the demo depends on before you present.
+
 ---
 
 ## The problem
@@ -147,6 +181,29 @@ only your organisation knows.** Any use case with that shape plugs in —
 write `domains/<name>.py`, implement the `Domain` protocol, done. The
 validator, clustering, repair, gate and dashboard need no changes.
 
+### The `Domain` protocol
+
+Every domain-specific path resolves through this. Adding the second domain
+exposed four places that were hardcoded to invoices — each one failed
+*silently*, presenting as model failure rather than a wiring bug:
+
+| Member | Supplies | Was hardcoded in |
+|---|---|---|
+| `Schema` | what "valid" means | — |
+| `SCORED_FIELDS` | fields the scorer compares | `verify/compare.py` |
+| `system_prompt()` | serving instructions, **no registry** | — |
+| `reference_prompt()` | private data, repair model only | `repair/distill.py` |
+| `repair_rules()` | correction rules for the repair prompt | `repair/distill.py` |
+| `enrich()` | derive everything derivable | — |
+| `mechanical()` | deterministic repair | `repair/mechanical.py` |
+| `check_rules()` | business-rule violations | — |
+| `normalize_field()` | optional, per-field comparison normalisation | — |
+
+`normalize_field` exists because rendered support emails carry `Re:` prefixes
+and `[TKT-…]` suffixes their constructed gold does not — a model reading the
+subject line perfectly still failed an exact match. Same principle as money to
+2dp or dates to ISO; it does not make a wrong value match a right one.
+
 ## Design decisions that matter
 
 **Clusters are deterministic, not embedded.** `ValidationError.errors()`
@@ -183,11 +240,21 @@ Each one caught a real bug. None of them warn; they raise.
 | `core/freeze.py::assert_no_leak` | build a dataset containing holdout documents |
 | `core/freeze.py::freeze_holdout` | freeze a holdout containing template documents |
 | `train/backend.py::assert_fits` | launch training whose examples would truncate |
+| `scripts/gen_emails.py::implausible` | keep a render that is short, JSON-shaped, or missing values |
+| `scripts/preflight.ps1` | let you demo with fragments, a stale `DB_PATH`, or no rejected retrain |
 
-The second exists because a rate-limited generation run silently fell back to
-template rendering and **49% of an 80-document holdout was trivially easy**
-before anyone noticed. It shifted `field_f1` by 2.7pp — against a promotion
-margin of 2.0pp.
+The template guard exists because a rate-limited generation run silently fell
+back to template rendering and **49% of an 80-document holdout was trivially
+easy** before anyone noticed. It shifted `field_f1` by 2.7pp — against a
+promotion margin of 2.0pp.
+
+The render guard exists because `chat()` inherits `json_mode` from settings,
+and every email script exports `JSON_MODE=1` for the *serving* path — so the
+**generator** was forced into JSON mode and returned fragments like
+`[2026.08, "a plain business email"]`. All 800 documents were 6–35 characters.
+Downstream it looked exactly like catastrophic model failure. Generators now
+pass `json_mode=False` explicitly and **drop** rather than degrade: a smaller
+honest corpus beats a larger contaminated one.
 
 ---
 
@@ -253,10 +320,120 @@ python scripts\selfheal_test.py control --size 190      # the negative control
 The control is the decisive experiment — see [RESULTS.md](RESULTS.md).
 
 ```powershell
-python -m pytest tests\ -q     # 43 tests, no API key needed
+python -m pytest tests\ -q     # 55 tests, no API key needed
 python scripts\demo.py --pause # 7-beat scripted walkthrough
 python scripts\ceiling_test.py # registry-in-prompt upper bound
 ```
+
+---
+
+## Reproduce every headline number
+
+Each block is self-contained. `$env:DB_PATH` isolates the run so one
+experiment can't contaminate another.
+
+### 1 · Enrichment: 0% → 98.3% valid  *(~20 min, API key, no GPU)*
+
+```powershell
+copy .env.example .env                       # paste BASETEN_API_KEY
+uv venv --python 3.13 ; uv pip install -e ".[dev]"
+python scripts\check_models.py               # confirm the model IDs exist
+
+$env:DB_PATH="repro.db"; $env:DOMAIN="invoice"
+python scripts\gen_docs.py --live 300 --holdout 120 --workers 5
+python scripts\freeze_eval.py
+
+$env:ENRICH="0"; $env:JSON_MODE="0"
+python scripts\run_cycle.py --stage baseline      # expect valid 0%, f1 ~0.66
+$env:ENRICH="1"; $env:JSON_MODE="1"
+python scripts\run_cycle.py --stage baseline      # expect valid ~95-98%, f1 ~0.97
+```
+
+### 2 · The full loop  *(~30 min)*
+
+```powershell
+python scripts\run_cycle.py --stage serve --n 300 --workers 5
+python scripts\run_cycle.py --stage clusters      # led by registry_vendor_id
+python scripts\run_cycle.py --stage repair --limit 400 --workers 5
+```
+
+Expect ~90% of repairs verified, and **mechanical 0** — enrichment already did
+everything a lookup can, so only the hard residue reaches the large model.
+
+### 3 · Training + the control  *(~90 min, needs an 8GB GPU)*
+
+```powershell
+uv pip install --index-url https://download.pytorch.org/whl/cu128 torch
+uv pip install transformers peft trl accelerate datasets
+
+$env:COMPACT_PROMPT="1"                      # REQUIRED, see Training below
+python scripts\score_local.py --label local-base
+python scripts\train_local.py --epochs 3 --lora-r 16
+python scripts\score_local.py --label local-lora --adapter models\lora-<stamp>
+
+python scripts\selfheal_test.py control --size 190          # build the control set
+python scripts\train_local.py --dataset data\datasets\control-<stamp>.jsonl --epochs 3
+python scripts\score_local.py --label local-control --adapter models\lora-<stamp2>
+python scripts\selfheal_test.py compare --before local-base --after local-lora
+```
+
+Expect base ≈ 0.6147, LoRA ≈ 0.8158, control ≈ 0.6961.
+**The gap between LoRA and control is the claim.**
+
+### 4 · The gate rejecting  *(~40 min)*
+
+```powershell
+python scripts\make_undertrained.py --size 20        # 20 examples, on purpose
+python scripts\train_local.py --dataset data\datasets\undertrained-<stamp>.jsonl --epochs 1
+python scripts\score_local.py --label local-under --adapter models\lora-<stamp3>
+python scripts\register_local.py --base local-base --lora local-under --adapter models\lora-<stamp3>
+```
+
+Expect `GATE: REJECTED … +1.51pp < required +2.00pp`.
+
+### 5 · Cheap at scale  *(~30 min)*
+
+Scores the hosted model with the **same** scorer as the local one — otherwise
+you'd be comparing `mean_f1` against `field_f1`, which are different numbers on
+identical predictions.
+
+```powershell
+python scripts\score_hosted.py --label hosted-small --limit 120
+python scripts\score_local.py  --label cheap-base
+python scripts\score_local.py  --label cheap-lora --adapter models\lora-<stamp>
+```
+
+Expect hosted 95.8% / 0.9748 · local base 50.8% / 0.8295 · **local+LoRA 96.7% / 0.9665**.
+
+### 6 · The second domain  *(~45 min)*
+
+```powershell
+$env:DB_PATH="autoextract.email.db"; $env:DOMAIN="support_email"
+.\scripts\rebuild_email.ps1        # generate → freeze → baseline → serve → repair → dataset
+```
+
+Expect ~23% failure rate and ~85% of repairs verified. Nothing in the
+framework changes — only `domains/support_email.py` is new.
+
+### Offline, no key and no GPU
+
+```powershell
+$env:MOCK_LLM="1"; $env:DRY_RUN="1"
+python scripts\gen_docs.py --live 120 --holdout 100 --offline
+python scripts\freeze_eval.py
+python scripts\run_cycle.py --stage all --n 80
+python -m pytest tests\ -q
+```
+
+Exercises every code path. **Never report numbers produced under `MOCK_LLM=1`.**
+
+### Known gaps
+
+- **Baseten Training Jobs returns 403** for this workspace. The local track is
+  the working path; see Training below.
+- **The email LoRA is not finished.** The corpus, loop and verified repairs are
+  done; the baseline score and gate decision are not, so no email training
+  number is quoted anywhere.
 
 ---
 
@@ -283,8 +460,10 @@ versions. The comparison is only meaningful against the same frozen holdout.
 | `repair/` | mechanical fixes, distillation, verification |
 | `train/` | dataset builder, job generator, Baseten CLI |
 | `evalgate/` | frozen-holdout scorer, promotion gate |
+| `domains/` | **plugin layer** — invoice and support_email |
 | `api/` | FastAPI: `/extract` + read endpoints |
 | `dashboard/` | Next.js, polls every 5s |
+| `examples/` | real documents + their gold, for the demo |
 | `scripts/` | probe, gen, freeze, cycle, local training, demo |
 
 Named `evalgate`, not `eval`, to avoid shadowing the builtin.
@@ -298,8 +477,10 @@ Named `evalgate`, not `eval`, to avoid shadowing the builtin.
 | `BASETEN_API_KEY` | — | required for real runs |
 | `SMALL_MODEL` | `thinkingmachines/inkling-small` | serves traffic |
 | `LARGE_MODEL` | `moonshotai/Kimi-K2.6` | data gen + repairs |
-| `TRAIN_BASE_MODEL` | `Qwen/Qwen3-4B` | Baseten fine-tune target |
-| `LOCAL_BASE_MODEL` | `Qwen/Qwen2.5-1.5B-Instruct` | local fine-tune target |
+| `TRAIN_BASE_MODEL` | `Qwen/Qwen3-4B` | Baseten fine-tune target — **unused, that track is 403** |
+| `LOCAL_BASE_MODEL` | `Qwen/Qwen2.5-1.5B-Instruct` | local fine-tune target — **every published number uses this** |
+| `DOMAIN` | `invoice` | `invoice` or `support_email` |
+| `ENRICH` | `1` | serve-time derivation; `0` reproduces the 0%-valid baseline |
 | `PROMOTION_MARGIN` | `2.0` | required gain, in pp |
 | `REPAIR_FRACTION` | `0.7` | repair share of training set |
 | `MAX_CLUSTER_SHARE` | `0.25` | per-signature cap |

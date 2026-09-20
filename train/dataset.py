@@ -57,8 +57,15 @@ def build_dataset(
     max_examples: int = 800,
     seed: int = 1337,
     out_dir: Path | None = None,
+    prefix: str = "train",
 ) -> dict:
-    """Write a chat-format JSONL training file. Returns a manifest."""
+    """Write a chat-format JSONL training file. Returns a manifest.
+
+    `prefix` names the file. It exists so the deliberately-undertrained
+    candidate -- the one the gate is supposed to REJECT -- can be built by the
+    same code path as a real dataset instead of by hand. A demo that shows the
+    gate refusing is only credible if the rejection is reproducible.
+    """
     random.seed(seed)
     out_dir = out_dir or settings.dataset_dir
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -118,7 +125,7 @@ def build_dataset(
     random.shuffle(examples)
 
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    path = out_dir / f"train-{stamp}.jsonl"
+    path = out_dir / f"{prefix}-{stamp}.jsonl"
     with path.open("w", encoding="utf-8") as fh:
         for ex in examples:
             fh.write(json.dumps(ex, ensure_ascii=False) + "\n")
