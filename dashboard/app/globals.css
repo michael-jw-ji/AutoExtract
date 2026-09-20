@@ -173,6 +173,13 @@ tr:last-child td { border-bottom: none; }
 .chip:hover { border-color: var(--muted); }
 .chip.on { background: rgba(42, 120, 214, 0.08); border-color: var(--accent); color: var(--accent); }
 
+/* Read-only pipeline status. Deliberately NOT chip-shaped: a chip reads as a
+   control, and these cannot be toggled from the browser. */
+.flag { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 11px; }
+.flag i { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); opacity: 0.45; }
+.flag-on { color: var(--ink-2); }
+.flag-on i { background: var(--good); opacity: 1; }
+
 th.sortable { cursor: pointer; user-select: none; }
 th.sortable:hover { color: var(--ink); }
 

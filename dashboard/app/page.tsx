@@ -31,7 +31,6 @@ type RepairStats = {
   by_status: Record<string, number>;
   failures: number; repairs: number; verified: number;
 };
-type Latency = { buckets: { label: string; count: number }[]; p50: number; p95: number; n: number };
 type Config = {
   domain: string; available_domains: string[]; schema: string;
   json_mode: boolean; enrich: boolean; serving_model: string; db: string;
@@ -57,7 +56,6 @@ export default function Page() {
   const [timeline, setTimeline] = useState<Tick[]>([]);
   const [fields, setFields] = useState<Field[]>([]);
   const [repairs, setRepairs] = useState<RepairStats | null>(null);
-  const [latency, setLatency] = useState<Latency | null>(null);
   const [cfg, setCfg] = useState<Config | null>(null);
   const [offline, setOffline] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -75,7 +73,7 @@ export default function Page() {
   const [sortDesc, setSortDesc] = useState(false);
 
   const load = useCallback(async () => {
-    const [s, v, c, t, f, r, l, k] = await Promise.all([
+    const [s, v, c, t, f, r, k] = await Promise.all([
       get<Stats>("/api/stats"),
       get<Version[]>("/api/versions"),
       get<Cluster[]>(
@@ -85,7 +83,6 @@ export default function Page() {
       get<Tick[]>("/api/timeline?limit=300"),
       get<Field[]>("/api/fields"),
       get<RepairStats>("/api/repair-stats"),
-      get<Latency>("/api/latency"),
       get<Config>("/api/config"),
     ]);
     setOffline(s === null);
@@ -95,7 +92,6 @@ export default function Page() {
     if (t) setTimeline(t.slice().reverse());
     if (f) setFields(f);
     if (r) setRepairs(r);
-    if (l) setLatency(l);
     if (k) setCfg(k);
   }, [clusterLimit, clusterStatus]);
 
@@ -191,11 +187,15 @@ export default function Page() {
           </span>
           <span className="dim">{cfg.schema}</span>
           <span className="flabel">pipeline</span>
-          <span className={`chip${cfg.json_mode ? " on" : ""}`}>
-            json mode {cfg.json_mode ? "on" : "off"}
+          {/* Read-only status, NOT controls: these are startup config
+              (JSON_MODE / ENRICH env vars) read at import, so they cannot be
+              toggled without restarting the server. Styled as status dots so
+              they don't advertise an affordance that does not exist. */}
+          <span className={`flag${cfg.json_mode ? " flag-on" : ""}`}>
+            <i /> json mode {cfg.json_mode ? "on" : "off"}
           </span>
-          <span className={`chip${cfg.enrich ? " on" : ""}`}>
-            enrichment {cfg.enrich ? "on" : "off"}
+          <span className={`flag${cfg.enrich ? " flag-on" : ""}`}>
+            <i /> enrichment {cfg.enrich ? "on" : "off"}
           </span>
           <span className="cfg-right dim">
             {cfg.serving_model} · {cfg.db}
@@ -411,22 +411,6 @@ export default function Page() {
         )}
       </Panel>
 
-      <Panel title="extraction latency" note="the slow tail is what bites during a live demo">
-        {latency && latency.n > 0 ? (
-          <>
-            <div className="latrow">
-              <span>p50 <b>{(latency.p50 / 1000).toFixed(1)}s</b></span>
-              <span>p95 <b>{(latency.p95 / 1000).toFixed(1)}s</b></span>
-              <span>n <b>{latency.n}</b></span>
-            </div>
-            <HBar
-              data={latency.buckets.map((b) => ({ key: b.label, label: b.label, value: b.count }))}
-            />
-          </>
-        ) : (
-          <div className="empty">no latency data</div>
-        )}
-      </Panel>
     </div>
   );
 }
