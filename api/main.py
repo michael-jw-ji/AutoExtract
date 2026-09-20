@@ -171,6 +171,8 @@ def versions() -> list[dict]:
             "   ORDER BY e.id DESC LIMIT 1) AS field_f1, "
             "  (SELECT valid_rate FROM evals e WHERE e.model_version_id=v.id "
             "   ORDER BY e.id DESC LIMIT 1) AS valid_rate, "
+            "  (SELECT metric FROM evals e WHERE e.model_version_id=v.id "
+            "   ORDER BY e.id DESC LIMIT 1) AS metric, "
             "  (SELECT decision FROM promotions p WHERE p.candidate_id=v.id "
             "   ORDER BY p.id DESC LIMIT 1) AS decision, "
             "  (SELECT margin FROM promotions p WHERE p.candidate_id=v.id "
@@ -250,9 +252,13 @@ def fields() -> list[dict]:
     sit near zero before training and climb after.
     """
     with tx() as conn:
+        # Latest eval that actually HAS per-field data. Not simply the latest:
+        # merged evals from another track carry no per_field_json, and taking
+        # the newest row blanked this panel entirely.
         row = one(
             conn,
             "SELECT per_field_json, model_version_id FROM evals "
+            "WHERE per_field_json IS NOT NULL AND per_field_json != '' "
             "ORDER BY id DESC LIMIT 1",
         )
     if not row or not row["per_field_json"]:
