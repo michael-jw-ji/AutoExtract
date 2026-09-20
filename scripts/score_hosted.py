@@ -29,7 +29,7 @@ sys.path.insert(0, str(ROOT))
 from core.config import settings  # noqa: E402
 from core.db import init_db  # noqa: E402
 from core.freeze import current_hash  # noqa: E402
-from evalgate.scorer import holdout_docs  # noqa: E402
+from evalgate.scorer import config_label, holdout_docs  # noqa: E402
 from serve.extract import extract_text  # noqa: E402
 from verify.compare import counts, f1  # noqa: E402
 from verify.validate import validate  # noqa: E402
@@ -88,6 +88,7 @@ def main() -> None:
         "label": args.label,
         "model": f"{model} (hosted)",
         "eval_set_hash": current_hash(),
+        "config": config_label(),
         "n_docs": len(records),
         "valid_rate": round(sum(r["valid"] for r in records) / len(records), 4)
         if records else 0.0,

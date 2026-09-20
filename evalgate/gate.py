@@ -53,26 +53,45 @@ def decide(candidate_id: int, against: int | None = None) -> dict:
             "no incumbent -- first scored model becomes the baseline",
         )
 
+    # The score column is named field_f1, but the local track stores mean_f1
+    # in it -- so the reason text must name the metric it ACTUALLY compared.
+    # Hardcoding "field_f1" produced rows reading "field_f1 +20.11pp" beside a
+    # metric column saying mean_f1, which reads as a bug in the gate.
+    metric = cand_eval.get("metric") or "field_f1"
+
+    # Comparing across metrics is meaningless: field_f1 is micro-averaged over
+    # every field at once, mean_f1 is per-document F1 averaged over documents,
+    # and they differ on identical predictions. Refuse rather than emit a
+    # number that looks authoritative and is not.
+    inc_metric = inc_eval.get("metric") or "field_f1"
+    if metric != inc_metric:
+        reason = (
+            f"cannot compare: candidate scored on {metric}, incumbent on "
+            f"{inc_metric}. Re-score both with the same scorer."
+        )
+        return _record(cand, inc, cand_eval, inc_eval, "rejected", 0.0,
+                       required, reason)
+
     margin = (cand_eval["field_f1"] - inc_eval["field_f1"]) * 100
     valid_delta = (cand_eval["valid_rate"] - inc_eval["valid_rate"]) * 100
 
     if margin < required:
         reason = (
-            f"field_f1 +{margin:.2f}pp < required +{required:.2f}pp "
+            f"{metric} +{margin:.2f}pp < required +{required:.2f}pp "
             f"({inc_eval['field_f1']:.4f} -> {cand_eval['field_f1']:.4f})"
         )
         return _record(cand, inc, cand_eval, inc_eval, "rejected", margin, required, reason)
 
     if valid_delta < 0:
         reason = (
-            f"field_f1 +{margin:.2f}pp met the bar but valid_rate regressed "
+            f"{metric} +{margin:.2f}pp met the bar but valid_rate regressed "
             f"{valid_delta:.2f}pp ({inc_eval['valid_rate']:.4f} -> "
             f"{cand_eval['valid_rate']:.4f})"
         )
         return _record(cand, inc, cand_eval, inc_eval, "rejected", margin, required, reason)
 
     reason = (
-        f"field_f1 +{margin:.2f}pp >= +{required:.2f}pp, "
+        f"{metric} +{margin:.2f}pp >= +{required:.2f}pp, "
         f"valid_rate {valid_delta:+.2f}pp"
     )
     return _record(cand, inc, cand_eval, inc_eval, "promoted", margin, required, reason)

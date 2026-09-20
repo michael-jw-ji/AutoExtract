@@ -30,6 +30,7 @@ from pathlib import Path
 from core.config import ROOT, settings
 from core.db import init_db, insert, one, tx
 from evalgate import gate
+from evalgate.scorer import config_label
 
 SNAP_DIR = ROOT / "data" / "snapshots"
 
@@ -65,6 +66,10 @@ def record_eval(version_id: int, snap: dict) -> None:
             field_f1=snap["mean_f1"],      # see module docstring: metric column
             metric="mean_f1",
             n_docs=snap["n_docs"],
+            # Prefer the config the SNAPSHOT was taken under. Reading it from
+            # current settings would label a months-old snapshot with today's
+            # environment, which is worse than leaving it blank.
+            config=snap.get("config") or config_label(),
             per_field_json=None,
         )
 

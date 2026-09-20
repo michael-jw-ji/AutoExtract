@@ -121,9 +121,28 @@ def score_model(
                 valid_rate=result["valid_rate"],
                 field_f1=result["field_f1"],
                 n_docs=result["n_docs"],
+                config=config_label(),
                 per_field_json=json.dumps(result["per_field"]),
             )
     return result
+
+
+def config_label() -> str:
+    """The pipeline settings a score was measured under, e.g. 'enrich+json'.
+
+    Two scores are only comparable if this matches. Recording it is what makes
+    a `valid 0.0%` row readable: it means enrichment was off, not that the
+    model collapsed.
+    """
+    from core.config import settings
+    parts = []
+    if settings.enrich:
+        parts.append("enrich")
+    if settings.json_mode:
+        parts.append("json")
+    if settings.compact_prompt:
+        parts.append("compact")
+    return "+".join(parts) if parts else "bare"
 
 
 def latest_eval(model_version_id: int) -> dict | None:

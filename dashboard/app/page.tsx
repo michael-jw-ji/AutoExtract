@@ -20,6 +20,7 @@ type Stats = {
 type Version = {
   id: number; name: string; status: string; track: string | null;
   field_f1: number | null; valid_rate: number | null; metric: string | null;
+  config: string | null;
   decision: string | null; margin: number | null; reason: string | null;
   dataset_size: number | null;
 };
@@ -292,7 +293,7 @@ export default function Page() {
                   ["id", "#"], ["track", "track"], ["name", "version"],
                   ["dataset_size", "dataset"],
                   ["valid_rate", "valid"], ["field_f1", "score"],
-                  ["metric", "metric"],
+                  ["metric", "metric"], ["config", "measured with"],
                   ["margin", "margin"], ["decision", "decision"],
                 ] as [keyof Version, string][]).map(([k, label]) => (
                   <th key={k} className="sortable" onClick={() => sortBy(k)}>
@@ -316,6 +317,7 @@ export default function Page() {
                   <td>{v.valid_rate != null ? `${(v.valid_rate * 100).toFixed(1)}%` : "—"}</td>
                   <td>{v.field_f1 != null ? v.field_f1.toFixed(4) : "—"}</td>
                   <td className="dim">{v.metric ?? "—"}</td>
+                  <td className="dim">{v.config ?? "—"}</td>
                   <td className={v.margin == null ? "" : `delta ${v.margin >= 0 ? "up" : "down"}`}>
                     {v.margin != null ? `${v.margin >= 0 ? "+" : ""}${v.margin.toFixed(2)}pp` : "—"}
                   </td>

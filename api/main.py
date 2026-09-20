@@ -233,6 +233,8 @@ def versions() -> list[dict]:
             "   ORDER BY e.id DESC LIMIT 1) AS valid_rate, "
             "  (SELECT metric FROM evals e WHERE e.model_version_id=v.id "
             "   ORDER BY e.id DESC LIMIT 1) AS metric, "
+            "  (SELECT config FROM evals e WHERE e.model_version_id=v.id "
+            "   ORDER BY e.id DESC LIMIT 1) AS config, "
             "  (SELECT decision FROM promotions p WHERE p.candidate_id=v.id "
             "   ORDER BY p.id DESC LIMIT 1) AS decision, "
             "  (SELECT margin FROM promotions p WHERE p.candidate_id=v.id "

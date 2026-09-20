@@ -57,6 +57,13 @@ MIGRATIONS = [
     # field_f1; the local track records per-document mean_f1. Recording which
     # is which beats silently putting one in a column named for the other.
     ("evals", "metric", "TEXT NOT NULL DEFAULT 'field_f1'"),
+    # The pipeline config the score was measured under, e.g. "enrich+json".
+    # Without it a row reading `valid 0.0%` is unexplainable: the local track
+    # was deliberately scored with enrichment OFF to isolate what training
+    # alone contributes, and full validity needs vendor_id, which training
+    # never learned. Next to a row showing 95% that looks like a broken model
+    # rather than a different measurement.
+    ("evals", "config", "TEXT"),
 ]
 
 

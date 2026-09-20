@@ -21,7 +21,7 @@ from pathlib import Path
 from core.config import ROOT, settings
 from core.db import init_db
 from core.freeze import current_hash
-from evalgate.scorer import holdout_docs
+from evalgate.scorer import config_label, holdout_docs
 from serve.extract import apply_enrichment, system_prompt
 from verify.compare import counts, f1
 from verify.validate import validate
@@ -36,6 +36,7 @@ def save(args, base: str, records: list[dict]) -> dict:
         "label": args.label,
         "model": f"{base}{suffix}",
         "eval_set_hash": current_hash(),
+        "config": config_label(),
         "n_docs": len(records),
         "valid_rate": round(sum(r["valid"] for r in records) / len(records), 4)
         if records else 0.0,
