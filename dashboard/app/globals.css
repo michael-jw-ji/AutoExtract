@@ -18,8 +18,11 @@
   --ink: #0b0b0b;           /* primary text */
   --ink-2: #52514e;         /* secondary text */
   --muted: #898781;         /* axis, labels */
-  --rule: rgba(11, 11, 11, 0.10);
-  --rule-soft: rgba(11, 11, 11, 0.06);
+  /* Container outlines are deliberately stronger than a hairline: at full
+     width the panels are wide enough that a 0.10 alpha border stops reading
+     as an edge and the page turns into undifferentiated text. */
+  --rule: rgba(11, 11, 11, 0.18);
+  --rule-soft: rgba(11, 11, 11, 0.09);
   --grid: #e1e0d9;
 
   --accent: #2a78d6;
@@ -43,7 +46,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-.wrap { max-width: 1160px; margin: 0 auto; padding: 40px 28px 96px; }
+.wrap { width: 100%; margin: 0; padding: 32px 28px 96px; }
 
 /* ------------------------------------------------------------------ header */
 
@@ -57,17 +60,20 @@ header .live { color: var(--good); font-size: 11px; }
 
 .cfgbar {
   display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  padding: 0 0 20px; margin-bottom: 28px;
-  border-bottom: 1px solid var(--rule);
+  padding: 10px 16px; margin-bottom: 20px;
+  background: var(--surface);
+  border: 1px solid var(--rule); border-radius: 6px;
   font-size: 11px; color: var(--ink-2);
 }
 .cfgbar .cfg-right { margin-left: auto; color: var(--muted); }
 
 /* ------------------------------------------------------------- stat tiles */
 
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0; margin-bottom: 36px; }
-.stat { padding: 0 20px; border-left: 1px solid var(--rule); }
-.stat:first-child { padding-left: 0; border-left: none; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.stat {
+  padding: 12px 16px; background: var(--surface);
+  border: 1px solid var(--rule); border-radius: 6px;
+}
 .stat .k { color: var(--muted); font-size: 11px; letter-spacing: 0.02em; }
 .stat .v { font-size: 26px; margin-top: 2px; font-weight: 500; letter-spacing: -0.02em; }
 .stat .warn { color: var(--warn); font-size: 10px; margin-top: 4px; }
@@ -197,17 +203,17 @@ th.sortable:hover { color: var(--ink); }
 .pg-sig-k { color: var(--muted); font-size: 10px; margin-bottom: 3px; }
 .pg-sig code { color: var(--accent); font-size: 11px; font-family: var(--mono); word-break: break-all; }
 .pg-errs { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; max-height: 250px; overflow: auto; }
-.pg-err { background: var(--page); border: 1px solid var(--rule-soft); border-radius: 4px; padding: 7px 10px; }
+.pg-err { background: var(--page); border: 1px solid var(--rule); border-radius: 4px; padding: 9px 11px; }
 .pg-err-type { font-size: 11px; font-weight: 600; margin-right: 8px; }
 .pg-err-msg { color: var(--muted); font-size: 10.5px; margin-top: 2px; word-break: break-word; }
-.pg-json { background: var(--page); border: 1px solid var(--rule-soft); border-radius: 4px; padding: 10px; font-size: 10.5px; font-family: var(--mono); color: var(--ink-2); max-height: 280px; overflow: auto; margin-top: 10px; white-space: pre-wrap; }
+.pg-json { background: var(--page); border: 1px solid var(--rule); border-radius: 4px; padding: 12px; font-size: 10.5px; font-family: var(--mono); color: var(--ink-2); max-height: 280px; overflow: auto; margin-top: 10px; white-space: pre-wrap; }
 
 /* ------------------------------------------------------------ drill-down */
 
 .drill { margin-top: 14px; border-top: 1px solid var(--rule); padding-top: 12px; }
 .drill-head { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 11px; margin-bottom: 10px; flex-wrap: wrap; }
 .drill-head code { color: var(--accent); font-family: var(--mono); }
-.drill-row { background: var(--page); border: 1px solid var(--rule-soft); border-radius: 4px; padding: 9px 11px; margin-bottom: 7px; }
+.drill-row { background: var(--page); border: 1px solid var(--rule); border-radius: 4px; padding: 11px 13px; margin-bottom: 8px; }
 .drill-meta { color: var(--muted); font-size: 10px; margin-bottom: 5px; }
 .drill-row pre { margin: 0; white-space: pre-wrap; word-break: break-word; font-size: 11px; font-family: var(--mono); color: var(--ink-2); max-height: 100px; overflow: auto; }
 
@@ -216,7 +222,12 @@ th.sortable:hover { color: var(--ink); }
 .linkbtn { background: none; border: 1px solid var(--rule); color: var(--ink-2); font-family: var(--sans); font-size: 11px; padding: 2px 9px; border-radius: 4px; cursor: pointer; }
 .linkbtn:hover { border-color: var(--muted); color: var(--ink); }
 .tableview { margin-top: 12px; }
-.mini { margin-top: 8px; }
-.mini th, .mini td { padding: 4px 8px; font-size: 11px; }
+/* Data tables are the accessibility fallback for every chart, so their rows
+   need to be comfortably scannable rather than compressed. */
+.mini { margin-top: 10px; border: 1px solid var(--rule); border-radius: 6px; }
+.mini th { padding: 12px 14px; font-size: 11px; background: var(--page); }
+.mini th:first-child { border-top-left-radius: 6px; }
+.mini th:last-child { border-top-right-radius: 6px; }
+.mini td { padding: 13px 14px; font-size: 12px; line-height: 1.6; }
 .latrow { display: flex; gap: 22px; margin-bottom: 12px; color: var(--muted); font-size: 11px; }
 .latrow b { color: var(--ink); font-size: 15px; font-weight: 500; }
