@@ -42,6 +42,15 @@ class Domain(Protocol):
     def reference_prompt(self) -> str:
         """Private reference data, given ONLY to the repair model."""
 
+    def repair_rules(self) -> str:
+        """This domain's correction rules, for the repair model's prompt.
+
+        Must be domain-specific for the same reason `mechanical` must be:
+        repair/distill.py once hardcoded the invoice schema, registry and
+        rules, so on any other domain the repair model was asked to produce
+        an invoice from the wrong reference data.
+        """
+
     def enrich(self, payload: dict) -> tuple[dict, dict[str, Any]]:
         """Derive every field that has a right answer. Returns (payload, report).
 

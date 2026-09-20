@@ -16,6 +16,21 @@ from verify.rules import check_rules as _check_rules
 from verify.schema import INVOICE_JSON_SCHEMA, SCORED_FIELDS as _SCORED, Invoice
 
 
+#: Verbatim the rules that used to live in repair/distill.py, moved here so
+#: the repair model gets THIS domain's rules rather than invoice rules on
+#: every domain.
+REPAIR_RULES = """- Dates ISO-8601 (YYYY-MM-DD). currency in USD/EUR/GBP/CAD.
+- payment_terms in NET_15/NET_30/NET_45/NET_60/DUE_ON_RECEIPT.
+- invoice_number matches ^[A-Z]{2,4}-\\d{4,8}$.
+- line_total = quantity * unit_price, exactly, for every item.
+- subtotal = sum of line_total. total = subtotal + tax - discount.
+- vendor_id, line-item category, and payment_terms are NOT printed on the \
+document. Derive them from the INTERNAL REFERENCE DATA above.
+- Read values from the SOURCE DOCUMENT. Do not invent numbers to satisfy the \
+arithmetic -- if the printed total disagrees with the line items, trust the \
+line items and recompute."""
+
+
 class InvoiceDomain:
     name = "invoice"
     Schema = Invoice
@@ -30,6 +45,9 @@ class InvoiceDomain:
 
     def reference_prompt(self) -> str:
         return registry.registry_prompt()
+
+    def repair_rules(self) -> str:
+        return REPAIR_RULES
 
     def enrich(self, payload: dict) -> tuple[dict, dict[str, Any]]:
         return _enrich(payload)

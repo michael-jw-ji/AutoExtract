@@ -9,10 +9,8 @@ from __future__ import annotations
 
 import json
 
-from core import registry
 from core.config import settings
 from serve.client import chat
-from verify.schema import INVOICE_JSON_SCHEMA
 from verify.validate import describe, strip_fences
 
 SYSTEM = """You are correcting a failed structured extraction.
@@ -25,16 +23,7 @@ Target JSON Schema:
 {schema}
 
 Rules:
-- Dates ISO-8601 (YYYY-MM-DD). currency in USD/EUR/GBP/CAD.
-- payment_terms in NET_15/NET_30/NET_45/NET_60/DUE_ON_RECEIPT.
-- invoice_number matches ^[A-Z]{{2,4}}-\\d{{4,8}}$.
-- line_total = quantity * unit_price, exactly, for every item.
-- subtotal = sum of line_total. total = subtotal + tax - discount.
-- vendor_id, line-item category, and payment_terms are NOT printed on the \
-document. Derive them from the INTERNAL REFERENCE DATA above.
-- Read values from the SOURCE DOCUMENT. Do not invent numbers to satisfy the \
-arithmetic -- if the printed total disagrees with the line items, trust the \
-line items and recompute."""
+{rules}"""
 
 USER = """INTERNAL REFERENCE DATA (the serving model does not have this):
 {registry}
@@ -51,11 +40,35 @@ VALIDATION ERRORS:
 Corrected JSON:"""
 
 
+def _domain():
+    """The active domain, lazily, with the invoice domain as the fallback.
+
+    This module used to hardcode the invoice schema, the invoice vendor
+    registry and invoice-only rules about payment_terms and line_total. On the
+    support_email domain that meant the repair model was asked to turn a
+    support email into an INVOICE, using the wrong reference data -- so no
+    email repair could ever verify, and any rule added to the email domain's
+    reference_prompt() was never read at all.
+    """
+    global _D
+    if _D is None:
+        from domains import get_domain
+        _D = get_domain()
+    return _D
+
+
+_D = None
+
+
 def repair(doc_text: str, attempt: str, errors: list[dict]) -> dict | None:
     """Ask the large model for a fix. Returns parsed JSON or None."""
-    system = SYSTEM.format(schema=json.dumps(INVOICE_JSON_SCHEMA, indent=2))
+    domain = _domain()
+    system = SYSTEM.format(
+        schema=json.dumps(domain.Schema.model_json_schema(), indent=2),
+        rules=domain.repair_rules(),
+    )
     user = USER.format(
-        registry=registry.registry_prompt(),
+        registry=domain.reference_prompt(),
         document=doc_text,
         attempt=attempt[:4000],
         errors=describe(errors),

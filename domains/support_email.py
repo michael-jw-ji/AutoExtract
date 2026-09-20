@@ -47,6 +47,29 @@ CATEGORY_KEYWORDS: list[tuple[str, str]] = [
     (r"\b(password|login|account|access|seat|licen[cs]e|sso)\b", "ACCOUNT"),
 ]
 
+#: A ticket identifies the CUSTOMER's original message, which in a reply
+#: thread is not the most prominent one on the page. This is a genuine
+#: convention, not a comparison workaround: an agent replying on the 23rd to a
+#: customer message from the 22nd does not make the ticket a day younger, nor
+#: does it make support@ the requester.
+#:
+#: The serving model reliably grabs the top `Date:` and `From:` headers
+#: instead -- between them they blocked almost every email repair -- so the
+#: rule goes to the REPAIR model, like every other private convention, and the
+#: LoRA learns the habit from the verified repairs. That is the architecture
+#: working as intended rather than an exception to it.
+THREAD_RULE = """A ticket describes the CUSTOMER's original message, not the
+latest reply. In a reply or forwarded thread the top `Date:` and `From:`
+headers usually belong to an agent's response.
+
+  received_at    date of the ORIGINAL customer message
+  sender_email   address of the CUSTOMER who wrote it
+
+Find them in the quoted history, e.g. `On 2026-02-22, klaus@acme.de wrote:`
+or under `>> From: ... >> Date: ...`. Never use a support@, help@, noreply@ or
+tickets@ address as sender_email -- that is our own side of the conversation.
+If the email is a single message with no quoted history, use its own headers."""
+
 POLICY_DESCRIPTION = """Priority is NOT stated in the email. It is derived from
 the customer's tier and the ticket category:
   gold   + TECHNICAL or BILLING  -> P1, otherwise P2
@@ -209,7 +232,8 @@ class SupportEmailDomain:
         return (
             f"CUSTOMER REGISTRY (email domain -> id, tier):\n{custs}\n\n"
             f"CATEGORY KEYWORDS:\n{kws}\n\n"
-            f"PRIORITY POLICY:\n{POLICY_DESCRIPTION}"
+            f"PRIORITY POLICY:\n{POLICY_DESCRIPTION}\n\n"
+            f"THREAD CONVENTION:\n{THREAD_RULE}"
         )
 
     def enrich(self, payload: dict) -> tuple[dict, dict[str, Any]]:
@@ -245,6 +269,17 @@ class SupportEmailDomain:
                 doc["priority"] = pri
                 report["priority"] = "derived"
         return doc, report
+
+    def repair_rules(self) -> str:
+        return (
+            "- Dates ISO-8601 (YYYY-MM-DD).\n"
+            "- ticket_ref matches ^TKT-\\d{6}$. order_refs match ^ORD-\\d{7}$.\n"
+            "- subject is the canonical subject line: strip `Re:`/`Fwd:` "
+            "prefixes and any trailing `[TKT-...]`.\n"
+            "- customer_id, category and priority are NOT stated in the "
+            "email. Derive them from the INTERNAL REFERENCE DATA above.\n"
+            f"- {THREAD_RULE}"
+        )
 
     def normalize_field(self, path: str, value: Any) -> Any:
         """Strip email-thread noise from the subject before comparison.
