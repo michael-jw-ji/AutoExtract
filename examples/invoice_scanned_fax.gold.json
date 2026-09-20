@@ -1,0 +1,59 @@
+{
+  "invoice_number": "BJD-81347720",
+  "issue_date": "2026-04-26",
+  "due_date": "2026-04-26",
+  "currency": "EUR",
+  "payment_terms": "DUE_ON_RECEIPT",
+  "vendor_id": "VND-01443",
+  "vendor": {
+    "name": "Kestrel Fasteners plc",
+    "address": "58 Attercliffe Road, Sheffield S4 7WL, UK",
+    "tax_id": null
+  },
+  "bill_to": {
+    "name": "Aubergine Foods SARL",
+    "address": "22 Rue Saint-Denis, 75001 Paris, France",
+    "tax_id": null
+  },
+  "line_items": [
+    {
+      "description": "Hi-vis vest, XL",
+      "category": "PE-VEST-01",
+      "quantity": "5.00",
+      "unit_price": "285.47",
+      "line_total": "1427.35"
+    },
+    {
+      "description": "Warehouse handling fee",
+      "category": "SV-HAND-01",
+      "quantity": "5.00",
+      "unit_price": "455.19",
+      "line_total": "2275.95"
+    },
+    {
+      "description": "Corrugated box 400x300x200",
+      "category": "PK-BOXX-03",
+      "quantity": "3.00",
+      "unit_price": "151.19",
+      "line_total": "453.57"
+    },
+    {
+      "description": "Industrial adhesive 5L",
+      "category": "CH-ADHE-03",
+      "quantity": "2.00",
+      "unit_price": "230.17",
+      "line_total": "460.34"
+    },
+    {
+      "description": "Ear defenders, class 4",
+      "category": "PE-EARS-05",
+      "quantity": "100.00",
+      "unit_price": "250.61",
+      "line_total": "25061.00"
+    }
+  ],
+  "subtotal": "29678.21",
+  "tax": "0.00",
+  "discount": "0.00",
+  "total": "29678.21"
+}

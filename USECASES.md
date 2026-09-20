@@ -1,51 +1,97 @@
-# Two use cases, end to end
+# Use cases you can run
 
-The loop is domain-agnostic. A domain supplies five things — schema,
-registries, enrichment, prompts, generator — and everything else is shared.
-These two prove it on completely different content.
-
-Both have the same **shape**:
-
-> fields you can read off the page  +  fields only your organisation knows
-
-That second group is the whole problem. No model can know them, they appear
-in no pretraining corpus, and they are exactly what a lookup or a fine-tune
-has to supply.
+Every command here works right now. Copy, paste, watch.
 
 ---
 
-## Use case 1 — Invoice extraction
+# THE 30-SECOND DEMO
 
-**`DOMAIN=invoice`** · `autoextract.v2.db` · 1,000 live + 250 holdout
+Two commands, one document, same model. This is the whole argument.
+
+```powershell
+python scripts\demo_case.py examples\invoice_missing_totals.txt --raw
+python scripts\demo_case.py examples\invoice_missing_totals.txt
+```
+
+| | `--raw` (enrichment off) | default (enrichment on) |
+|---|---|---|
+| verdict | **INVALID** — 7 errors | **VALID** |
+| `vendor_id` | `VND-00001` *(invented)* | `VND-01530` ✓ |
+| 5 category codes | all 5 wrong | all 5 correct ✓ |
+| field F1 | 0.6 range | **0.8947** |
+| latency | ~1.3 s | ~3.6 s |
+
+What the first run prints:
+
+```
+registry_vendor_id    vendor_id
+  vendor_id 'VND-00001' != registry id for 'Solvent Chemical Co' (VND-01530)
+taxonomy_category     line_items.0
+  category SA-BOOT-10 != taxonomy code for this product (PE-BOOT-07)
+
+failure signature  registry_vendor_id:vendor_id|taxonomy_category:line_items.*
+```
+
+**Say this:** "`SA-BOOT-10` is not a typo — it's a confident invention. It has
+the right shape and it's completely wrong, because the real code only exists
+in our systems. No bigger model fixes that."
+
+### The second thing to point at
+
+The enriched run is **VALID** and still prints:
+
+```
+tax     got '0.00'      want '1221.75'
+total   got '24435.03'  want '25656.78'
+
+NOTE  this passed the schema and is still wrong - which is exactly why
+      a repair must be checked against gold before it can train anything.
+```
+
+This invoice never prints its totals, so the model guessed zero tax and the
+arithmetic is self-consistent around a wrong number. **Schema-valid is not
+correct.** That distinction is why `repairs.verified` exists and why an
+unverified repair never reaches a training set.
+
+### Other examples
+
+```powershell
+python scripts\demo_case.py examples\invoice_currency_symbols.txt   # mixed currency symbols
+python scripts\demo_case.py examples\invoice_scanned_fax.txt        # OCR artefacts, 5 line items
+```
+
+Each `.txt` has a sibling `.gold.json`, which is how the run can say
+"correct" rather than just "parsed".
+
+---
+
+## Use case 1 — Invoices `DOMAIN=invoice`
 
 | Field | Where the answer lives |
 |---|---|
-| `vendor_id` | vendor registry (20 vendors) |
-| `line_items[].category` | product taxonomy (30 codes) |
+| `vendor_id` | vendor registry, 20 vendors |
+| `line_items[].category` | product taxonomy, 30 codes |
 | `payment_terms` | policy: vendor tier × invoice total |
 
-None are printed on the invoice. The model invents `VND-10001` when the
-answer is `VND-00713` — plausibly formatted, entirely wrong.
+None are printed on the invoice.
 
-### Run it
+### Run the full loop
 
 ```powershell
 $env:DB_PATH="autoextract.v2.db"; $env:DOMAIN="invoice"
 
 python scripts\freeze_eval.py
 python scripts\run_cycle.py --stage baseline
-python scripts\run_cycle.py --stage serve --n 1000 --workers 5
+python scripts\run_cycle.py --stage serve   --n 1000 --workers 5
 python scripts\run_cycle.py --stage clusters
-python scripts\run_cycle.py --stage repair --limit 1200 --workers 5
+python scripts\run_cycle.py --stage repair  --limit 1200 --workers 5
 ```
-
-### Expected results
 
 | Stage | Expect |
 |---|---|
 | Baseline, enrichment **off** | `valid_rate 0%`, `field_f1 ≈ 0.66` |
 | Baseline, enrichment **on** | `valid_rate ≈ 95%`, `field_f1 ≈ 0.97` |
-| Serve (enrichment on) | ~2% failures; the rest are misread dates |
+| Serve | ~2% failures; the rest are misread dates |
 | Clusters | led by `registry_vendor_id + taxonomy_category` |
 | Repair | ~90%+ verified; **mechanical 0** once enrichment runs first |
 
@@ -66,8 +112,6 @@ identical output format — only the rule knowledge removed. It gained +8.13.
 The real one gained +20.10. The **+11.97pp difference is the repairs**, which
 "any fine-tuning helps a weak model" cannot explain.
 
-Per-error-type isolation:
-
 | | base | lora | control |
 |---|---|---|---|
 | `taxonomy_category` | 114 | **85** | 115 |
@@ -81,25 +125,32 @@ codes.**
 no better than chance). Category codes carry semantic structure and recur
 several times per document; a 5-digit vendor ID is arbitrary and appears once.
 This is also why `valid_rate` stays at 0% for the local track: full validity
-requires `vendor_id`.
+requires `vendor_id`. Say it plainly — it's a finding, not a flaw.
 
 ---
 
-## Use case 2 — Support email triage
-
-**`DOMAIN=support_email`** · `autoextract.email.db` · 600 live + 200 holdout
+## Use case 2 — Support email triage `DOMAIN=support_email`
 
 | Field | Where the answer lives |
 |---|---|
 | `customer_id` | registry keyed on the sender's email domain |
-| `category` | keyword taxonomy (BILLING / TECHNICAL / SHIPPING / RETURNS / ACCOUNT) |
+| `category` | keyword taxonomy |
 | `priority` | policy: customer tier × category |
 
-Same structure, no invoice logic anywhere. `klaus@bergmann-elektronik.de`
-resolves to `CUS-00412`, tier gold; a BILLING ticket from a gold customer is
-P1. None of that is in the email.
+`klaus@bergmann-elektronik.de` → `CUS-00412`, tier gold; a BILLING ticket from
+a gold customer is P1. None of that is in the email.
+
+The point is that **nothing in the framework changed** — validator, clustering,
+repair, gate and dashboard are untouched. Only `domains/support_email.py` is
+new.
 
 ### Run it
+
+```powershell
+.\scripts\rebuild_email.ps1     # generate -> freeze -> baseline -> serve -> repair -> dataset
+```
+
+Or by hand:
 
 ```powershell
 $env:DB_PATH="autoextract.email.db"; $env:DOMAIN="support_email"
@@ -112,55 +163,55 @@ python scripts\run_cycle.py --stage clusters
 python scripts\run_cycle.py --stage repair --limit 700 --workers 5
 ```
 
-Or just `.\scripts\run_email_cycle.ps1`, which waits for generation and runs
-the whole thing.
-
-### Expected results
-
-| Stage | Expect |
-|---|---|
-| Baseline, enrichment **off** | `valid_rate ≈ 0%` — it cannot know customer IDs |
-| Baseline, enrichment **on** | high validity; the three rule fields are all derived |
-| Clusters | `registry_customer_id`, `policy_priority`, `order_ref_format` |
-| Repair | verified repairs feed the same dataset builder |
-
-The point is not the numbers. It is that **nothing in the framework changed** —
-validator, clustering, repair, gate and dashboard are untouched. Only
-`domains/support_email.py` is new.
-
 ### Training
 
 ```powershell
-$env:DB_PATH="autoextract.email.db"; $env:DOMAIN="support_email"
 $env:COMPACT_PROMPT="1"
-
-python scripts\score_local.py --label email-base
-python scripts\train_local.py --epochs 3 --lora-r 16
-python scripts\score_local.py --label email-lora --adapter models\lora-<stamp>
+python scripts\score_local.py  --label email-base
+python scripts\train_local.py  --epochs 3 --lora-r 16
+python scripts\score_local.py  --label email-lora --adapter models\lora-<stamp>
 python scripts\selfheal_test.py compare --before email-base --after email-lora
 python scripts\register_local.py --base email-base --lora email-lora --adapter models\lora-<stamp>
 ```
 
-**Expected, based on the invoice run:** format and structure improve sharply;
-`category` and `priority` improve partially (both are derivable from patterns);
-`customer_id` improves least, because like `vendor_id` it is an arbitrary
-5-digit code seen once per example.
+### Status: corpus rebuilding — numbers pending
 
-If that holds, it replicates the invoice finding on new content — **training
-teaches habits and structure, not arbitrary facts** — which is a stronger
-claim than one domain alone supports.
+The first email corpus was unusable and the failure was silent. Generation
+inherited `JSON_MODE=1` from the environment, which forced the **renderer**
+into JSON mode even though its prompt asks for prose. It returned fragments
+like `[2026.08, "a plain business email"]` — 9 to 35 characters. All 800
+"emails" were fragments.
+
+Downstream this looked exactly like model failure: 95.8% failure rate,
+placeholder outputs (`alice.smith@company.com`, `TKT-000001`), zero verified
+repairs. The model wasn't failing; it had nothing to read.
+
+Fixed in `scripts/gen_emails.py`: `json_mode=False` is now explicit, and a
+render is **dropped** unless it is ≥120 characters, is not JSON-shaped, and
+actually contains the `ticket_ref`, `sender_email` and every `order_ref` it
+was told to include. `scripts/gen_docs.py` had the same latent leak and got
+the same treatment — the invoice corpus escaped only because it predates JSON
+mode.
+
+**Expected once the rebuild lands**, based on the invoice run: format and
+structure improve sharply; `category` and `priority` improve partially (both
+follow patterns); `customer_id` improves least, because like `vendor_id` it is
+an arbitrary 5-digit code seen once per example. If that holds it replicates
+the invoice finding on new content — **training teaches habits and structure,
+not arbitrary facts** — which is a stronger claim than one domain supports.
 
 ---
 
 ## What to show, in order
 
-1. **Live playground** — paste an invoice, watch it invent `VND-10001`
-2. **Ceiling test** — `0.6571 → 0.9269` with the registry in prompt: the gap
+1. **`demo_case.py --raw` then without** — invented IDs, then correct, 30 seconds
+2. **The `NOTE`** — valid and still wrong, so repairs must be verified
+3. **Ceiling test** — `0.6571 → 0.9269` with the registry in prompt: the gap
    is knowledge, not capability
-3. **Enrichment** — `0% → 98.3%` valid, latency 6.4s → 1.7s, cost ~0
-4. **Training + control** — +20.10 vs +8.13, so +11.97 is the repairs
-5. **The gate rejecting** — a weak candidate blocked at +1.51pp
-6. **Switch `DOMAIN`** — the same loop on emails, framework unchanged
+4. **Enrichment at scale** — `0% → 98.3%` valid, 6.4 s → 1.7 s, cost ~0
+5. **Training + control** — +20.10 vs +8.13, so +11.97 is the repairs
+6. **The gate rejecting** — a weak candidate blocked at +1.51pp
+7. **Switch `DOMAIN`** — the same loop on emails, framework unchanged
 
 ## The claim that survives scrutiny
 

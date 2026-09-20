@@ -1,0 +1,71 @@
+---
+
+**FAX TRANSMISSION REPORT**
+==================================================
+FROM: -------------- TO: --------------------
+DATE: 2026-04-26 TIME: 14:32:07
+PAGES: 01/01 STATUS: OK [##########]
+==================================================
+--- CONFIDENTIAL ---
+PAGE 1 OF 1
+REF: BJD-81347720
+==================================================
+
+---
+
+INVOICE
+
+No. BJD-81347720
+
+Date: 2026-04-26
+
+---
+
+VENDOR:
+
+Kestrel Fasteners plc
+58 Attercliffe Road, Sheffield S4 7WL, UK
+
+---
+
+BILL TO:
+
+Aubergine Foods SARL
+22 Rue Saint-Denis, 75001 Paris, France
+
+---
+
+DUE DATE: 2026-04-26
+
+CURRENCY: EUR
+
+---
+
+| Description | Qty | Unit Price | Amount |
+|-------------|-----|------------|--------|
+| Hi-vis vest, XL | 5.00 | 285.47 | 1427.35 |
+| Warehouse handling fee | 5.00 | 455.19 | 2275.95 |
+| Corrugated box 400x300x200 | 3.00 | 151.19 | 453.57 |
+| Industrial adhesive 5L | 2.00 | 230.17 | 460.34 |
+| Ear defenders, class 4 | 100.00 | 250.61 | 25061.00 |
+
+---
+
+SUBTOTAL: 29678.21
+
+TAX: 0.00
+
+DISCOUNT: 0.00
+
+---
+
+**TOTAL: 29678.21**
+
+---
+
+==================================================
+--- END TRANSMISSION ---
+FAX ID: BJD-81347720-P1
+==================================================
+--- PLEASE RECYCLE ---
+PAGE 1 OF 1

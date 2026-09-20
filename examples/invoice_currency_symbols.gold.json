@@ -1,0 +1,45 @@
+{
+  "invoice_number": "JAP-94121346",
+  "issue_date": "2026-04-08",
+  "due_date": "2026-05-08",
+  "currency": "USD",
+  "payment_terms": "NET_30",
+  "vendor_id": "VND-00921",
+  "vendor": {
+    "name": "Dunmore Electrical Co",
+    "address": "200 Bay Street, Toronto, ON M5J 2J1, Canada",
+    "tax_id": "TX168683"
+  },
+  "bill_to": {
+    "name": "Halcyon Studios LLC",
+    "address": "1200 Congress Ave, Austin, TX 78701, USA",
+    "tax_id": null
+  },
+  "line_items": [
+    {
+      "description": "Crane hire, half day",
+      "category": "SV-RENT-15",
+      "quantity": "12.00",
+      "unit_price": "35.10",
+      "line_total": "421.20"
+    },
+    {
+      "description": "Courier service, zone 3",
+      "category": "SV-COUR-08",
+      "quantity": "5.00",
+      "unit_price": "220.74",
+      "line_total": "1103.70"
+    },
+    {
+      "description": "Hex bolt M10x60 (box of 50)",
+      "category": "HW-FAST-05",
+      "quantity": "2.00",
+      "unit_price": "53.61",
+      "line_total": "107.22"
+    }
+  ],
+  "subtotal": "1632.12",
+  "tax": "0.00",
+  "discount": "0.00",
+  "total": "1632.12"
+}

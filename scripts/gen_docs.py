@@ -219,11 +219,21 @@ def render(invoice: Invoice, style: str, offline: bool, attempts: int = 5) -> st
     last: Exception | None = None
     for attempt in range(attempts):
         try:
+            # json_mode=False EXPLICITLY. chat() otherwise inherits
+            # settings.json_mode, which is set for the SERVING path -- and a
+            # renderer forced into JSON mode returns a JSON fragment instead
+            # of a document. That destroyed an entire email corpus before it
+            # was caught; this path escaped only because the invoice corpus
+            # predates JSON mode.
             text, _ = chat(settings.large_model, RENDER_SYSTEM, user,
-                           temperature=0.9, max_tokens=1600)
-            if text.strip():
-                return text.strip()
-            last = RuntimeError("empty render")
+                           temperature=0.9, max_tokens=1600, json_mode=False)
+            stripped = text.strip()
+            if len(stripped) >= 200 and not stripped.startswith(("{", "[")):
+                return stripped
+            last = RuntimeError(
+                f"unusable render ({len(stripped)} chars)"
+                if stripped else "empty render"
+            )
         except Exception as exc:  # rate limits, timeouts, transient 5xx
             last = exc
         # exponential backoff with jitter: 2s, 4s, 8s, 16s

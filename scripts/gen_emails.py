@@ -138,6 +138,40 @@ def redact(gold: dict) -> dict:
             if k not in ("customer_id", "category", "priority")}
 
 
+#: Shortest believable email. Anything under this is a fragment, not a render.
+MIN_CHARS = 120
+
+
+def implausible(text: str, gold: dict) -> str | None:
+    """Why this render is unusable, or None if it is fine.
+
+    A non-empty check is not enough. Generation once ran with JSON_MODE=1
+    inherited from the environment, which forced the RENDERER into JSON mode
+    even though its system prompt asks for prose -- so it returned things like
+    `[2026.08, "a plain business email"]`. Nine characters, non-empty, saved
+    happily. The entire 800-email corpus was fragments, the serving model had
+    nothing to read, and it invented placeholders; that surfaced downstream as
+    a 95.8% failure rate and zero verified repairs, which looks exactly like
+    model failure rather than a broken corpus.
+
+    So the render must also CONTAIN the values it was told to include. That is
+    the generator's own contract ("Every value from the input MUST appear"),
+    and checking it is what turns a silent contamination into a loud drop.
+    """
+    stripped = text.strip()
+    if len(stripped) < MIN_CHARS:
+        return f"too short ({len(stripped)} chars)"
+    if stripped.startswith(("{", "[")):
+        return "looks like JSON, not an email"
+    for field in ("ticket_ref", "sender_email"):
+        if str(gold[field]) not in stripped:
+            return f"{field} missing from the rendered email"
+    for ref in gold.get("order_refs") or []:
+        if str(ref) not in stripped:
+            return f"order ref {ref} missing from the rendered email"
+    return None
+
+
 def render(ticket: SupportTicket, style: str, attempts: int = 5) -> str:
     gold = json.loads(ticket.model_dump_json())
     user = (
@@ -147,11 +181,15 @@ def render(ticket: SupportTicket, style: str, attempts: int = 5) -> str:
     last: Exception | None = None
     for attempt in range(attempts):
         try:
+            # json_mode=False EXPLICITLY. chat() otherwise inherits
+            # settings.json_mode, and every email script exports JSON_MODE=1
+            # for the serving path -- which silently applied to generation too.
             text, _ = chat(settings.large_model, RENDER_SYSTEM, user,
-                           temperature=0.9, max_tokens=900)
-            if text.strip():
+                           temperature=0.9, max_tokens=900, json_mode=False)
+            why = implausible(text, gold)
+            if why is None:
                 return text.strip()
-            last = RuntimeError("empty render")
+            last = RuntimeError(why)
         except Exception as exc:
             last = exc
         time.sleep(min(2 ** (attempt + 1), 20) * (0.7 + random.random() * 0.6))

@@ -1,0 +1,31 @@
+INVOICE
+
+Invoice #: JAP-94121346
+Date Issued: 2026-04-08
+Due Date: 2026-05-08
+
+From:
+Dunmore Electrical Co
+200 Bay Street, Toronto, ON M5J 2J1, Canada
+Tax ID: TX168683
+
+Bill To:
+Halcyon Studios LLC
+1200 Congress Ave, Austin, TX 78701, USA
+Tax ID: —
+
+-----------------------------------------------------------------
+
+| Description | Qty | Unit Price | Amount |
+|-------------|-----|------------|--------|
+| Crane hire, half day | 12.00 | $35.10 | 421.20 dollars |
+| Courier service, zone 3 | 5.00 | 220.74 USD | 1,103.70 USD |
+| Hex bolt M10x60 (box of 50) | 2.00 | USD 53.61 | $107.22 |
+
+-----------------------------------------------------------------
+
+Subtotal: $1,632.12 USD
+Tax: 0.00
+Discount: 0.00 dollars
+
+TOTAL DUE: 1,632.12 $

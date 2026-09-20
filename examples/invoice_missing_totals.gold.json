@@ -1,0 +1,59 @@
+{
+  "invoice_number": "SGC-53476538",
+  "issue_date": "2026-05-01",
+  "due_date": "2026-05-01",
+  "currency": "EUR",
+  "payment_terms": "DUE_ON_RECEIPT",
+  "vendor_id": "VND-01530",
+  "vendor": {
+    "name": "Solvent Chemical Co",
+    "address": "3 Dock Lane, Hull HU1 2AB, UK",
+    "tax_id": null
+  },
+  "bill_to": {
+    "name": "Riverbend Outfitters",
+    "address": "77 Queen St E, Ottawa, ON K1P 5C8, Canada",
+    "tax_id": null
+  },
+  "line_items": [
+    {
+      "description": "Safety boots, size 10",
+      "category": "PE-BOOT-07",
+      "quantity": "12.00",
+      "unit_price": "61.73",
+      "line_total": "740.76"
+    },
+    {
+      "description": "Steel shelf bracket, heavy",
+      "category": "HW-MOUN-14",
+      "quantity": "5.00",
+      "unit_price": "305.39",
+      "line_total": "1526.95"
+    },
+    {
+      "description": "Inkjet cartridge, black",
+      "category": "PP-INKJ-02",
+      "quantity": "3.00",
+      "unit_price": "335.54",
+      "line_total": "1006.62"
+    },
+    {
+      "description": "Thermal receipt roll 80mm",
+      "category": "PP-ROLL-01",
+      "quantity": "100.00",
+      "unit_price": "179.06",
+      "line_total": "17906.00"
+    },
+    {
+      "description": "Argon cylinder, 50L",
+      "category": "CH-GASS-04",
+      "quantity": "10.00",
+      "unit_price": "325.47",
+      "line_total": "3254.70"
+    }
+  ],
+  "subtotal": "24435.03",
+  "tax": "1221.75",
+  "discount": "0.00",
+  "total": "25656.78"
+}

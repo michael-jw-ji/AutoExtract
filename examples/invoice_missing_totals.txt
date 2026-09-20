@@ -1,0 +1,29 @@
+Solvent Chemical Co
+3 Dock Lane, Hull HU1 2AB, UK
+
+INVOICE #: SGC-53476538
+Date: 2026-05-01
+Due: 2026-05-01
+Currency: EUR
+
+Bill To:
+Riverbend Outfitters
+77 Queen St E, Ottawa, ON K1P 5C8, Canada
+
+---------------------------------------------------------
+
+Item                           Qty      Unit Price     Amount
+Safety boots, size 10          12.00    61.73          740.76
+Steel shelf bracket, heavy     5.00     305.39         1526.95
+Inkjet cartridge, black        3.00     335.54         1006.62
+Thermal receipt roll 80mm      100.00   179.06         17906.00
+Argon cylinder, 50L            10.00    325.47         3254.70
+
+---------------------------------------------------------
+
+Tax rate applied as per local regulations.
+Discount applied: 0.00
+
+Payment terms: Due on receipt.
+
+Thank you for your business.
