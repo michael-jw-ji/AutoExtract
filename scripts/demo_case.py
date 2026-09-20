@@ -38,12 +38,120 @@ def rule(title: str) -> None:
     print(f"\n{BOLD}{title}{OFF}\n{DIM}{'-' * 68}{OFF}")
 
 
+def _at(doc: dict, path: str):
+    """Dotted lookup, for showing original values rather than normalised ones."""
+    cur = doc or {}
+    for part in path.split("."):
+        if not isinstance(cur, dict):
+            return None
+        cur = cur.get(part)
+    return cur
+
+
+def side_by_side(text, model, gold, chat, system_prompt, apply_enrichment,
+                 validate, flatten, counts, f1) -> None:
+    """The opening beat: with and without enrichment, from ONE model call.
+
+    Calling the model once and enriching a copy of its output is both faster
+    (one network round trip instead of two) and a stricter comparison --
+    running it twice would let sampling noise masquerade as the effect.
+    """
+    started = time.perf_counter()
+    raw, _ = chat(model, system_prompt(), text)
+    elapsed = int((time.perf_counter() - started) * 1000)
+
+    before = validate(raw)
+    after = validate(apply_enrichment(raw))
+
+    rule("2. ONE MODEL CALL, TWO VERDICTS")
+    print(f"  {elapsed} ms. Both columns are the SAME model output - the right"
+          f"\n  one has passed through deterministic enrichment.\n")
+
+    def verdict(o):
+        return (f"{GRN}VALID{OFF}" if o.valid
+                else f"{RED}INVALID ({o.error_count}){OFF}")
+
+    def score(o):
+        return f"{f1(*counts(o.scorable, gold)):.4f}" if gold else "-"
+
+    w = 26
+    print(f"  {'':<{w}}{BOLD}{'enrichment OFF':<24}{'enrichment ON'}{OFF}")
+    print(f"  {'verdict':<{w}}{verdict(before):<33}{verdict(after)}")
+    print(f"  {'field F1':<{w}}{score(before):<24}{score(after)}")
+
+    # Only the fields that actually moved. Listing everything buries the point.
+    # Values come from the payloads rather than flatten(), which lowercases for
+    # comparison -- 'vnd-00001' on screen reads as a formatting bug.
+    def row(label, b, a, want=None):
+        mark = ""
+        if want is not None:
+            mark = (f"  {GRN}<- correct{OFF}" if str(a) == str(want)
+                    else f"  {YEL}<- still off{OFF}")
+        print(f"  {label:<{w}}{RED}{str(b)[:22]:<24}{OFF}{GRN}{str(a)[:22]}{OFF}{mark}")
+
+    fb, fa = flatten(before.scorable), flatten(after.scorable)
+    fg = flatten(gold) if gold else {}
+    for key in sorted(set(fb) | set(fa)):
+        if fb.get(key) == fa.get(key):
+            continue
+        if isinstance(fb.get(key), list) or isinstance(fa.get(key), list):
+            continue
+        row(key, _at(before.scorable, key), _at(after.scorable, key),
+            _at(gold, key) if fg else None)
+
+    # Line-item categories are the single most legible failure in the whole
+    # demo -- five confident, wrongly-invented codes on one page. They sit
+    # inside a list, so the loop above skips them entirely.
+    b_items = before.scorable.get("line_items") or []
+    a_items = after.scorable.get("line_items") or []
+    g_by_desc = {
+        str(i.get("description", "")).strip().lower(): i.get("category")
+        for i in (gold.get("line_items") or []) if isinstance(i, dict)
+    } if gold else {}
+    for idx, (bi, ai) in enumerate(zip(b_items, a_items)):
+        if not isinstance(bi, dict) or not isinstance(ai, dict):
+            continue
+        if bi.get("category") == ai.get("category"):
+            continue
+        desc = str(ai.get("description", "")).strip()
+        row(f"item[{idx}] {desc[:14]}", bi.get("category"), ai.get("category"),
+            g_by_desc.get(desc.lower()) if g_by_desc else None)
+
+    rule("3. WHAT THE VALIDATOR CAUGHT  (before enrichment, pydantic only)")
+    for err in before.errors[:6]:
+        loc = ".".join(str(p) for p in err.get("loc", ())) or "<root>"
+        print(f"  {RED}{err['type']:<26}{OFF} {loc}")
+        print(f"    {DIM}{str(err['msg'])[:92]}{OFF}")
+    if before.error_count > 6:
+        print(f"  {DIM}... {before.error_count - 6} more{OFF}")
+    print(f"\n  {BOLD}signature{OFF} {CYN}{before.signature}{OFF}")
+
+    if gold:
+        fa_flat, fg_flat = flatten(after.scorable), flatten(gold)
+        wrong = [k for k in sorted(set(fa_flat) | set(fg_flat))
+                 if fa_flat.get(k) != fg_flat.get(k)]
+        if wrong and after.valid:
+            rule("4. VALID IS NOT CORRECT")
+            for key in wrong[:6]:
+                got, want = fa_flat.get(key), fg_flat.get(key)
+                if isinstance(got, list) or isinstance(want, list):
+                    got, want = f"{len(got or [])} items", f"{len(want or [])} items"
+                print(f"  {YEL}{key:<22}{OFF} got {RED}{str(got)[:26]!r}{OFF}"
+                      f"  want {GRN}{str(want)[:26]!r}{OFF}")
+            print(f"\n  {YEL}This passed every schema and business rule and is still"
+                  f" wrong.{OFF}\n  {DIM}Which is why a repair is checked against "
+                  f"ground truth before it\n  is allowed to train anything.{OFF}")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="Run one document through the loop")
     ap.add_argument("document", help="path to a .txt document")
     ap.add_argument("--domain", default=None, help="invoice | support_email")
     ap.add_argument("--raw", action="store_true",
                     help="disable enrichment, to show the contrast")
+    ap.add_argument("--both", action="store_true",
+                    help="side-by-side with and without enrichment, from ONE "
+                         "model call (the demo's opening beat)")
     ap.add_argument("--model", default=None, help="override the serving model")
     args = ap.parse_args()
 
@@ -56,7 +164,8 @@ def main() -> None:
 
     from core.config import settings
     from domains import get_domain
-    from serve.extract import extract_text
+    from serve.client import chat
+    from serve.extract import apply_enrichment, extract_text, system_prompt
     from verify.compare import counts, f1, flatten
     from verify.validate import validate
 
@@ -83,6 +192,11 @@ def main() -> None:
         print(f"  {DIM}|{OFF} {line}")
     if len(lines) > 18:
         print(f"  {DIM}| ... {len(lines) - 18} more lines{OFF}")
+
+    if args.both:
+        side_by_side(text, model, gold, chat, system_prompt, apply_enrichment,
+                     validate, flatten, counts, f1)
+        return
 
     rule("2. THE MODEL READS IT")
     started = time.perf_counter()

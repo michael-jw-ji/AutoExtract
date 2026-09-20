@@ -10,6 +10,7 @@ component: the audit trail is the product.
 from __future__ import annotations
 
 import json
+from decimal import Decimal, InvalidOperation
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -115,14 +116,73 @@ def extract(req: ExtractRequest) -> dict:
         "model": model_used,
         "latency_ms": latency_ms,
         # What changed between the model's answer and the final one.
+        #
+        # error_list matters as much as the count. With ENRICH=1 the final
+        # answer is usually valid and `errors` above is empty, so a caller
+        # that only sees the count learns that something was fixed but never
+        # WHAT -- and "it invented VND-00001 for Northwind" is the entire
+        # point. changed[] pairs the model's value against the derived one.
         "before": {
             "valid": before.valid,
             "errors": len(before.errors),
             "signature": before.signature,
+            "error_list": before.errors[:10],
         },
+        "changed": _changed_fields(raw_model, raw),
         "enrichment": report,
         "enrich_enabled": settings.enrich,
     }
+
+
+def _changed_fields(raw_model: str, raw_final: str) -> list[dict]:
+    """Scalar fields whose value differs after enrichment, plus line-item
+    categories -- which live in a list and would otherwise never surface."""
+    def parse(text: str) -> dict:
+        try:
+            value = json.loads(strip_fences(text))
+            return value if isinstance(value, dict) else {}
+        except json.JSONDecodeError:
+            return {}
+
+    def same(b, a) -> bool:
+        """Treat 24435.03 and '24435.03' as unchanged.
+
+        Enrichment normalises money to 2-decimal strings, so every numeric
+        field 'changes' on every document. Listing those buries the handful
+        of real corrections -- which are the only reason this exists.
+        """
+        if b == a:
+            return True
+        try:
+            return Decimal(str(b)) == Decimal(str(a))
+        except (InvalidOperation, TypeError, ValueError):
+            return False
+
+    before, after = parse(raw_model), parse(raw_final)
+    if not before or not after:
+        return []
+
+    out: list[dict] = []
+    for key in sorted(set(before) | set(after)):
+        b, a = before.get(key), after.get(key)
+        if isinstance(b, (dict, list)) or isinstance(a, (dict, list)):
+            continue
+        if not same(b, a):
+            out.append({"field": key, "model": b, "derived": a})
+
+    for idx, (bi, ai) in enumerate(
+        zip(before.get("line_items") or [], after.get("line_items") or [])
+    ):
+        if not isinstance(bi, dict) or not isinstance(ai, dict):
+            continue
+        if bi.get("category") != ai.get("category"):
+            out.append({
+                "field": f"line_items[{idx}].category",
+                "label": str(ai.get("description", ""))[:22],
+                "model": bi.get("category"),
+                "derived": ai.get("category"),
+            })
+    return out
 
 
 @app.get("/api/stats")
