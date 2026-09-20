@@ -32,6 +32,10 @@ type RepairStats = {
   failures: number; repairs: number; verified: number;
 };
 type Latency = { buckets: { label: string; count: number }[]; p50: number; p95: number; n: number };
+type Config = {
+  domain: string; available_domains: string[]; schema: string;
+  json_mode: boolean; enrich: boolean; serving_model: string; db: string;
+};
 type Failure = {
   id: number; signature: string; error_count: number; status: string;
   doc_excerpt: string; messiness: string;
@@ -54,6 +58,7 @@ export default function Page() {
   const [fields, setFields] = useState<Field[]>([]);
   const [repairs, setRepairs] = useState<RepairStats | null>(null);
   const [latency, setLatency] = useState<Latency | null>(null);
+  const [cfg, setCfg] = useState<Config | null>(null);
   const [offline, setOffline] = useState(false);
   const [paused, setPaused] = useState(false);
 
@@ -70,7 +75,7 @@ export default function Page() {
   const [sortDesc, setSortDesc] = useState(false);
 
   const load = useCallback(async () => {
-    const [s, v, c, t, f, r, l] = await Promise.all([
+    const [s, v, c, t, f, r, l, k] = await Promise.all([
       get<Stats>("/api/stats"),
       get<Version[]>("/api/versions"),
       get<Cluster[]>(
@@ -81,6 +86,7 @@ export default function Page() {
       get<Field[]>("/api/fields"),
       get<RepairStats>("/api/repair-stats"),
       get<Latency>("/api/latency"),
+      get<Config>("/api/config"),
     ]);
     setOffline(s === null);
     if (s) setStats(s);
@@ -90,6 +96,7 @@ export default function Page() {
     if (f) setFields(f);
     if (r) setRepairs(r);
     if (l) setLatency(l);
+    if (k) setCfg(k);
   }, [clusterLimit, clusterStatus]);
 
   useEffect(() => {
@@ -176,6 +183,26 @@ export default function Page() {
         </span>
       </header>
 
+      {cfg && (
+        <div className="cfgbar">
+          <span className="flabel">domain</span>
+          <span className={`track track-${cfg.domain === "invoice" ? "baseten" : "local"}`}>
+            {cfg.domain}
+          </span>
+          <span className="dim">{cfg.schema}</span>
+          <span className="flabel">pipeline</span>
+          <span className={`chip${cfg.json_mode ? " on" : ""}`}>
+            json mode {cfg.json_mode ? "on" : "off"}
+          </span>
+          <span className={`chip${cfg.enrich ? " on" : ""}`}>
+            enrichment {cfg.enrich ? "on" : "off"}
+          </span>
+          <span className="cfg-right dim">
+            {cfg.serving_model} · {cfg.db}
+          </span>
+        </div>
+      )}
+
       <div className="stats">
         <Stat k="incumbent" v={stats?.incumbent ?? "—"} />
         <Stat k="extractions" v={stats?.extractions ?? 0} />
@@ -199,7 +226,7 @@ export default function Page() {
       <div className="grid2">
         <Panel
           title="valid rate — rolling 20-extraction window"
-          note="flat at 0% until a retrain lands; this is the line that should climb"
+          note="rolling, not per-document: a pass/fail series reads as noise rather than trend"
         >
           <TrendLine points={trend} />
         </Panel>
@@ -208,7 +235,13 @@ export default function Page() {
           title="repair funnel"
           note="only VERIFIED repairs reach a training set"
         >
-          {repairs && (
+          {repairs && repairs.repairs === 0 ? (
+            <div className="empty">
+              {repairs.failures === 0
+                ? "no failures to repair"
+                : `${repairs.failures} failure${repairs.failures === 1 ? "" : "s"} buffered — no repair pass has run yet`}
+            </div>
+          ) : repairs && (
             <>
               <Funnel
                 stages={[

@@ -17,8 +17,9 @@ from pydantic import BaseModel
 
 from buffer import cluster, store
 from core.db import connect, incumbent, init_db, insert, one, rows, tx
+from core.config import settings
 from serve.extract import extract_text
-from verify.validate import validate
+from verify.validate import strip_fences, validate
 
 app = FastAPI(title="AutoExtract", version="0.1.0")
 app.add_middleware(
@@ -39,10 +40,50 @@ class ExtractRequest(BaseModel):
     persist: bool = True
 
 
+@app.get("/api/config")
+def config() -> dict:
+    """Which domain and which switches are live. The dashboard shows these
+    because every number on it is only meaningful relative to them."""
+    from domains import available, get_domain
+    d = get_domain()
+    return {
+        "domain": d.name,
+        "available_domains": available(),
+        "schema": d.Schema.__name__,
+        "json_mode": settings.json_mode,
+        "enrich": settings.enrich,
+        "serving_model": settings.small_model,
+        "db": settings.db_path.name,
+    }
+
+
 @app.post("/extract")
 def extract(req: ExtractRequest) -> dict:
-    """Extract, validate, and (by default) buffer the failure if it fails."""
-    raw, latency_ms, model_used = extract_text(req.text)
+    """Extract, validate, and (by default) buffer the failure if it fails.
+
+    Returns BOTH the model's raw answer and the enriched one, so the caller
+    can see exactly which fields the model got and which were derived by
+    code. That distinction is the whole architecture.
+    """
+    from serve.client import chat
+    from serve.extract import apply_enrichment, system_prompt
+    from domains import get_domain
+
+    raw_model, latency_ms = chat(settings.small_model, system_prompt(), req.text)
+    model_used = settings.small_model
+    before = validate(raw_model)
+
+    report: dict = {}
+    raw = raw_model
+    if settings.enrich:
+        try:
+            payload = json.loads(strip_fences(raw_model))
+            if isinstance(payload, dict):
+                enriched, report = get_domain().enrich(payload)
+                raw = json.dumps(enriched, default=str)
+        except json.JSONDecodeError:
+            report = {"skipped": "model output was not parseable"}
+
     outcome = validate(raw)
 
     if req.persist:
@@ -73,6 +114,14 @@ def extract(req: ExtractRequest) -> dict:
         "signature": outcome.signature,
         "model": model_used,
         "latency_ms": latency_ms,
+        # What changed between the model's answer and the final one.
+        "before": {
+            "valid": before.valid,
+            "errors": len(before.errors),
+            "signature": before.signature,
+        },
+        "enrichment": report,
+        "enrich_enabled": settings.enrich,
     }
 
 

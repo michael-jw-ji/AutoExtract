@@ -3,12 +3,14 @@
 /**
  * Chart primitives, hand-rolled — no chart library, nothing fetched at runtime.
  *
- * Palette is the validated default stepped for THIS dashboard's dark surface
- * (#14171c). The three categorical slots were run through the skill's
- * validator against that exact surface and clear every gate all-pairs:
- *   lightness band PASS · chroma PASS · CVD worst ΔE 9.4 · normal-vision 20.9
- *   · contrast >= 3:1
- * Do not add a 4th categorical hue without re-running it.
+ * Palette is the validated default for THIS dashboard's light surface
+ * (#fcfcfb), run through the skill's validator against that exact surface:
+ *   lightness PASS · chroma PASS · CVD worst ΔE 9.2 · normal-vision 24.0
+ *   contrast WARN: aqua is 2.74:1, so the RELIEF RULE applies -- it may only
+ *   be used where a visible label or a table view carries the identity. The
+ *   funnel legend prints counts and every chart has a data-table toggle,
+ *   which satisfies it. Do not use aqua on an unlabelled mark.
+ * Do not add a 4th categorical hue without re-running the validator.
  *
  * Magnitude charts use ONE hue and let length carry the value. Colour is only
  * spent where identity is the point (the repair funnel).
@@ -17,15 +19,16 @@
 import { useEffect, useRef, useState } from "react";
 
 export const VIZ = {
-  s1: "#3987e5", // blue   — categorical slot 1
-  s2: "#d95926", // orange — slot 2
-  s3: "#199e70", // aqua   — slot 3
+  s1: "#2a78d6", // blue   — categorical slot 1
+  s2: "#eb6834", // orange — slot 2
+  s3: "#1baf7a", // aqua   — slot 3
   good: "#0ca30c",
   critical: "#d03b3b",
-  warning: "#fab219",
-  grid: "#2c2c2a",
-  baseline: "#383835",
+  warning: "#b07c00",
+  grid: "#e1e0d9",
+  baseline: "#c3c2b7",
   muted: "#898781",
+  surface: "#fcfcfb",
 } as const;
 
 /* ------------------------------------------------------------------ tooltip */
@@ -216,7 +219,7 @@ export function TrendLine({
               vectorEffect="non-scaling-stroke"
             />
             <circle cx={x(hover)} cy={y(points[hover].value)} r={5} fill={VIZ.s1}
-                    stroke="#14171c" strokeWidth={2} />
+                    stroke={VIZ.surface} strokeWidth={2} />
           </>
         )}
       </svg>

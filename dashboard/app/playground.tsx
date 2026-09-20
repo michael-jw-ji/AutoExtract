@@ -20,6 +20,9 @@ type Result = {
   signature: string | null;
   model: string;
   latency_ms: number;
+  before?: { valid: boolean; errors: number; signature: string | null };
+  enrichment?: Record<string, unknown>;
+  enrich_enabled?: boolean;
 };
 
 const SAMPLE = `INVOICE  NW-10024
@@ -102,6 +105,38 @@ export function Playground() {
               <span className="dim">{result.latency_ms} ms</span>
               <span className="dim">{result.errors.length} error(s)</span>
             </div>
+
+            {result.enrich_enabled && result.before && (
+              <div className="pg-delta">
+                <div className="pg-sig-k">model answer → after enrichment</div>
+                <div className="pg-delta-row">
+                  <span className={`badge ${result.before.valid ? "promoted" : "rejected"}`}>
+                    {result.before.valid ? "VALID" : `${result.before.errors} errors`}
+                  </span>
+                  <span className="arrow">→</span>
+                  <span className={`badge ${result.valid ? "promoted" : "rejected"}`}>
+                    {result.valid ? "VALID" : `${result.errors.length} errors`}
+                  </span>
+                  <span className="dim">
+                    {result.before.valid === false && result.valid
+                      ? "fixed by code, no model call"
+                      : ""}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {result.enrichment && Object.keys(result.enrichment).length > 0 && (
+              <div className="pg-enrich">
+                <div className="pg-sig-k">how each field was resolved</div>
+                {Object.entries(result.enrichment).map(([k, v]) => (
+                  <div className="pg-enrich-row" key={k}>
+                    <span>{k}</span>
+                    <b>{Array.isArray(v) ? v.join(", ") : String(v)}</b>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {result.signature && (
               <div className="pg-sig">
