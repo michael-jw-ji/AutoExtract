@@ -53,18 +53,27 @@ def chat(
     if settings.json_mode if json_mode is None else json_mode:
         extra["response_format"] = {"type": "json_object"}
 
-    resp = client().chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": system},
-            {"role": "user", "content": user},
-        ],
-        temperature=temperature,
-        max_tokens=max_tokens,
-        **extra,
-    )
+    messages = [
+        {"role": "system", "content": system},
+        {"role": "user", "content": user},
+    ]
+
+    # An empty response is a real failure mode, not a hypothetical: the same
+    # document at temperature 0 returned 740 chars, then 0 chars, then 432.
+    # An empty string cannot be parsed, so it used to surface as a json_decode
+    # failure and get sent all the way to the large model for "repair" -- when
+    # simply asking again fixes it.
+    text = ""
+    for attempt in range(3):
+        resp = client().chat.completions.create(
+            model=model, messages=messages,
+            temperature=temperature, max_tokens=max_tokens, **extra,
+        )
+        text = resp.choices[0].message.content or ""
+        if text.strip():
+            break
     latency_ms = int((time.perf_counter() - started) * 1000)
-    return (resp.choices[0].message.content or ""), latency_ms
+    return text, latency_ms
 
 
 def serving_model(adapter_ref: str | None = None) -> str:

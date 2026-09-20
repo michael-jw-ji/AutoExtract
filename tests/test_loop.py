@@ -360,6 +360,134 @@ def test_truncation_guard_passes_when_it_fits(tmp_path):
     assert info["est_tokens"] < 4096
 
 
+# --- serve-time enrichment -------------------------------------------------
+
+def test_enrich_fixes_uppercase_vendor():
+    """32 of 38 unknown-vendor failures were literally just uppercase."""
+    from serve.enrich import enrich
+    doc = good_invoice()
+    doc["vendor"]["name"] = "NORTHWIND LOGISTICS LTD"
+    doc["vendor_id"] = "VND-99999"
+    out, report = enrich(doc)
+    assert report["vendor_match"] == "case"
+    assert out["vendor_id"] == "VND-00713"
+
+
+def test_enrich_fuzzy_matches_ocr_noise():
+    from serve.enrich import enrich
+    doc = good_invoice()
+    doc["vendor"]["name"] = "Northwind Logistics Ltd."     # stray period
+    out, report = enrich(doc)
+    assert report["vendor_match"] in {"fuzzy", "case", "exact"}
+    assert out["vendor_id"] == "VND-00713"
+
+
+def test_enrich_refuses_to_guess_an_unknown_vendor():
+    """A confidently wrong ID is worse than an honest failure."""
+    from serve.enrich import enrich
+    doc = good_invoice()
+    doc["vendor"]["name"] = "Completely Unrelated Company Inc"
+    doc["vendor_id"] = "VND-11111"
+    out, report = enrich(doc)
+    assert report["vendor_match"] == "unmatched"
+    assert out["vendor_id"] == "VND-11111"          # left alone, not invented
+    assert not validate(json.dumps(out)).valid      # and the validator flags it
+
+
+def test_enrich_derives_everything_from_a_bad_answer():
+    """The model gets the readable fields right; code derives the rest."""
+    from serve.enrich import enrich
+    gold = good_invoice()
+    bad = json.loads(json.dumps(gold))
+    bad["vendor_id"] = "VND-00000"                  # invented
+    bad["payment_terms"] = "NET_60"                 # wrong per policy
+    bad["line_items"][0]["category"] = "XX-MISC-01" # invented
+    bad["line_items"][0]["line_total"] = "999.00"   # bad arithmetic
+    bad["total"] = "1.00"                           # bad arithmetic
+    bad["issue_date"] = "01/03/2026"                # wrong format
+
+    out, _ = enrich(bad)
+    assert validate(json.dumps(out)).valid, "enrichment should make this valid"
+    assert matches_gold(validate(json.dumps(out)).parsed, gold)
+
+
+def test_enrich_leaves_unparseable_output_alone():
+    from serve.extract import apply_enrichment
+    assert apply_enrichment("not json") == "not json"
+
+
+# --- domain plugability ----------------------------------------------------
+
+def good_ticket() -> dict:
+    """A valid support ticket, derived from the registry the same way
+    good_invoice() is."""
+    return {
+        "ticket_ref": "TKT-004821",
+        "sender_email": "klaus@bergmann-elektronik.de",   # gold tier
+        "received_at": "2026-05-21",
+        "subject": "Overcharged on last invoice",
+        "summary": "Customer was billed twice for the same order.",
+        "order_refs": ["ORD-9928471"],
+        "customer_id": "CUS-00412",
+        "category": "BILLING",
+        "priority": "P1",                                  # gold + BILLING
+    }
+
+
+def test_both_domains_are_registered():
+    from domains import available
+    assert set(available()) >= {"invoice", "support_email"}
+
+
+def test_email_domain_validates_a_good_ticket():
+    from domains import get_domain
+    d = get_domain("support_email")
+    d.Schema.model_validate(good_ticket())
+
+
+def test_email_domain_catches_wrong_customer_id():
+    from domains import get_domain
+    d = get_domain("support_email")
+    bad = {**good_ticket(), "customer_id": "CUS-99999"}
+    errs = d.check_rules(bad)
+    assert any(e["type"] == "registry_customer_id" for e in errs)
+
+
+def test_email_domain_catches_policy_violation():
+    """gold + BILLING must be P1; P3 is a policy break, not a format error."""
+    from domains import get_domain
+    d = get_domain("support_email")
+    errs = d.check_rules({**good_ticket(), "priority": "P3"})
+    assert any(e["type"] == "policy_priority" for e in errs)
+
+
+def test_email_domain_enrichment_derives_all_three_private_fields():
+    """Same principle as invoices: the model reads, code derives."""
+    from domains import get_domain
+    d = get_domain("support_email")
+    bad = {**good_ticket(), "customer_id": "CUS-00000",
+           "category": "SHIPPING", "priority": "P4"}
+    out, report = d.enrich(bad)
+    assert out["customer_id"] == "CUS-00412"   # looked up from email domain
+    assert out["category"] == "BILLING"        # from "Overcharged"/"billed"
+    assert out["priority"] == "P1"             # gold + BILLING
+    assert report["customer_match"] == "exact"
+    d.Schema.model_validate(out)
+
+
+def test_email_domain_refuses_to_guess_unknown_customer():
+    from domains import get_domain
+    d = get_domain("support_email")
+    out, report = d.enrich({**good_ticket(), "sender_email": "x@nowhere.example"})
+    assert report["customer_match"] == "unmatched"
+    assert out["customer_id"] == "CUS-00412"   # left as-is, not invented
+
+
+def test_domains_do_not_share_schemas():
+    from domains import get_domain
+    assert get_domain("invoice").Schema is not get_domain("support_email").Schema
+
+
 # --- scoring --------------------------------------------------------------
 
 def test_identical_documents_score_perfectly():

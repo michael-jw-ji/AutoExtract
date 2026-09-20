@@ -51,6 +51,12 @@ class Settings:
     #: than partway through one whose baseline was measured without it.
     json_mode: bool = os.getenv("JSON_MODE", "0").strip() in {"1", "true", "yes"}
 
+    #: Run deterministic enrichment (lookups, arithmetic, formats) at SERVE
+    #: time rather than only during repair. This is the optimal architecture:
+    #: the model reads the page, code derives everything with a right answer.
+    #: Off by default so existing measurements stay comparable.
+    enrich: bool = os.getenv("ENRICH", "0").strip() in {"1", "true", "yes"}
+
     promotion_margin: float = _f("PROMOTION_MARGIN", 2.0)
     repair_fraction: float = _f("REPAIR_FRACTION", 0.7)
     max_cluster_share: float = _f("MAX_CLUSTER_SHARE", 0.25)

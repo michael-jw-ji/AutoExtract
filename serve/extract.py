@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 
 from core.config import settings
 from core.db import connect, incumbent, insert, tx
@@ -59,7 +60,7 @@ No extra fields."""
 
 
 def system_prompt() -> str:
-    """The serving/training system prompt.
+    """The serving/training system prompt for the ACTIVE domain.
 
     COMPACT_PROMPT=1 swaps the full JSON Schema (5.9k chars) for a terse field
     list (~1.1k). That matters for local training on an 8GB GPU: with the full
@@ -70,18 +71,55 @@ def system_prompt() -> str:
     serving can never silently disagree about the prompt -- if they did, the
     LoRA would be tuned for text the server never sends and would not transfer.
     """
+    dom = os.getenv("DOMAIN", "invoice").strip().lower()
+    if dom != "invoice":
+        from domains import get_domain
+        return get_domain(dom).system_prompt()
     if settings.compact_prompt:
         return COMPACT_SYSTEM
     return SYSTEM.format(schema=json.dumps(INVOICE_JSON_SCHEMA, indent=2))
 
 
 def extract_text(doc_text: str, model: str | None = None) -> tuple[str, int, str]:
-    """Raw extraction call. Returns (raw_output, latency_ms, model_used)."""
+    """Raw extraction call. Returns (raw_output, latency_ms, model_used).
+
+    If ENRICH=1, the model's answer is passed through serve/enrich.py before
+    being returned: formats normalised, arithmetic recomputed, and every rule
+    field derived by lookup. The model is left responsible only for reading
+    the page -- which is the only part that needs a model.
+    """
     with tx() as conn:
         inc = incumbent(conn)
     used = model or serving_model(inc["adapter_ref"] if inc else None)
     raw, latency_ms = chat(used, system_prompt(), doc_text)
+
+    if settings.enrich:
+        raw = apply_enrichment(raw)
     return raw, latency_ms, used
+
+
+def _domain():
+    from domains import get_domain
+    return get_domain()
+
+
+def apply_enrichment(raw: str) -> str:
+    """Run deterministic enrichment over a raw model response.
+
+    Returns the raw text unchanged if it cannot be parsed -- enrichment has
+    nothing to work with, and silently swallowing the failure would hide it
+    from the validator.
+    """
+    from verify.validate import strip_fences
+
+    try:
+        payload = json.loads(strip_fences(raw))
+    except json.JSONDecodeError:
+        return raw
+    if not isinstance(payload, dict):
+        return raw
+    enriched, _report = _domain().enrich(payload)
+    return json.dumps(enriched, default=str)
 
 
 def extract_and_record(doc_id: int, doc_text: str, model: str | None = None) -> Outcome:

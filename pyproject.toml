@@ -22,7 +22,7 @@ dependencies = [
 dev = ["pytest>=8.0"]
 
 [tool.setuptools]
-packages = ["core", "verify", "serve", "buffer", "repair", "train", "evalgate", "api"]
+packages = ["core", "verify", "serve", "buffer", "repair", "train", "evalgate", "api", "domains"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

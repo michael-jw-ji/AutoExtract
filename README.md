@@ -101,6 +101,52 @@ python scripts\run_cycle.py --stage evaluate --version 2
 
 ---
 
+## Enrichment — the single biggest win
+
+`serve/enrich.py` runs at **serve time**, before validation. The model is
+asked only what the page *says*; code derives everything that follows.
+
+| Configuration | valid_rate | field_f1 | live failures |
+|---|---|---|---|
+| Original | 0.0% | 0.6571 | 300/300 |
+| + JSON mode | 0.0% | 0.7165 | 300/300 |
+| **+ enrichment** | **95.0%** | **0.9738** | **6/300** |
+
+It beats the registry-in-prompt "ceiling" (0.9269) because prompting only
+supplies facts — code also fixes arithmetic, date formats and money
+precision, which the model still has to *execute* correctly.
+
+Cost: microseconds, no tokens, no training. Compare to a LoRA (+20.1pp,
+12 min GPU, 214 curated examples) or prompt-stuffing (+27.0pp, 8,471 chars on
+every request forever).
+
+When a vendor can't be matched it **refuses to guess**, leaving the model's
+answer for the validator to flag. A confidently wrong ID is worse than an
+honest failure.
+
+## Multiple domains
+
+The loop is domain-agnostic. A domain supplies five things; everything else
+is shared:
+
+```
+DOMAIN=invoice         invoices  → vendor_id, category, payment_terms
+DOMAIN=support_email   emails    → customer_id, category, priority
+```
+
+| What a domain provides | Invoice | Support email |
+|---|---|---|
+| Schema | `Invoice` | `SupportTicket` |
+| Private registry | vendor → ID, tier | email domain → customer ID, tier |
+| Derived by policy | payment_terms | priority |
+| Taxonomy | product → category code | keywords → category |
+| Redacted from the document | vendor_id, terms, category | customer_id, category, priority |
+
+Both have the same shape: **fields you can read off the page, plus fields
+only your organisation knows.** Any use case with that shape plugs in —
+write `domains/<name>.py`, implement the `Domain` protocol, done. The
+validator, clustering, repair, gate and dashboard need no changes.
+
 ## Design decisions that matter
 
 **Clusters are deterministic, not embedded.** `ValidationError.errors()`

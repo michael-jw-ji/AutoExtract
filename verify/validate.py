@@ -18,8 +18,30 @@ from typing import Any
 
 from pydantic import ValidationError
 
-from verify.rules import check_rules
+from verify.rules import check_rules as _invoice_rules
 from verify.schema import Invoice
+
+
+def _active():
+    """Resolve the active domain's schema + rule checker.
+
+    Imported lazily and cached: domains/invoice.py imports serve.extract,
+    which imports this module, so a top-level import would cycle. Falls back
+    to the invoice domain if the domain package is unavailable for any reason,
+    so validation never breaks because of plugin wiring.
+    """
+    global _ACTIVE
+    if _ACTIVE is None:
+        try:
+            from domains import get_domain
+            d = get_domain()
+            _ACTIVE = (d.Schema, d.check_rules)
+        except Exception:
+            _ACTIVE = (Invoice, _invoice_rules)
+    return _ACTIVE
+
+
+_ACTIVE = None
 
 FENCE = re.compile(r"^\s*```(?:json)?\s*|\s*```\s*$", re.MULTILINE)
 
@@ -109,8 +131,9 @@ def validate(raw: str) -> Outcome:
         err = {"type": "not_an_object", "loc": (), "msg": f"got {type(payload).__name__}"}
         return Outcome(valid=False, errors=[err], signature=signature_of([err]))
 
+    schema, check_rules = _active()
     try:
-        invoice = Invoice.model_validate(payload)
+        invoice = schema.model_validate(payload)
     except ValidationError as exc:
         errors = [
             {"type": e["type"], "loc": tuple(e["loc"]), "msg": e["msg"]}
