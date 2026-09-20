@@ -40,14 +40,25 @@ def repair_one(failure: dict, *, allow_distill: bool = True) -> dict:
         attempt = {}
 
     # --- Pass 1: mechanical ---
+    #
+    # Short-circuit ONLY on a verified result. A mechanical repair that is
+    # schema-valid but does not match gold is not good enough to stop at: the
+    # distillation pass sees the registry and would often get it right. An
+    # earlier version returned on any parseable result, which silently capped
+    # the verified yield -- and JSON mode made it worse, because more
+    # documents then produced output mechanical could force into validity
+    # while still being wrong.
+    fallback = None
     if attempt:
         candidate = mechanical.repair(attempt)
         verified, parsed = _verify(candidate, failure.get("gold_json"))
         if parsed is not None:
-            _persist(failure, "mechanical", parsed, verified)
-            store.mark(failure["id"], "repaired" if verified else "unrepairable")
-            return {"failure_id": failure["id"], "method": "mechanical",
-                    "verified": verified}
+            if verified:
+                _persist(failure, "mechanical", parsed, True)
+                store.mark(failure["id"], "repaired")
+                return {"failure_id": failure["id"], "method": "mechanical",
+                        "verified": True}
+            fallback = parsed        # keep it, but try harder first
 
     # --- Pass 2: distillation ---
     if allow_distill:
@@ -55,11 +66,19 @@ def repair_one(failure: dict, *, allow_distill: bool = True) -> dict:
         if candidate is not None:
             candidate = mechanical.repair(candidate)  # cheap normalisation on top
             verified, parsed = _verify(candidate, failure.get("gold_json"))
-            if parsed is not None:
+            if parsed is not None and (verified or fallback is None):
                 _persist(failure, "distill", parsed, verified)
                 store.mark(failure["id"], "repaired" if verified else "unrepairable")
                 return {"failure_id": failure["id"], "method": "distill",
                         "verified": verified}
+
+    # Nothing verified. Record the mechanical attempt so the dashboard can see
+    # it, but it stays unverified and never reaches a training set.
+    if fallback is not None:
+        _persist(failure, "mechanical", fallback, False)
+        store.mark(failure["id"], "unrepairable")
+        return {"failure_id": failure["id"], "method": "mechanical",
+                "verified": False}
 
     store.mark(failure["id"], "unrepairable")
     return {"failure_id": failure["id"], "method": None, "verified": False}

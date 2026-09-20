@@ -7,318 +7,291 @@ on them, and refuses to ship a model that isn't measurably better.
 serve → verify → buffer → cluster → repair → train → eval gate → promote/reject
 ```
 
-## Quickstart (no API key, no GPU)
+**Headline result:** a LoRA trained on the loop's own repairs improved
+`mean_f1` by **+20.10pp** on a frozen holdout. A negative control — identical
+documents, identical volume, identical output format, rule knowledge removed —
+gained only +8.13pp. The **+11.97pp difference is attributable to the repairs**.
+Full numbers and caveats in [RESULTS.md](RESULTS.md).
 
-The whole loop runs offline against a mock model. Use this to develop and to
-verify logic changes.
+---
 
-```bash
+## The problem
+
+Three fields on every invoice are **not printed on the document**:
+
+| Field | Where the answer lives |
+|---|---|
+| `vendor_id` | an internal vendor registry (20 vendors) |
+| `line_items[].category` | an internal taxonomy (30 codes) |
+| `payment_terms` | a policy table keyed on vendor tier × total |
+
+No model can read these off the page, and none appears in any pretraining
+corpus. So the serving model fails ~100% of documents — and fine-tuning is the
+*right* tool by construction, because the missing ingredient is information
+and training is how information gets injected.
+
+`core/registry.py` holds them. The serving prompt never contains it; the
+validator does; the repair prompt does. That asymmetry is the whole design.
+
+---
+
+## Quickstart
+
+### Offline — no API key, no GPU
+
+```powershell
 uv venv --python 3.13
 uv pip install -e ".[dev]"
 
-# Windows PowerShell:  $env:MOCK_LLM="1"; $env:DRY_RUN="1"
-export MOCK_LLM=1 DRY_RUN=1
-
-python scripts/gen_docs.py --live 120 --holdout 100 --offline
-python scripts/freeze_eval.py
-python scripts/run_cycle.py --stage all --n 80
+$env:MOCK_LLM="1"; $env:DRY_RUN="1"
+python scripts\gen_docs.py --live 120 --holdout 100 --offline
+python scripts\freeze_eval.py
+python scripts\run_cycle.py --stage all --n 80
 ```
 
-Then, in two terminals:
+Mock mode is a **dev harness, not a quality simulator**. Never report numbers
+produced under `MOCK_LLM=1`.
 
-```bash
-uvicorn api.main:app --reload --port 8000
-cd dashboard && npm install && npm run dev      # http://localhost:3000
-```
-
-> Mock mode is a **dev harness**, not a quality simulator. Never report
-> numbers produced under `MOCK_LLM=1`.
-
-## Real run
-
-```bash
-cp .env.example .env          # paste BASETEN_API_KEY
-python scripts/check_models.py    # confirm the model IDs actually exist
-
-python scripts/gen_docs.py --live 150 --holdout 100
-python scripts/freeze_eval.py
-python scripts/probe.py --n 20    # MUST land in 25-45%
-```
-
-`probe.py` is the hour-0 experiment. If the failure rate is outside the band,
-tune `verify/schema.py` before building anything on top — see "Tuning" below.
-
-Then run the loop stage by stage:
-
-```bash
-python scripts/run_cycle.py --stage baseline        # score base model, becomes incumbent
-python scripts/run_cycle.py --stage serve --n 100   # extract + buffer failures
-python scripts/run_cycle.py --stage clusters        # inspect what's failing
-python scripts/run_cycle.py --stage repair          # mechanical + distillation
-python scripts/run_cycle.py --stage train           # build dataset, push Baseten job
-# ... wait for training ...
-python scripts/run_cycle.py --stage finalize --run 1 --version 2 --job <job_id>
-python scripts/run_cycle.py --stage evaluate --version 2
-```
-
-## How training works
-
-`train/dataset.py` builds a chat-format JSONL with three enforced invariants:
-
-1. **No holdout leakage.** `core/freeze.py` hashes the holdout id-set at
-   freeze time. `build_dataset()` calls `assert_no_leak()` before writing
-   anything to disk and raises `EvalLeakError` on any overlap.
-2. **70% repairs / 30% replay** (`REPAIR_FRACTION`). Replay examples are
-   previously-passing extractions, included so the LoRA doesn't forget what
-   already worked.
-3. **No signature exceeds 25% of the repair half** (`MAX_CLUSTER_SHARE`).
-   Without this the model overfits the single loudest error and regresses
-   everywhere else — which the gate would then reject, wasting a GPU run.
-
-### The Baseten job
-
-A Baseten training job is a **directory**, not a config file. `train/backend.py`
-generates all of it per run:
-
-```
-train/jobs/<run>/config.py      TrainingProject/TrainingJob -- image, compute
-train/jobs/<run>/run.sh         installs deps, starts training
-train/jobs/<run>/train.py       TRL SFTTrainer + LoRA
-train/jobs/<run>/dataset.jsonl  shipped with the job, no hub download
-```
-
-```bash
-truss train push train/jobs/<run>/config.py       # CONFIG IS POSITIONAL
-truss train deploy_checkpoints --config <deploy.py>
-```
-
-Gotchas already paid for: the subcommand is `deploy_checkpoints` (not
-`checkpoint deploy`); it is **interactive** unless given `--config`, so
-unattended runs generate a `DeployCheckpointsConfig`; deploying needs
-`hf_access_token` in [Baseten Secrets](https://app.baseten.co/settings/secrets);
-and on Windows the venv's `Scripts/` is not on PATH, so `detect_cli()` looks
-next to `sys.executable` first.
-
-LoRA rank must be one Baseten accepts: 8/16/32/64/128/256/320/512.
-`DRY_RUN=1` skips the real job and returns a synthetic id.
-
-Reference timing from Baseten's own qwen3-4b example: **~2 minutes on 1×H100**
-for 50 steps. Training is not the demo bottleneck — queueing and deployment are.
-
-### SMALL_MODEL vs TRAIN_BASE_MODEL
-
-These are deliberately different. Baseten's Model APIs serve a fixed catalogue
-(17 models on our key, none of them small open models), while Training Jobs
-fine-tune any HF model and deploy it separately. So `SMALL_MODEL` serves
-production traffic and `TRAIN_BASE_MODEL` (`Qwen/Qwen3-4B`) is what actually
-gets a LoRA.
-
-**Consequence for the gate:** comparing a LoRA'd Qwen3-4B against an
-`inkling-small` incumbent is not an apples-to-apples test. For the self-healing
-claim, compare Qwen3-4B **base** against Qwen3-4B **+LoRA** — same base model,
-one variable.
-
-### Only verified repairs are trained on
-
-Mechanical repair makes output schema-**valid**, not **correct**. If the model
-misread a `unit_price`, recomputing the totals from it yields a
-self-consistent, confidently wrong invoice — and training on that actively
-degrades the model.
-
-So `repair/run.py` marks a repair `verified` only if it is schema-valid **and**
-matches gold exactly (`verify/compare.py`). Because documents are generated
-from constructed gold, we have ground truth for every document, including live
-traffic. Unverified repairs are recorded for the dashboard and never enter a
-training set.
-
-## How evaluation works
-
-`evalgate/scorer.py` runs the frozen holdout and reports two numbers:
-
-- `valid_rate` — fraction passing the schema
-- `field_f1` — micro-averaged field-level F1 vs gold
-
-`valid_rate` alone is too coarse at n≈100: it moves in whole-percent steps, so
-noise swamps genuine improvement and the gate promotes on coin flips.
-`field_f1` moves continuously and is what the margin is measured against.
-
-`evalgate/gate.py` promotes only if `field_f1` improves by at least
-`PROMOTION_MARGIN` (default +2.0pp) **and** `valid_rate` does not regress.
-Both outcomes are written to `promotions`.
-
-## Local training track (the Baseten fallback)
-
-Baseten Training Jobs returned **403 "not authorized for Baseten training"**
-for this workspace — confirmed with both `truss` and the official `baseten`
-CLI v1.0.0. Reads succeed (`baseten train project list` → 200), creates do
-not, so it is a workspace permission flag, not auth or billing.
-
-The local track trains on one consumer GPU instead, and is arguably better
-science: it compares **Qwen-base against Qwen+LoRA** — same model, one
-variable — which is the clean A/B the Baseten path could not give without
-first deploying a base endpoint.
+### Real run
 
 ```powershell
-# one-time
+copy .env.example .env          # paste BASETEN_API_KEY
+python scripts\check_models.py  # confirm model IDs actually exist
+
+python scripts\gen_docs.py --live 300 --holdout 120 --workers 5
+python scripts\freeze_eval.py
+python scripts\probe.py --n 16  # the hour-0 experiment
+```
+
+### Servers
+
+```powershell
+.\run_api.ps1          # :8000 — preflights the port, names the offender
+.\run_dashboard.ps1    # :3000
+```
+
+Use `127.0.0.1`, not `localhost` — see Troubleshooting.
+
+---
+
+## The pipeline, stage by stage
+
+| # | Stage | Module | What happens |
+|---|---|---|---|
+| 1 | **serve** | `serve/` | Document → Baseten model → raw JSON text |
+| 2 | **verify** | `verify/` | pydantic validates; failures get a deterministic signature |
+| 3 | **buffer** | `buffer/store.py` | Failures queue up with their errors |
+| 4 | **cluster** | `buffer/cluster.py` | Group by signature — **no embeddings** |
+| 5 | **repair** | `repair/` | Mechanical lookup first, then large-model distillation |
+| 6 | **verify repair** | `repair/run.py` | Only repairs matching **gold** may train |
+| 7 | **train** | `train/` | Build dataset, fine-tune LoRA |
+| 8 | **eval** | `evalgate/scorer.py` | Score on the frozen holdout |
+| 9 | **gate** | `evalgate/gate.py` | Promote only on a real margin; log rejections |
+
+Run any stage:
+
+```powershell
+python scripts\run_cycle.py --stage baseline      # score the incumbent
+python scripts\run_cycle.py --stage serve --n 300 --workers 6
+python scripts\run_cycle.py --stage clusters      # what's failing
+python scripts\run_cycle.py --stage repair --workers 6
+python scripts\run_cycle.py --stage train
+python scripts\run_cycle.py --stage evaluate --version 2
+```
+
+---
+
+## Design decisions that matter
+
+**Clusters are deterministic, not embedded.** `ValidationError.errors()`
+already says precisely what went wrong. The cluster key is the sorted,
+index-normalised signature — instant, reproducible, and readable as English.
+Embeddings would only help for output that is schema-valid but semantically
+wrong, which is explicitly out of scope.
+
+**Repairs are verified against gold before training.** Mechanical repair makes
+output schema-**valid**, not **correct** — recomputing totals from a misread
+price yields a self-consistent, confidently wrong invoice. Training on that
+degrades the model. `test_mechanical_cannot_rescue_a_misread_price` guards this.
+
+**Repair only short-circuits on success.** A mechanical result that is valid
+but unverified falls through to distillation, which sees the registry and
+often gets it right. Returning early on any parseable result silently capped
+the verified yield (257 → 283 when fixed).
+
+**The gate measures F1, not pass/fail.** `valid_rate` is pinned at 0% and
+cannot detect a 20-point improvement. `field_f1` moves continuously.
+
+**Gold is constructed, never extracted.** Documents are generated *from* a
+valid invoice object, so ground truth is exact by definition — which is what
+makes verifying repairs possible at all.
+
+---
+
+## Guards that hard-fail
+
+Each one caught a real bug. None of them warn; they raise.
+
+| Guard | Refuses to |
+|---|---|
+| `core/freeze.py::assert_no_leak` | build a dataset containing holdout documents |
+| `core/freeze.py::freeze_holdout` | freeze a holdout containing template documents |
+| `train/backend.py::assert_fits` | launch training whose examples would truncate |
+
+The second exists because a rate-limited generation run silently fell back to
+template rendering and **49% of an 80-document holdout was trivially easy**
+before anyone noticed. It shifted `field_f1` by 2.7pp — against a promotion
+margin of 2.0pp.
+
+---
+
+## Training
+
+### Local track (works today)
+
+Baseten Training Jobs returns **403** for this workspace, so the local track
+is the working path — and gives a cleaner comparison anyway: Qwen-base vs
+Qwen+LoRA, same model, one variable.
+
+```powershell
 uv pip install --index-url https://download.pytorch.org/whl/cu128 torch
 uv pip install transformers peft trl accelerate datasets
 
-$env:COMPACT_PROMPT="1"     # REQUIRED, see below
-python scripts/run_cycle.py --stage train   # (skip; builds dataset only)
-python scripts/score_local.py --label local-base
-python scripts/train_local.py --epochs 3
-python scripts/score_local.py --label local-lora --adapter models/lora-<stamp>
-python scripts/selfheal_test.py compare --before local-base --after local-lora
+$env:COMPACT_PROMPT="1"     # REQUIRED — see below
+python scripts\score_local.py --label local-base
+python scripts\train_local.py --epochs 3
+python scripts\score_local.py --label local-lora --adapter models\lora-<stamp>
+python scripts\selfheal_test.py compare --before local-base --after local-lora
+python scripts\register_local.py --adapter models\lora-<stamp>
 ```
 
-**`COMPACT_PROMPT=1` is mandatory and must be identical for dataset build,
-training, and scoring.** It swaps the full JSON Schema (5,868 chars) for a
-terse field list (984), which brings examples from ~3.7k tokens to ~2.1k so
-they fit an 8GB GPU. Both the dataset builder and the scorer call
-`serve.extract.system_prompt()`, so they cannot silently disagree — if they
-did, the LoRA would be tuned against a prompt the scorer never sends and
-would not transfer at all.
+`COMPACT_PROMPT=1` swaps the full JSON Schema (5,868 chars) for a terse field
+list (984), bringing examples from ~3.7k to ~2.1k tokens so they fit 8GB. It
+**must be identical** for dataset build, training, and scoring — both read
+`serve.extract.system_prompt()`, so they cannot silently disagree.
 
-Memory plan for 8GB: Qwen2.5-1.5B-Instruct in bf16 (~3.1GB), LoRA only, no
-quantization — which avoids `bitsandbytes` entirely, the genuinely painful
-Windows dependency. Gradient checkpointing, batch 1, accumulation 16.
+Memory plan for 8GB: Qwen2.5-1.5B in bf16 (~3.1GB), LoRA only, **no
+quantization** — which avoids `bitsandbytes` entirely. 12 min for 3 epochs on
+an RTX 5050.
 
-Expect the local **base** numbers to look poor — a 1.5B is far weaker than
-`inkling-small`. That is fine. The number that matters is the delta between
-base and LoRA on the same model.
+### Baseten track (blocked)
+
+A training job is a **directory** — `config.py`, `run.sh`, `train.py`,
+`dataset.jsonl` — all generated by `train/backend.py`.
+
+```powershell
+baseten train push --config train\jobs\<run>\config.py   # --config flag
+truss  train push        train\jobs\<run>\config.py      # positional!
+baseten train checkpoint deploy --job-id <id>
+```
+
+Gotchas already paid for: the subcommand is `deploy_checkpoints`, not
+`checkpoint deploy`; it is interactive unless given `--config`; deploying needs
+`hf_access_token` in Baseten Secrets.
+
+---
 
 ## Proving it self-heals
 
-"field_f1 went up" is weak evidence — a model can improve for reasons that
-have nothing to do with the repairs. `scripts/selfheal_test.py` isolates the
-claim.
-
-```bash
-python scripts/selfheal_test.py snapshot --label before
-# ... serve, repair, train, deploy ...
-python scripts/selfheal_test.py snapshot --label after --model <adapter_ref>
-python scripts/selfheal_test.py compare --before before --after after
+```powershell
+python scripts\selfheal_test.py snapshot --label before
+# ... train ...
+python scripts\selfheal_test.py snapshot --label after --model <ref>
+python scripts\selfheal_test.py compare --before before --after after
+python scripts\selfheal_test.py control --size 190      # the negative control
 ```
 
-`compare` refuses to run if the two snapshots have different eval-set hashes,
-and reports **healed** (failed before, pass now), **regressed** (passed before,
-fail now — the forgetting check), and which error types moved.
+`compare` refuses to run if the eval-set hashes differ, and reports **healed**,
+**regressed** (the forgetting check), and which error types moved.
 
-The decisive test is the **negative control**:
-
-```bash
-python scripts/selfheal_test.py control --size 180   # same size, ZERO repairs
-# train a second LoRA on this dataset, deploy it
-python scripts/selfheal_test.py snapshot --label control --model <control_ref>
-python scripts/selfheal_test.py compare --before before --after control
-```
-
-The repair-trained model must beat the control. If it doesn't, the gain came
-from fine-tuning in general, not from the repairs, and the self-healing claim
-is unsupported.
-
-Unit tests cover the deterministic pieces — schema rules, policy boundaries,
-signature normalisation, mechanical repair, scoring:
-
-```bash
-python -m pytest tests/ -q      # 30 tests, no API key needed
-```
-
-Two of them guard properties that are easy to break silently:
-`test_mechanical_cannot_rescue_a_misread_price` (repair can make output valid
-but wrong — which is why repairs are verified against gold) and
-`test_invalid_output_is_still_scorable` (if invalid documents score 0,
-`field_f1` collapses into `valid_rate` and the gate goes blind).
-
-## Tuning the failure rate
-
-The project needs the base model to fail 25–45% of the time.
-
-| Symptom | Fix |
-|---|---|
-| Rate too low (<25%) | Tighten `verify/schema.py`, raise messiness in `gen_docs.py`, use a smaller `SMALL_MODEL` |
-| Rate too high (>45%) | Relax `extra="forbid"`, widen `TOLERANCE`, use a larger `SMALL_MODEL` |
-
-Highest-yield strictness knobs, in order: arithmetic consistency → enums →
-date/number formats → structural requirements.
-
-## Running it
+The control is the decisive experiment — see [RESULTS.md](RESULTS.md).
 
 ```powershell
-.\run_api.ps1          # API on :8000  — refuses to start if the port is held
-.\run_dashboard.ps1    # dashboard on :3000
+python -m pytest tests\ -q     # 43 tests, no API key needed
+python scripts\demo.py --pause # 7-beat scripted walkthrough
+python scripts\ceiling_test.py # registry-in-prompt upper bound
 ```
 
-Both scripts preflight their port and print the offending process instead of
-failing silently.
+---
 
-## Troubleshooting
-
-Every entry here cost real debugging time. They are all environment issues,
-not application bugs.
-
-**New API routes return 404 after you added them.**
-Something else is already on :8000 and your new server never bound. The global
-interpreter on this machine also has fastapi + uvicorn installed, so a stray
-`python -m uvicorn` wins the port and keeps answering with old code. `run_api.ps1`
-now catches this. To clear it by hand:
+## Experiments without destroying results
 
 ```powershell
-Get-CimInstance Win32_Process -Filter "Name='python.exe'" |
-  Where-Object { $_.CommandLine -match "uvicorn|multiprocessing-fork" } |
-  ForEach-Object { Stop-Process -Id $_.ProcessId -Force }
+python scripts\fork_db.py --to autoextract.jsonmode.db
+$env:DB_PATH="autoextract.jsonmode.db"
 ```
 
-Note that `uv` venvs do not copy `python.exe` — they shim to the uv-managed
-base interpreter, so a process command line showing an `AppData\Roaming\uv`
-path does **not** mean the venv is inactive.
+Keeps documents and the freeze; clears extractions, failures, repairs and
+versions. The comparison is only meaningful against the same frozen holdout.
 
-**Everything local feels slow, uniformly ~2s.**
-Use `127.0.0.1`, not `localhost`. uvicorn binds IPv4-only; Windows resolves
-`localhost` to `::1` first and that attempt stalls before falling back.
-Measured on the same endpoint: `localhost` 2061ms vs `127.0.0.1` 3.8ms.
-
-**`uvicorn --reload` crashes at startup with
-`watch() got an unexpected keyword argument 'ignore_permission_denied'`.**
-The traceback is entirely inside `uvicorn/supervisors/` and `Uvicorn running
-on …` prints *before* it — your app is fine, only the file watcher died.
-watchfiles ships a compiled Rust extension alongside its Python wrapper and a
-partial install leaves them out of sync. Fix with
-`pip install --force-reinstall watchfiles`, or drop `--reload`.
-
-**Dashboard 500s with `__webpack_modules__[moduleId] is not a function`.**
-You ran `npm run build` while `npm run dev` was running; the production build
-clobbered the dev server's chunk map. Stop dev, `rm -r dashboard/.next`,
-restart. Don't run both at once.
+---
 
 ## Layout
 
 | Path | Role |
 |---|---|
-| `core/` | config, sqlite, DDL, freeze enforcement |
-| `verify/` | strict `Invoice` schema, validation, failure signatures, gold comparison |
+| `core/` | config, sqlite, DDL, **registry**, freeze enforcement |
+| `verify/` | schema, validation, signatures, rules, gold comparison |
 | `serve/` | Baseten client, extraction, offline mock |
 | `buffer/` | failure store, signature clustering |
-| `repair/` | mechanical fixes, large-model distillation, verification |
-| `train/` | dataset builder, Axolotl config, Baseten job control |
+| `repair/` | mechanical fixes, distillation, verification |
+| `train/` | dataset builder, job generator, Baseten CLI |
 | `evalgate/` | frozen-holdout scorer, promotion gate |
 | `api/` | FastAPI: `/extract` + read endpoints |
-| `dashboard/` | Next.js, polls the read endpoints every 5s |
-| `scripts/` | probe, data gen, freeze, cycle driver |
+| `dashboard/` | Next.js, polls every 5s |
+| `scripts/` | probe, gen, freeze, cycle, local training, demo |
 
-Named `evalgate` rather than `eval` to avoid shadowing the builtin.
+Named `evalgate`, not `eval`, to avoid shadowing the builtin.
+
+---
 
 ## Environment
 
 | Variable | Default | Purpose |
 |---|---|---|
 | `BASETEN_API_KEY` | — | required for real runs |
-| `BASETEN_BASE_URL` | `https://inference.baseten.co/v1` | OpenAI-compatible endpoint |
-| `SMALL_MODEL` | `Qwen/Qwen3-8B` | serves + gets fine-tuned — **verify this id** |
-| `LARGE_MODEL` | `deepseek-ai/DeepSeek-V3.1` | data gen + repairs — **verify this id** |
-| `PROMOTION_MARGIN` | `2.0` | required field_f1 gain, in pp |
-| `REPAIR_FRACTION` | `0.7` | repair share of the training set |
-| `MAX_CLUSTER_SHARE` | `0.25` | per-signature cap on the repair half |
-| `MOCK_LLM` | unset | `1` = offline mock model |
-| `MOCK_FAILURE_RATE` | `0.35` | mock corruption probability |
-| `DRY_RUN` | auto | `1` = skip real training |
+| `SMALL_MODEL` | `thinkingmachines/inkling-small` | serves traffic |
+| `LARGE_MODEL` | `moonshotai/Kimi-K2.6` | data gen + repairs |
+| `TRAIN_BASE_MODEL` | `Qwen/Qwen3-4B` | Baseten fine-tune target |
+| `LOCAL_BASE_MODEL` | `Qwen/Qwen2.5-1.5B-Instruct` | local fine-tune target |
+| `PROMOTION_MARGIN` | `2.0` | required gain, in pp |
+| `REPAIR_FRACTION` | `0.7` | repair share of training set |
+| `MAX_CLUSTER_SHARE` | `0.25` | per-signature cap |
+| `JSON_MODE` | `0` | structured output — kills `json_decode` |
+| `COMPACT_PROMPT` | `0` | terse prompt for local training |
+| `POLICY_VERSION` | `1` | `2` = harder payment policy |
+| `DB_PATH` | `autoextract.db` | which database to operate on |
+| `MOCK_LLM` / `DRY_RUN` | unset | offline development |
+
+`SMALL_MODEL` and `TRAIN_BASE_MODEL` differ deliberately: Baseten's Model APIs
+serve a fixed catalogue with no small open models, while Training Jobs
+fine-tune any HF model and deploy it separately.
+
+---
+
+## Troubleshooting
+
+Every entry cost real debugging time. All are environment issues.
+
+**New API routes 404 after you added them.** Something else holds :8000 and
+your server never bound — the global interpreter also has uvicorn installed.
+`run_api.ps1` catches this. Note that `uv` venvs shim to the base interpreter,
+so an `AppData\Roaming\uv` path does **not** mean the venv is inactive.
+
+**Everything local feels slow, uniformly ~2s.** Use `127.0.0.1`. uvicorn binds
+IPv4-only; Windows resolves `localhost` to `::1` first and stalls. Measured:
+2061ms vs 3.8ms.
+
+**`uvicorn --reload` crashes with `ignore_permission_denied`.** The traceback
+is inside `uvicorn/supervisors/` and "Uvicorn running" prints first — only the
+watcher died. `pip install --force-reinstall watchfiles`, or drop `--reload`.
+
+**Dashboard 500s with `__webpack_modules__[moduleId] is not a function`.** You
+ran `npm run build` while `npm run dev` was running. Stop dev, delete
+`dashboard/.next`, restart. Use `npx tsc --noEmit` to typecheck instead.
+
+**`set VAR=1 && cmd` in cmd.exe** assigns `"1 "` with a trailing space. Use
+`set "VAR=1" && cmd`, or PowerShell's `$env:VAR="1"`.
+
+**truss output crashes with `UnicodeDecodeError`.** It emits box-drawing
+characters; pass `encoding="utf-8"` to `subprocess.run`.

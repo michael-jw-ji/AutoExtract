@@ -55,7 +55,14 @@ class Settings:
     repair_fraction: float = _f("REPAIR_FRACTION", 0.7)
     max_cluster_share: float = _f("MAX_CLUSTER_SHARE", 0.25)
 
-    db_path: Path = ROOT / "autoextract.db"
+    #: DB_PATH lets an experiment run against a forked database instead of
+    #: destroying one that already holds a complete result. Relative paths
+    #: resolve against the repo root.
+    db_path: Path = (
+        (ROOT / os.getenv("DB_PATH", "autoextract.db")).resolve()
+        if not os.path.isabs(os.getenv("DB_PATH", "autoextract.db"))
+        else Path(os.getenv("DB_PATH", "autoextract.db"))
+    )
     data_dir: Path = ROOT / "data"
     dataset_dir: Path = ROOT / "data" / "datasets"
 
