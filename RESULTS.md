@@ -126,3 +126,34 @@ freeze a holdout containing template documents.
   of 300 documents failed on it, because NET_30 is both the model's default
   guess and v1's answer for the commonest case. `POLICY_VERSION=2` fixes this
   but requires regenerating the corpus.
+
+---
+
+## Cheap at scale: does a 1.5B + LoRA match the hosted model?
+
+The question was whether training buys the same quality for less money, or
+only looks good against a weak baseline. Answered on the **same frozen
+holdout** (`90c45a2b4f844847`, n=120), the **same metric** (`mean_f1`), the
+same enrichment and the same compact prompt — measured with
+`scripts/score_hosted.py`, which exists precisely so this comparison is not
+`mean_f1` against `field_f1`.
+
+| Model | valid_rate | mean_f1 | median latency |
+|---|---|---|---|
+| `inkling-small` (hosted) | 95.8% | 0.9748 | 1079 ms |
+| Qwen2.5-1.5B (local, base) | 50.8% | 0.8295 | — |
+| **Qwen2.5-1.5B + LoRA (local)** | **96.7%** | **0.9665** | — |
+
+**The local 1.5B with a LoRA matches the hosted model.** It is +0.8pp *ahead*
+on valid_rate and 0.83pp behind on mean_f1 — inside the project's own 2.0pp
+promotion margin, i.e. not a difference this system would call real.
+
+Training moved the local model +45.9pp valid_rate and +13.7pp mean_f1 over its
+own base. That is the case where training is the right tool: the knowledge is
+stable, the volume is high, and the alternative is paying for a larger hosted
+model on every request forever.
+
+**Caveat worth stating.** Both sides run enrichment, so the registry fields are
+code-derived on both. What the LoRA bought is format and structure discipline
+at 1.5B scale — which is exactly what the earlier control isolated. It did not
+learn arbitrary IDs, and this result does not claim it did.
