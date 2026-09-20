@@ -246,6 +246,23 @@ class SupportEmailDomain:
                 report["priority"] = "derived"
         return doc, report
 
+    def normalize_field(self, path: str, value: Any) -> Any:
+        """Strip email-thread noise from the subject before comparison.
+
+        The generator renders realistic threads, so a subject appears on the
+        page as 'Re: Fwd: Overcharged on last invoice [TKT-482911]' while gold
+        holds the canonical 'Overcharged on last invoice'. A model that copies
+        the line verbatim is RIGHT; only the comparison was wrong. This strips
+        reply/forward prefixes and a trailing bracketed ticket ref, and
+        nothing else -- it does not make a wrong subject match a right one.
+        """
+        if path != "subject" or not isinstance(value, str):
+            return value
+        text = value.strip()
+        text = re.sub(r"^(?:\s*(?:re|fwd|fw)\s*:\s*)+", "", text, flags=re.I)
+        text = re.sub(r"\s*[\[(]\s*TKT-\d{6}\s*[\])]\s*$", "", text, flags=re.I)
+        return text.strip()
+
     def mechanical(self, payload: dict) -> dict:
         """Format normalisation, then the same derivation enrich() does.
 

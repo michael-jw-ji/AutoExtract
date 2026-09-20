@@ -11,6 +11,30 @@ from verify.schema import SCORED_FIELDS as _INVOICE_SCORED
 MONEY_FIELDS = {"subtotal", "tax", "discount", "total"}
 
 
+def _normalizer():
+    """The active domain's optional per-field normaliser.
+
+    Money already gets 2-decimal normalisation and dates get ISO form, because
+    '1221.7' and '1221.70' are the same answer. Some domains need the same
+    courtesy for text: a rendered support email carries 'Re: ' prefixes and a
+    '[TKT-482911]' suffix that the constructed gold subject does not, so a
+    model that reads the subject line perfectly still fails an exact match.
+    That is a measurement artefact, and left in place it blocked 94% of email
+    repairs from ever being verified.
+    """
+    global _NORM
+    if _NORM is None:
+        try:
+            from domains import get_domain
+            _NORM = getattr(get_domain(), "normalize_field", None) or (lambda p, v: v)
+        except Exception:
+            _NORM = lambda p, v: v  # noqa: E731
+    return _NORM
+
+
+_NORM = None
+
+
 def scored_fields() -> list[str]:
     """The active domain's scorable fields.
 
@@ -101,7 +125,10 @@ def flatten(doc: dict) -> dict[str, Any]:
             continue
         if value in (None, ""):
             continue
-        out[path] = _money(value) if path.split(".")[-1] in MONEY_FIELDS else _norm(value)
+        if path.split(".")[-1] in MONEY_FIELDS:
+            out[path] = _money(value)
+        else:
+            out[path] = _norm(_normalizer()(path, value))
     return out
 
 
