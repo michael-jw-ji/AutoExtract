@@ -16,7 +16,9 @@ Select one with DOMAIN=invoice or DOMAIN=support_email.
 
 from __future__ import annotations
 
+import importlib
 import os
+import threading
 from typing import Any, Protocol, runtime_checkable
 
 from pydantic import BaseModel
@@ -77,8 +79,7 @@ def register(domain: Domain) -> Domain:
 def get_domain(name: str | None = None) -> Domain:
     """Resolve the active domain. Defaults to DOMAIN, then 'invoice'."""
     key = (name or os.getenv("DOMAIN", "invoice")).strip().lower()
-    if not _REGISTRY:
-        _load_all()
+    _load_all()
     if key not in _REGISTRY:
         raise ValueError(
             f"unknown domain {key!r}. available: {sorted(_REGISTRY)}"
@@ -87,11 +88,39 @@ def get_domain(name: str | None = None) -> Domain:
 
 
 def available() -> list[str]:
-    if not _REGISTRY:
-        _load_all()
+    _load_all()
     return sorted(_REGISTRY)
 
 
+_LOADED = False
+_LOCK = threading.Lock()
+
+#: Every module that registers a domain. Loaded by name, not by attribute.
+_MODULES = ("domains.invoice", "domains.support_email")
+
+
 def _load_all() -> None:
-    # Imported lazily so a broken domain cannot take down the whole package.
-    from domains import invoice, support_email  # noqa: F401
+    """Import every domain module exactly once, safely under threads.
+
+    Both details here are load-bearing, and both were bugs:
+
+    * The guard is a flag, not `if not _REGISTRY`. The scorer resolves the
+      domain from inside a ThreadPoolExecutor, so one thread could register
+      `invoice` while another was still importing `support_email`; the second
+      thread then saw a non-empty registry, skipped loading, and raised
+      "unknown domain 'support_email'" -- intermittently, depending on timing.
+    * Modules are imported via importlib by name rather than
+      `from domains import invoice, support_email`. The `from` form fails with
+      "cannot import name ... from partially initialized module" when another
+      thread is midway through importing that submodule.
+    """
+    global _LOADED
+    if _LOADED:
+        return
+    with _LOCK:
+        if _LOADED:
+            return
+        for module in _MODULES:
+            # Lazily, so one broken domain cannot take down the whole package.
+            importlib.import_module(module)
+        _LOADED = True
