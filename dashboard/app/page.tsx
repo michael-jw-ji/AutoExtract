@@ -204,61 +204,74 @@ export default function Page() {
       )}
 
       <div className="stats">
-        <Stat k="incumbent" v={stats?.incumbent ?? "—"} />
-        <Stat k="extractions" v={stats?.extractions ?? 0} />
-        <Stat k="valid rate" v={stats ? `${(stats.valid_rate * 100).toFixed(1)}%` : "—"} />
-        <Stat k="buffer depth" v={stats?.buffer_depth ?? 0} />
-        <Stat k="versions" v={stats?.model_versions ?? 0} />
+        <Stat k="serving now" v={stats?.incumbent ?? "—"}
+              cap="the model answering requests" />
+        <Stat k="documents read" v={stats?.extractions ?? 0}
+              cap="total processed so far" />
+        <Stat k="got everything right"
+              v={stats ? `${(stats.valid_rate * 100).toFixed(1)}%` : "—"}
+              cap="passed every rule: format, maths and business rules" />
+        <Stat k="waiting to be fixed" v={stats?.buffer_depth ?? 0}
+              cap="failures queued for repair" />
+        <Stat k="models tried" v={stats?.model_versions ?? 0}
+              cap="every version trained or scored" />
         <Stat
-          k="promoted / rejected"
+          k="shipped / blocked"
           v={`${promoted} / ${rejected}`}
-          warn={rejected === 0 ? "gate has never rejected" : undefined}
+          cap="models the quality check let through, or stopped"
+          warn={rejected === 0 ? "nothing has been blocked yet" : undefined}
         />
       </div>
 
       <Panel
-        title="live extraction playground"
-        note="paste any invoice text — real model, real validator, nothing persisted"
+        title="try it yourself"
+        note="paste a document — real model, real checks, nothing is saved"
       >
         <Playground />
       </Panel>
 
       <div className="grid2">
         <Panel
-          title="valid rate — rolling 20-extraction window"
-          note="rolling, not per-document: a pass/fail series reads as noise rather than trend"
+          title="how often we get a document fully right"
+          note="share of the last 20 documents that passed every single rule"
         >
           <TrendLine points={trend} />
+          <div className="funnel-summary">
+            100% means every field was correct — the format, the arithmetic and
+            the business rules. One wrong field fails the whole document, so
+            this is a strict measure.
+          </div>
         </Panel>
 
         <Panel
-          title="repair funnel"
-          note="only VERIFIED repairs reach a training set"
+          title="how failures got fixed"
+          note="only fixes we can PROVE are right are allowed to train the model"
         >
           {repairs && repairs.repairs === 0 ? (
             <div className="empty">
               {repairs.failures === 0
-                ? "no failures to repair"
-                : `${repairs.failures} failure${repairs.failures === 1 ? "" : "s"} buffered — no repair pass has run yet`}
+                ? "nothing failed — nothing to fix"
+                : `${repairs.failures} failure${repairs.failures === 1 ? "" : "s"} waiting — the repair step hasn't run yet`}
             </div>
           ) : repairs && (
             <>
               <Funnel
                 stages={[
-                  { label: "mechanical ✓", value: mech?.verified ?? 0, color: VIZ.s1 },
-                  { label: "distilled ✓", value: dist?.verified ?? 0, color: VIZ.s3 },
+                  { label: "fixed by a lookup", value: mech?.verified ?? 0, color: VIZ.s1 },
+                  { label: "fixed by the big AI", value: dist?.verified ?? 0, color: VIZ.s3 },
                   {
-                    label: "unverified",
+                    label: "fixed, but can't prove it",
                     value: repairs.repairs - repairs.verified,
                     color: VIZ.s2,
                   },
-                  { label: "unrepairable", value: Math.max(0, unrepairable), color: VIZ.muted },
+                  { label: "couldn't fix", value: Math.max(0, unrepairable), color: VIZ.muted },
                 ]}
               />
               <div className="funnel-summary">
-                {repairs.failures} failures → {repairs.repairs} repaired →{" "}
-                <b>{repairs.verified} verified</b>{" "}
-                ({repairs.failures ? ((repairs.verified / repairs.failures) * 100).toFixed(0) : 0}% yield)
+                {repairs.failures} failed · {repairs.verified} fixed and{" "}
+                <b>proven correct</b> ({repairs.failures ? ((repairs.verified / repairs.failures) * 100).toFixed(0) : 0}%).
+                Only those become training examples — a fix that merely looks
+                valid can still be wrong.
               </div>
             </>
           )}
@@ -266,47 +279,8 @@ export default function Page() {
       </div>
 
       <Panel
-        title="per-field accuracy — latest eval"
-        note="orange = business rules the model cannot read off the document"
-      >
-        <div className="filters">
-          <span className="flabel">show</span>
-          {[
-            ["all", "all fields"],
-            ["business_rule", "business rules"],
-            ["extraction", "read from document"],
-          ].map(([v, label]) => (
-            <button
-              key={v}
-              className={`chip${fieldKind === v ? " on" : ""}`}
-              onClick={() => setFieldKind(v)}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-        {fieldBars.length ? (
-          <>
-            <HBar
-              data={fieldBars}
-              domainMax={1}
-              format={(v) => `${(v * 100).toFixed(0)}%`}
-            />
-            <TableView
-              open={!!tables.fields}
-              onToggle={() => toggle("fields")}
-              headers={["field", "accuracy", "kind"]}
-              rows={fields.map((f) => [f.field, `${(f.accuracy * 100).toFixed(1)}%`, f.kind])}
-            />
-          </>
-        ) : (
-          <div className="empty">no eval scored yet</div>
-        )}
-      </Panel>
-
-      <Panel
-        title="model lineage & gate decisions"
-        note="tracks are gated separately, and scores are NOT comparable across them: baseten rows are micro-averaged field_f1 measured with enrichment on; local rows are per-document mean_f1 measured without it"
+        title="every model we tried, and whether it shipped"
+        note="a model only replaces the current one if it beats it by a clear margin — scores are NOT comparable between tracks, they were measured differently"
       >
         {versions.length === 0 ? (
           <div className="empty">no model versions yet</div>
@@ -355,8 +329,47 @@ export default function Page() {
       </Panel>
 
       <Panel
-        title="failure clusters — deterministic signatures, no embeddings"
-        note="click a bar to inspect the documents behind it"
+        title="which fields we get right"
+        note="orange = answers that aren't written on the document, so the model has to know them"
+      >
+        <div className="filters">
+          <span className="flabel">show</span>
+          {[
+            ["all", "all fields"],
+            ["business_rule", "not on the document"],
+            ["extraction", "read from the document"],
+          ].map(([v, label]) => (
+            <button
+              key={v}
+              className={`chip${fieldKind === v ? " on" : ""}`}
+              onClick={() => setFieldKind(v)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        {fieldBars.length ? (
+          <>
+            <HBar
+              data={fieldBars}
+              domainMax={1}
+              format={(v) => `${(v * 100).toFixed(0)}%`}
+            />
+            <TableView
+              open={!!tables.fields}
+              onToggle={() => toggle("fields")}
+              headers={["field", "accuracy", "kind"]}
+              rows={fields.map((f) => [f.field, `${(f.accuracy * 100).toFixed(1)}%`, f.kind])}
+            />
+          </>
+        ) : (
+          <div className="empty">no scores yet</div>
+        )}
+      </Panel>
+
+      <Panel
+        title="what's going wrong, grouped"
+        note="identical failures share a key, so they group exactly — click a bar to read the documents"
       >
         <div className="filters">
           <span className="flabel">status</span>
@@ -429,11 +442,14 @@ function Panel({
   );
 }
 
-function Stat({ k, v, warn }: { k: string; v: string | number; warn?: string }) {
+function Stat({
+  k, v, cap, warn,
+}: { k: string; v: string | number; cap?: string; warn?: string }) {
   return (
-    <div className={`stat${warn ? " stat-warn" : ""}`} title={warn}>
+    <div className={`stat${warn ? " stat-warn" : ""}`}>
       <div className="k">{k}</div>
       <div className="v">{v}</div>
+      {cap && <div className="cap">{cap}</div>}
       {warn && <div className="warn">⚠ {warn}</div>}
     </div>
   );
