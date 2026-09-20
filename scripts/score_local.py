@@ -22,7 +22,7 @@ from core.config import ROOT, settings
 from core.db import init_db
 from core.freeze import current_hash
 from evalgate.scorer import holdout_docs
-from serve.extract import system_prompt
+from serve.extract import apply_enrichment, system_prompt
 from verify.compare import counts, f1
 from verify.validate import validate
 
@@ -73,7 +73,9 @@ def main() -> None:
 
     print(f"base    : {base}")
     print(f"adapter : {args.adapter or '(none — scoring the base model)'}")
-    print(f"prompt  : {'compact' if settings.compact_prompt else 'full JSON Schema'}")
+    print(f"prompt  : {'compact' if settings.compact_prompt else 'full JSON Schema'} "
+          f"({len(system_prompt())} chars)")
+    print(f"enrich  : {'on' if settings.enrich else 'OFF'}")
 
     model = AutoModelForCausalLM.from_pretrained(
         base, torch_dtype=torch.bfloat16, device_map={"": 0},
@@ -105,6 +107,12 @@ def main() -> None:
             )
         latency_ms = int((time.perf_counter() - t0) * 1000)
         raw = tok.decode(out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True)
+
+        # Apply the SAME serve-time enrichment the hosted pipeline uses, or the
+        # comparison is rigged: one side would get code-derived business rules
+        # and the other would not.
+        if settings.enrich:
+            raw = apply_enrichment(raw)
 
         outcome = validate(raw)
         gold = json.loads(doc["gold_json"]) if doc["gold_json"] else {}
