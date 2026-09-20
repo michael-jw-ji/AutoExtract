@@ -31,8 +31,7 @@ from core.db import init_db
 from evalgate.scorer import holdout_docs
 from serve.client import chat
 from serve.extract import system_prompt
-from verify.compare import counts, f1, flatten
-from verify.schema import SCORED_FIELDS
+from verify.compare import counts, f1, flatten, scored_fields
 from verify.validate import validate
 
 
@@ -82,8 +81,8 @@ def main() -> None:
         tp, pred, gold_n = tp + a, pred + b, gold_n + c
 
         fp, fg = flatten(outcome.scorable), flatten(gold)
-        for path in SCORED_FIELDS:
-            if path == "line_items" or path not in fg:
+        for path in scored_fields():
+            if isinstance(fg.get(path), list) or path not in fg:
                 continue
             per_field[path][1] += 1
             if fp.get(path) == fg[path]:

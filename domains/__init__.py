@@ -48,6 +48,16 @@ class Domain(Protocol):
         this to serve time took valid_rate from 0% to 95%.
         """
 
+    def mechanical(self, payload: dict) -> dict:
+        """Deterministic repair: normalise formats, then derive what code can.
+
+        Must be domain-specific, because it drops keys the schema forbids. The
+        invoice implementation was called for every domain at one point, which
+        stripped support-email payloads down to `{}` before they were verified
+        -- so the email track recorded zero repairs and looked like a model
+        failure rather than a wiring bug.
+        """
+
     def check_rules(self, payload: dict) -> list[dict]:
         """Business-rule violations, checked independently of pydantic ordering.
 

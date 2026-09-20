@@ -14,7 +14,7 @@ change; only this file does.
 from __future__ import annotations
 
 import re
-from datetime import date
+from datetime import date, datetime
 from enum import Enum
 from typing import Any
 
@@ -150,6 +150,27 @@ SCORED_FIELDS = [
     "customer_id", "category", "priority", "order_refs",
 ]
 
+#: Schema is extra='forbid', so mechanical repair drops everything else.
+_ALLOWED = frozenset(SCORED_FIELDS) | {"summary"}
+
+_DATE_FORMATS = [
+    "%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y", "%d-%m-%Y", "%m-%d-%Y",
+    "%d %B %Y", "%B %d, %Y", "%b %d, %Y", "%d %b %Y", "%Y/%m/%d",
+    "%d.%m.%Y", "%Y%m%d",
+]
+
+
+def _fix_date(value: str) -> str:
+    text = value.strip()
+    # Model output is frequently a full timestamp where a date is wanted.
+    for candidate in (text, text.split("T")[0], text.split(" ")[0]):
+        for fmt in _DATE_FORMATS:
+            try:
+                return datetime.strptime(candidate, fmt).date().isoformat()
+            except ValueError:
+                continue
+    return text
+
 # Fields the email never contains. The generator must strip these before
 # rendering, or the model could simply copy them off the page.
 REDACTED = ("customer_id", "category", "priority")
@@ -224,6 +245,46 @@ class SupportEmailDomain:
                 doc["priority"] = pri
                 report["priority"] = "derived"
         return doc, report
+
+    def mechanical(self, payload: dict) -> dict:
+        """Format normalisation, then the same derivation enrich() does.
+
+        Only formats are guessed at here. `customer_id`, `category` and
+        `priority` are never invented -- enrich() derives them from the
+        registry or leaves them alone, so a repair that cannot resolve the
+        sender stays wrong and fails verification, which is the intent.
+        """
+        if not isinstance(payload, dict):
+            return {}
+        doc = {k: v for k, v in payload.items() if k in _ALLOWED}
+
+        ref = doc.get("ticket_ref")
+        if isinstance(ref, str):
+            m = re.search(r"(\d{6})", ref)
+            if m:
+                doc["ticket_ref"] = f"TKT-{m.group(1)}"
+
+        got = doc.get("received_at")
+        if isinstance(got, str):
+            doc["received_at"] = _fix_date(got)
+
+        refs = doc.get("order_refs")
+        if isinstance(refs, list):
+            out = []
+            for r in refs:
+                m = re.search(r"(\d{7})", str(r))
+                if m:
+                    out.append(f"ORD-{m.group(1)}")
+            doc["order_refs"] = out
+        elif "order_refs" in doc:
+            doc["order_refs"] = []
+
+        for key in ("subject", "summary"):
+            if isinstance(doc.get(key), str):
+                doc[key] = doc[key].strip()
+
+        doc, _ = self.enrich(doc)
+        return doc
 
     def check_rules(self, payload: dict) -> list[dict]:
         errors: list[dict] = []

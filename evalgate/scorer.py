@@ -19,8 +19,7 @@ from concurrent.futures import ThreadPoolExecutor
 from core.db import insert, one, rows, tx
 from core.freeze import current_hash, holdout_ids
 from serve.extract import extract_text
-from verify.compare import counts, f1, flatten
-from verify.schema import SCORED_FIELDS
+from verify.compare import counts, f1, flatten, scored_fields
 from verify.validate import validate
 
 
@@ -72,8 +71,8 @@ def score_model(
             gold_total += n_gold
 
             fp, fg = flatten(pred), flatten(gold)
-            for path in SCORED_FIELDS:
-                if path == "line_items":
+            for path in scored_fields():
+                if isinstance(fg.get(path), list):
                     continue
                 if path in fg:
                     per_field_hits[path][1] += 1

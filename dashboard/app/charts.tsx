@@ -25,10 +25,10 @@ export const VIZ = {
   good: "#0ca30c",
   critical: "#d03b3b",
   warning: "#b07c00",
-  grid: "#e1e0d9",
-  baseline: "#c3c2b7",
-  muted: "#898781",
-  surface: "#fcfcfb",
+  grid: "#ededf0",
+  baseline: "#c9c9ce",
+  muted: "#8e8e97",
+  surface: "#ffffff",
 } as const;
 
 /* ------------------------------------------------------------------ tooltip */
@@ -158,7 +158,6 @@ export function TrendLine({
   const x = (i: number) => PAD.l + (i / (points.length - 1)) * (W - PAD.l - PAD.r);
   const y = (v: number) => PAD.t + (1 - v) * (H - PAD.t - PAD.b);
   const path = points.map((p, i) => `${i ? "L" : "M"}${x(i)},${y(p.value)}`).join("");
-  const area = `${path}L${x(points.length - 1)},${y(0)}L${x(0)},${y(0)}Z`;
 
   const onMove = (e: React.MouseEvent) => {
     const rect = ref.current?.getBoundingClientRect();
@@ -198,7 +197,10 @@ export function TrendLine({
             </text>
           </g>
         ))}
-        <path d={area} fill={VIZ.s1} opacity={0.14} />
+        {/* No area fill. This rate lives in its top decile, so filling down to
+            zero paints most of the panel a solid colour that encodes nothing
+            and buries the gridlines. The axis stays 0-100% -- truncating it to
+            90-100% would magnify noise into apparent movement. */}
         <path
           d={path}
           fill="none"

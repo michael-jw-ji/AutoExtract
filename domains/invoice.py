@@ -34,6 +34,10 @@ class InvoiceDomain:
     def enrich(self, payload: dict) -> tuple[dict, dict[str, Any]]:
         return _enrich(payload)
 
+    def mechanical(self, payload: dict) -> dict:
+        from repair.mechanical import repair as _mechanical
+        return _mechanical(payload)
+
     def check_rules(self, payload: dict) -> list[dict]:
         return _check_rules(payload)
 

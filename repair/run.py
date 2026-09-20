@@ -12,9 +12,32 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from buffer import store
 from core.db import insert, tx
-from repair import distill, mechanical
+from repair import distill
 from verify.compare import matches_gold
 from verify.validate import strip_fences, validate
+
+
+def _mechanical(payload: dict) -> dict:
+    """The active domain's deterministic repair.
+
+    Resolved lazily and cached, with the invoice implementation as the
+    fallback, matching verify/validate.py::_active(). This used to call
+    repair.mechanical directly, which is invoice-only: its allow-list wiped
+    every key of a support-email payload, so nothing ever reached the
+    verifier and the whole email track reported zero repairs.
+    """
+    global _MECH
+    if _MECH is None:
+        try:
+            from domains import get_domain
+            _MECH = get_domain().mechanical
+        except Exception:
+            from repair.mechanical import repair as _fallback
+            _MECH = _fallback
+    return _MECH(payload)
+
+
+_MECH = None
 
 
 def _verify(candidate: dict, gold_json: str | None) -> tuple[bool, dict | None]:
@@ -50,7 +73,7 @@ def repair_one(failure: dict, *, allow_distill: bool = True) -> dict:
     # while still being wrong.
     fallback = None
     if attempt:
-        candidate = mechanical.repair(attempt)
+        candidate = _mechanical(attempt)
         verified, parsed = _verify(candidate, failure.get("gold_json"))
         if parsed is not None:
             if verified:
@@ -64,7 +87,7 @@ def repair_one(failure: dict, *, allow_distill: bool = True) -> dict:
     if allow_distill:
         candidate = distill.repair(failure["doc_text"], attempt_text, errors)
         if candidate is not None:
-            candidate = mechanical.repair(candidate)  # cheap normalisation on top
+            candidate = _mechanical(candidate)  # cheap normalisation on top
             verified, parsed = _verify(candidate, failure.get("gold_json"))
             if parsed is not None and (verified or fallback is None):
                 _persist(failure, "distill", parsed, verified)
