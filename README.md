@@ -8,8 +8,9 @@ better. Being extended to SEC Form 4 insider-transaction filings.
 serve → verify → buffer → cluster → repair → train → eval gate → promote/reject
 ```
 
-**Status:** early. The Form 4 domain is a skeleton; no Form 4 results yet.
-Milestones and checklists: [docs/PLAN.md](docs/PLAN.md).
+**Status:** Milestone 1 built; baseline running on a frozen 189-filing holdout.
+How everything works, with diagrams: [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md).
+Measured numbers: [RESULTS.md](RESULTS.md). Roadmap: [docs/PLAN.md](docs/PLAN.md).
 
 ## Setup
 
