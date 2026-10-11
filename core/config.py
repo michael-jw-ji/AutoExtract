@@ -28,6 +28,13 @@ class Settings:
     #: endpoint above.
     large_llm_base_url: str = os.getenv("LARGE_LLM_BASE_URL", "").strip() or llm_base_url
     large_llm_api_key: str = os.getenv("LARGE_LLM_API_KEY", "").strip() or llm_api_key
+    #: Requests to send at once. Local Ollama runs ONE at a time (Parallel:1);
+    #: more than that only queues, and queue time counts against the timeout.
+    llm_concurrency: int = int(os.getenv("LLM_CONCURRENCY", "1"))
+    #: Modal's vLLM serves several at once (MAX_CONCURRENT in infra/modal_llm.py).
+    large_llm_concurrency: int = int(os.getenv("LARGE_LLM_CONCURRENCY", "4"))
+    #: Seconds per request. A 30-row filing can take minutes to generate locally.
+    llm_timeout: float = float(os.getenv("LLM_TIMEOUT", "600"))
     small_model: str = os.getenv("SMALL_MODEL", "qwen2.5:7b")
     large_model: str = os.getenv("LARGE_MODEL", "qwen2.5:14b")
 

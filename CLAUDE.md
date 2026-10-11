@@ -18,10 +18,18 @@ docs/PLAN.md; keep it ticked as work lands.
   generator, and there is no template fallback to guard against. Hand-labelled
   filings go in data/form4/labels/ (tracked); raw downloads do not.
 - Select the domain with `DOMAIN=form4` or `run_cycle.py --domain form4`.
-- Small model is `qwen2.5-7b-16k`: qwen2.5:7b with a 16K context
-  (infra/qwen2.5-7b-16k.Modelfile). Ollama's VRAM-based default is 4096
-  tokens, which SILENTLY truncated the longest filings' input. Extraction asks
-  for up to 4096 output tokens; serve/client.py warns on a truncated answer.
+- Small model is `Qwen/Qwen2.5-7B-Instruct`, bf16, vLLM on a Modal L40S
+  (infra/modal_small.py, LoRA enabled). It moved off local Ollama because
+  Ollama's qwen2.5:7b is a 4-bit GGUF: a baseline there vs a fine-tune of the
+  bf16 weights would change two things at once. Local Ollama
+  (`qwen2.5-7b-16k`, infra/qwen2.5-7b-16k.Modelfile; its default 4096 context
+  silently truncated long filings) is for free experiments only, never for
+  reported numbers. Extraction max_tokens is 8192; serve/client.py warns on a
+  truncated answer and follows Modal's 303 for requests over 150s.
+- Scoring (evalgate/scorer.py) runs LLM_CONCURRENCY requests at once (1 for
+  local Ollama, 8 on Modal), caches every answer in data/eval_cache/ as it
+  arrives, resumes on re-run, and REFUSES to score if any document got no
+  answer. Never score a missing answer as a wrong one.
 - Large model is Qwen2.5-32B-Instruct on Modal (infra/modal_llm.py), routed
   by LARGE_LLM_BASE_URL. It scales to zero; `modal app stop autoextract-llm`.
 - The invoice and support_email domains, their generators, mock mode, demo

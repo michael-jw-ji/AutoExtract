@@ -12,10 +12,16 @@ measured on.
 
 from __future__ import annotations
 
+import hashlib
 import json
+import re
+import threading
+import time
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
+from core.config import settings
 from core.db import insert, one, rows, tx
 from core.freeze import current_hash, holdout_ids
 from serve.extract import extract_text
@@ -34,13 +40,83 @@ def holdout_docs() -> list[dict]:
         ]
 
 
+def cache_path(model_ref: str) -> Path:
+    """Where this model's holdout answers are recorded, one JSON line each.
+
+    Keyed by everything that changes an answer: model, eval set, pipeline
+    config, and the system prompt itself. Change any of them and you get a
+    fresh file, never a stale reuse.
+    """
+    from serve.extract import system_prompt
+    prompt = hashlib.sha256(system_prompt().encode()).hexdigest()[:8]
+    name = re.sub(r"[^A-Za-z0-9._-]+", "_", model_ref)
+    return settings.data_dir / "eval_cache" / (
+        f"{name}__{current_hash()}__{config_label()}__p{prompt}.jsonl")
+
+
+def _collect(docs: list[dict], model_ref: str, workers: int, progress: bool) -> dict[int, str]:
+    """Raw model answers for every holdout doc, resumable.
+
+    Each answer is appended to the cache the moment it arrives, so a crash or
+    Ctrl+C loses nothing: the next run only asks for what is missing. The
+    cache is also the "recorded responses" a free, deterministic CI eval needs.
+    """
+    path = cache_path(model_ref)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    answers: dict[int, str] = {}
+    if path.exists():
+        for line in path.read_text(encoding="utf-8").splitlines():
+            rec = json.loads(line)
+            answers[rec["doc_id"]] = rec["raw"]
+    todo = [d for d in docs if d["id"] not in answers]
+    if progress:
+        print(f"  {len(answers)} cached, {len(todo)} to run, {workers} at a time "
+              f"-> {path.name}", flush=True)
+
+    lock = threading.Lock()
+    failed: list[tuple[int, str]] = []
+    started = time.monotonic()
+
+    def run(doc: dict) -> None:
+        try:
+            raw, latency_ms, _ = extract_text(doc["text"], model_ref)
+        except Exception as exc:  # noqa: BLE001 -- reported below, never scored
+            with lock:
+                failed.append((doc["id"], f"{type(exc).__name__}: {exc}"[:200]))
+            return
+        with lock:
+            answers[doc["id"]] = raw
+            with path.open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps({"doc_id": doc["id"], "raw": raw,
+                                     "latency_ms": latency_ms}) + "\n")
+            if progress:
+                done = len(answers)
+                rate = (time.monotonic() - started) / max(1, done - (len(docs) - len(todo)))
+                left = (len(docs) - done) * rate / 60
+                print(f"  [{done}/{len(docs)}] {latency_ms / 1000:5.1f}s  ~{left:.0f} min left",
+                      flush=True)
+
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        list(pool.map(run, todo))
+
+    if failed:
+        # Never score a missing answer as a wrong one: that would understate the
+        # model and nothing downstream could tell. Stop, keep the cache, resume.
+        for doc_id, err in failed[:5]:
+            print(f"  ! doc {doc_id}: {err}", flush=True)
+        raise RuntimeError(
+            f"{len(failed)} of {len(docs)} documents got no answer. Everything else "
+            f"is cached in {path}; re-run the same command to retry only those.")
+    return answers
+
+
 def score_model(
     model_version_id: int | None,
     model_ref: str | None = None,
     *,
     persist: bool = True,
     progress: bool = False,
-    workers: int = 10,
+    workers: int | None = None,
 ) -> dict:
     """Run the frozen holdout through one model and score it."""
     docs = holdout_docs()
@@ -51,14 +127,14 @@ def score_model(
     tp_total = pred_total = gold_total = 0
     per_field_hits: dict[str, list[int]] = defaultdict(lambda: [0, 0])
 
-    def score_one(doc: dict) -> tuple[dict, object]:
-        raw, _, _ = extract_text(doc["text"], model_ref)
-        return doc, validate(raw)
+    model_ref = model_ref or settings.small_model
+    # Default concurrency matches the server: local Ollama runs ONE request at
+    # a time, and queueing ten against it made requests wait past the client
+    # timeout, retry, and pile up -- over half failed in the first attempt.
+    answers = _collect(docs, model_ref, workers or settings.llm_concurrency, progress)
+    results = [(doc, validate(answers[doc["id"]])) for doc in docs]
 
-    with ThreadPoolExecutor(max_workers=workers) as pool:
-        results = list(pool.map(score_one, docs))
-
-    for i, (doc, outcome) in enumerate(results, 1):
+    for doc, outcome in results:
         if outcome.valid:
             n_valid += 1
 
@@ -79,9 +155,6 @@ def score_model(
             for path, (hit, total) in field_hits(pred, gold).items():
                 per_field_hits[path][0] += hit
                 per_field_hits[path][1] += total
-
-        if progress:
-            print(f"  [{i}/{len(docs)}] valid={outcome.valid}", flush=True)
 
     result = {
         "model_version_id": model_version_id,
@@ -117,7 +190,6 @@ def config_label() -> str:
     a `valid 0.0%` row readable: it means enrichment was off, not that the
     model collapsed.
     """
-    from core.config import settings
     parts = []
     if settings.enrich:
         parts.append("enrich")

@@ -44,7 +44,7 @@ Form 4 is the right first filing: it is public, structured underneath (SEC also 
   - `check_rules`: dates ISO; `code` in the SEC code list; `shares > 0`; `price >= 0`; for a single class, `shares_owned_after` consistent across sequential rows.
   - `enrich`: derive anything code can derive (for example transaction value = shares x price) instead of asking the model.
 - [x] Hand-label 30 tricky filings yourself (footnotes, multiple transactions, derivative tables, amendments) and mark ambiguous cases as `ambiguous: true` rather than forcing a label. This is exactly Pennant's "make ambiguity explicit" problem.
-- [ ] Freeze a holdout: about 150 auto-gold + 30 hand-labeled, record the hash.
+- [x] Freeze a holdout: about 150 auto-gold + 30 hand-labeled, record the hash.
 
 **Done when:** `run_cycle.py --stage baseline --domain form4` produces per-field scores on the frozen holdout.
 

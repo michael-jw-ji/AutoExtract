@@ -55,7 +55,8 @@ def stage_baseline() -> dict:
     return verdict
 
 
-def stage_serve(n: int, workers: int = 10) -> dict:
+def stage_serve(n: int, workers: int | None = None) -> dict:
+    workers = workers or settings.llm_concurrency
     """Run live documents through the incumbent, buffering every failure."""
     with tx() as conn:
         docs = rows(
@@ -92,7 +93,8 @@ def stage_serve(n: int, workers: int = 10) -> dict:
     return {"processed": len(docs), "failures": failures, "failure_rate": rate}
 
 
-def stage_repair(limit: int, allow_distill: bool, workers: int = 10) -> dict:
+def stage_repair(limit: int, allow_distill: bool, workers: int | None = None) -> dict:
+    workers = workers or settings.large_llm_concurrency
     print(f"repairing up to {limit} buffered failures (distill={allow_distill})...")
     stats = repair_run.run(limit=limit, allow_distill=allow_distill, workers=workers)
     print(
@@ -176,7 +178,9 @@ def main() -> None:
     ap.add_argument("--run", type=int, help="training_run id")
     ap.add_argument("--job", type=str, help="baseten job id")
     ap.add_argument("--no-distill", action="store_true", help="mechanical repairs only")
-    ap.add_argument("--workers", type=int, default=10, help="parallel API calls")
+    ap.add_argument("--workers", type=int, default=None,
+                    help="parallel API calls (default: LLM_CONCURRENCY for the small "
+                         "model, LARGE_LLM_CONCURRENCY for repairs)")
     ap.add_argument("--domain", default=None,
                     help="domain to run (default: $DOMAIN, else form4)")
     args = ap.parse_args()

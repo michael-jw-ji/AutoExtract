@@ -6,7 +6,7 @@ import sys
 import time
 from functools import lru_cache
 
-from openai import OpenAI
+from openai import DefaultHttpxClient, OpenAI
 
 from core.config import settings
 
@@ -18,11 +18,15 @@ def client(large: bool = False) -> OpenAI:
     return OpenAI(
         api_key=settings.large_llm_api_key if large else key,
         base_url=settings.large_llm_base_url if large else settings.llm_base_url,
-        timeout=180.0,
+        timeout=settings.llm_timeout,
         # The SDK retries 429s with its own backoff. Bumped from the default
         # because a rate-limited call that surfaces as an exception used to
         # fall back to a template document and quietly contaminate the corpus.
         max_retries=6,
+        # Modal answers any request still running after 150s (a cold start, or
+        # a long 30-row generation) with a 303 to a polling URL. The SDK treats
+        # 303 as an error and does not retry it, so follow it instead.
+        http_client=DefaultHttpxClient(follow_redirects=True, timeout=settings.llm_timeout),
     )
 
 

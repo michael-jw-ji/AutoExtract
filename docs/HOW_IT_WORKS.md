@@ -37,7 +37,7 @@ filing's official XML as an exact answer key.
 
 | Milestone | What | State |
 |---|---|---|
-| 1. Form 4 domain | fetch filings, XML to gold, schema and rules, labelled frozen holdout, baseline | **built**; baseline running |
+| 1. Form 4 domain | fetch filings, XML to gold, schema and rules, labelled frozen holdout, baseline | **done**: field F1 0.8352, valid 54.5% |
 | 2. Failure analysis | read failures, write `FAILURES.md`, fix each in the right layer, before/after per field | next |
 | 3. CI, tracing, judge | GitHub Actions eval gate, OpenTelemetry cost/latency, LLM judge checked against labels | planned |
 | 4. MCP server, polish | `extract_form4` as an MCP tool, README with results | planned |
@@ -80,7 +80,7 @@ flowchart LR
     end
 
     subgraph Serve["Serve and measure"]
-        F[filing text] --> G[small model<br/>Qwen2.5-7B, local]
+        F[filing text] --> G[small model<br/>Qwen2.5-7B on Modal]
         G --> H[enrich<br/>derive and normalise]
         H --> I{validate<br/>schema + rules}
         I -->|valid| J[answer]
@@ -162,7 +162,7 @@ document appears in training data.
 ```mermaid
 sequenceDiagram
     participant D as Filing text
-    participant M as Qwen2.5-7B (Ollama, 16K ctx)
+    participant M as Qwen2.5-7B (vLLM on Modal)
     participant E as enrich (code)
     participant V as validate (code)
     participant S as scorer (code)
@@ -259,8 +259,10 @@ Each of these would have shown up as "model error" and been wrong.
 | Checkboxes rendered as `Director \| X \| 10% Owner` (the X belongs to 10% Owner) | the human labeller asked whether an owner was a director | render `[ ] Director \| [X] 10% Owner`; verified against the XML on all 530 filings |
 | Table II acquired/disposed lost (shown by column, not letter) | the labeller couldn't tell a direction from the text | render `100,000 (D)`; verified on all 294 derivative transactions |
 | XML double-spaces titles (`Class A  Common Stock`) | automated "is every gold value on the page" check | scorer collapses whitespace (affected 7% of titles) |
-| Ollama context silently 4,096 tokens | measuring prompt tokens on the longest filing | 16K-context model variant; longest filing now read in full (5,441 tokens) |
+| Ollama context silently 4,096 tokens | measuring prompt tokens on the longest filing | 16K-context variant for local runs; the Modal server is sized to 16K |
 | Output caps sized for invoices | sizing the worst real answer and repair prompt | extraction and repair outputs 8,192; repairer sees 12,000 chars of attempt; Modal context 20,480. The worst repair prompt was measured at 9,935 tokens and accepted |
+| Baseline would have run on a different model than training | planning hosted training: Ollama's 7B is a 4-bit build, training uses the full-precision weights | small model moved to Modal; local numbers are never reported |
+| Scorer sent 10 requests to a one-at-a-time server | the first baseline stalled: 69 of 129 requests timed out in the queue | concurrency matches the server, answers cached as they arrive, resumable, refuses to score missing answers |
 | Shared code fell back to the invoice schema on error | removing the invoice domain | fallbacks removed; a broken domain fails loudly |
 | Duplicate filings in the fetch | load count was 201 from 200 files | EDGAR lists a filing once per filer; dedupe by accession |
 
@@ -277,7 +279,7 @@ Each of these would have shown up as "model error" and been wrong.
 | Frozen holdout | 189 filings, 553 transactions, hash `9789311604dce853` |
 | Live (for the loop) | 339 filings |
 | Labelled | 44 human-confirmed (AI-assisted), 5 with ambiguous fields |
-| Baseline | **running**; see [RESULTS.md](../RESULTS.md) |
+| Baseline | field F1 **0.8352**, valid rate **54.5%** (Qwen2.5-7B, bf16); details in [RESULTS.md](../RESULTS.md) |
 
 **Early signal, not a result.** A 20-document probe, run before the text
 rendering fixes, failed validation on 85% of documents with `qwen2.5:3b` (it
@@ -308,7 +310,7 @@ These are hypotheses from reading the corpus, not measurements:
 
 | Part | What | Why |
 |---|---|---|
-| Small model | Qwen2.5-7B-Instruct via Ollama, 16K context (`infra/qwen2.5-7b-16k.Modelfile`) | runs on an 8 GB laptop GPU; free; the 3B failed structurally |
+| Small model | Qwen2.5-7B-Instruct, bf16, vLLM on a Modal L40S (`infra/modal_small.py`), LoRA enabled | the same weights hosted training fine-tunes, so before/after compare one model; about $1.95/hour while up. Local Ollama is kept for free experiments only |
 | Large model | Qwen2.5-32B-Instruct, bf16, vLLM on a Modal H100 (`infra/modal_llm.py`) | repairs need a clearly stronger model; scales to zero, about $3.95/hour while up |
 | Client | OpenAI SDK against any OpenAI-compatible URL; small and large routed separately | swap providers with `.env` only |
 | Validation | pydantic v2, custom rule errors with field locations | deterministic, readable failure signatures |
@@ -317,7 +319,7 @@ These are hypotheses from reading the corpus, not measurements:
 | Labelling | FastAPI + one-page HTML tool, local only | review beside the page |
 | API / dashboard | FastAPI, Next.js | from the invoice version; not yet updated for Form 4 |
 | Training | TRL/PEFT LoRA locally, or Baseten training | see limitations |
-| Tests | pytest, 42 tests, no network or model needed | |
+| Tests | pytest, 46 tests, no network or model needed | |
 
 ---
 
@@ -350,7 +352,7 @@ docs/PLAN.md            roadmap and checklists
 python -m venv .venv && .venv\Scripts\activate      # macOS/Linux: source .venv/bin/activate
 pip install -e ".[dev,infra]"
 cp .env.example .env                                 # SEC_USER_AGENT, model settings
-ollama create qwen2.5-7b-16k -f infra/qwen2.5-7b-16k.Modelfile
+modal deploy infra/modal_small.py                    # small model; set LLM_* in .env
 pytest
 
 python scripts/fetch_form4.py --n 200                # needs SEC_USER_AGENT

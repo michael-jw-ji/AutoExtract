@@ -8,7 +8,7 @@ better. Being extended to SEC Form 4 insider-transaction filings.
 serve → verify → buffer → cluster → repair → train → eval gate → promote/reject
 ```
 
-**Status:** Milestone 1 built; baseline running on a frozen 189-filing holdout.
+**Status:** Milestone 1 done. Baseline on a frozen 189-filing holdout: field F1 0.8352, valid rate 54.5%.
 How everything works, with diagrams: [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md).
 Measured numbers: [RESULTS.md](RESULTS.md). Roadmap: [docs/PLAN.md](docs/PLAN.md).
 
