@@ -1,0 +1,15 @@
+{
+  "accession": "0001023459-26-000091",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "looks_right",
+  "points": [
+    "Same merger cancellation pattern as the other Simulations Plus filing; null option prices are right.",
+    "Script check: all 9 transaction row(s) match the page field by field (date, code, shares, A/D, price, owned-after, D/I, table).",
+    "Null prices: D x8 (disposition to issuer) -- the price column shows no number for these."
+  ],
+  "suggest": {
+    "status": "confirmed",
+    "ambiguous_fields": [],
+    "note": ""
+  }
+}

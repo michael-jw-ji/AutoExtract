@@ -1,82 +1,83 @@
 """Field-level comparison against gold. Shared by the repair verifier and the
-eval scorer so "correct" means exactly one thing everywhere."""
+eval scorer so "correct" means exactly one thing everywhere.
+
+Domain-agnostic. A domain supplies:
+  SCORED_FIELDS    dotted paths; a path whose value is a list is scored row by
+                   row (a list of dicts) or as a multiset (a list of scalars)
+  NUMERIC_FIELDS   optional, leaf names compared as numbers, so 12.50, "12.5"
+                   and "$12.50" agree while a wrong number still does not
+  UNSCORED_FIELDS  optional, `path.*.field` names left out of scoring (derived)
+  normalize_field  optional, (path, value) -> value, for domain text quirks
+
+Rows of a list field are paired with gold rows by best field overlap, then each
+sub-field is scored on its own. That gives per-field accuracy for fields inside
+repeated rows (`transactions.*.price_per_share`) and keeps one wrong cell from
+discarding the rest of its row.
+"""
 
 from __future__ import annotations
 
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
-from verify.schema import SCORED_FIELDS as _INVOICE_SCORED
 
-MONEY_FIELDS = {"subtotal", "tax", "discount", "total"}
+def _domain():
+    """The active domain, resolved lazily (import cycle) and cached.
 
-
-def _normalizer():
-    """The active domain's optional per-field normaliser.
-
-    Money already gets 2-decimal normalisation and dates get ISO form, because
-    '1221.7' and '1221.70' are the same answer. Some domains need the same
-    courtesy for text: a rendered support email carries 'Re: ' prefixes and a
-    '[TKT-482911]' suffix that the constructed gold subject does not, so a
-    model that reads the subject line perfectly still fails an exact match.
-    That is a measurement artefact, and left in place it blocked 94% of email
-    repairs from ever being verified.
+    No fallback: scoring against the wrong domain's fields yields 0/0 counts,
+    which looks exactly like a model that got everything wrong.
     """
-    global _NORM
-    if _NORM is None:
-        try:
-            from domains import get_domain
-            _NORM = getattr(get_domain(), "normalize_field", None) or (lambda p, v: v)
-        except Exception:
-            _NORM = lambda p, v: v  # noqa: E731
-    return _NORM
+    global _D
+    if _D is None:
+        from domains import get_domain
+        _D = get_domain()
+    return _D
 
 
-_NORM = None
+_D = None
 
 
 def scored_fields() -> list[str]:
-    """The active domain's scorable fields.
-
-    This was hardcoded to the invoice list, which silently zeroed the whole
-    email track: flatten() looked for `invoice_number` and friends in a
-    support ticket, found nothing on either side, and counts() returned
-    (0, 0, 0). That surfaces as field_f1 0.0000 AND as every repair failing
-    matches_gold(), because an f1 of 0.0 never clears the 1.0 threshold.
-    One bug, two symptoms, both of which looked like model failure.
-
-    Resolved lazily and cached, and falls back to the invoice list, for the
-    same import-cycle reason as verify/validate.py::_active().
-    """
-    global _SCORED
-    if _SCORED is None:
-        try:
-            from domains import get_domain
-            _SCORED = list(get_domain().SCORED_FIELDS)
-        except Exception:
-            _SCORED = list(_INVOICE_SCORED)
-    return _SCORED
+    return list(_domain().SCORED_FIELDS)
 
 
-_SCORED: list[str] | None = None
-
-
-def _norm(value: Any) -> str:
-    if value is None:
-        return ""
-    if isinstance(value, (int, float, Decimal)):
-        try:
-            return str(Decimal(str(value)).quantize(Decimal("0.01")))
-        except InvalidOperation:
-            return str(value)
-    return str(value).strip().lower()
-
-
-def _money(value: Any) -> str:
+def _num(value: Any) -> str | None:
+    """Canonical number text, or None if the value is not a number."""
+    if isinstance(value, bool):
+        return None
     try:
-        return str(Decimal(str(value)).quantize(Decimal("0.01")))
-    except (InvalidOperation, TypeError, ValueError):
-        return _norm(value)
+        text = str(value).strip().replace(",", "").lstrip("$")
+        d = Decimal(text)
+    except (InvalidOperation, ValueError):
+        return None
+    if not d.is_finite():
+        return None
+    return format(d.normalize(), "f") if d != 0 else "0"
+
+
+def _norm(path: str, value: Any) -> str:
+    """Comparable text for one leaf. Empty string means 'no value'."""
+    dom = _domain()
+    fix = getattr(dom, "normalize_field", None)
+    if fix is not None:
+        value = fix(path, value)
+    if value is None or (isinstance(value, str) and not value.strip()):
+        return ""
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    leaf = path.split(".")[-1]
+    if leaf in getattr(dom, "NUMERIC_FIELDS", ()):
+        n = _num(value)
+        if n is not None:
+            return n
+    if isinstance(value, (int, float, Decimal)):
+        n = _num(value)
+        if n is not None:
+            return n
+    # Collapse internal whitespace: filers' XML has 'Class A  Common Stock'
+    # (two spaces) where the rendered page shows one, so a model that copies
+    # the page exactly would otherwise be scored wrong on 7% of titles.
+    return " ".join(str(value).split()).lower()
 
 
 def _get(doc: dict, path: str) -> Any:
@@ -88,61 +89,77 @@ def _get(doc: dict, path: str) -> Any:
     return cur
 
 
-def line_item_key(item: dict) -> tuple:
-    # `category` MUST be in this key. It is a business-rule field, so it is
-    # precisely what the LoRA is supposed to learn -- leave it out and the
-    # model can master the taxonomy without field_f1 moving at all, which
-    # makes the promotion gate blind to the thing it is gating on.
-    return (
-        _norm(item.get("description")),
-        _norm(item.get("category")),
-        _money(item.get("quantity")),
-        _money(item.get("unit_price")),
-        _money(item.get("line_total")),
-    )
-
-
-def _item_key(item: Any) -> tuple:
-    """Multiset key for one element of a list field.
-
-    Dicts get the invoice line-item key; anything else (support_email's
-    `order_refs` is a list of strings) is normalised as a scalar. Keeping this
-    generic is what lets a new domain declare a list field without touching
-    the scorer.
-    """
-    if isinstance(item, dict):
-        return line_item_key(item)
-    return (_norm(item),)
-
-
-def flatten(doc: dict) -> dict[str, Any]:
-    """Leaf fields as comparable scalars, with list fields as multiset keys."""
-    out: dict[str, Any] = {}
-    for path in scored_fields():
-        value = _get(doc, path)
-        if isinstance(value, list):
-            out[path] = sorted(_item_key(i) for i in value)
+def _row(path: str, item: Any) -> dict[str, str]:
+    """A list-of-dicts row as {field: comparable text}, empty values dropped."""
+    if not isinstance(item, dict):
+        return {}
+    skip = getattr(_domain(), "UNSCORED_FIELDS", ())
+    out = {}
+    for key, value in item.items():
+        if f"{path}.*.{key}" in skip:
             continue
-        if value in (None, ""):
-            continue
-        if path.split(".")[-1] in MONEY_FIELDS:
-            out[path] = _money(value)
-        else:
-            out[path] = _norm(_normalizer()(path, value))
+        text = _norm(f"{path}.*.{key}", value)
+        if text != "":
+            out[key] = text
     return out
 
 
-def counts(pred: dict, gold: dict) -> tuple[int, int, int]:
-    """(true_positives, predicted_count, gold_count) for one document."""
-    p, g = flatten(pred), flatten(gold)
-    tp = 0
-    n_pred = 0
-    n_gold = 0
+def _is_row_list(*values: Any) -> bool:
+    return any(isinstance(v, list) and any(isinstance(i, dict) for i in v)
+               for v in values)
 
+
+def _align(pred: list[dict], gold: list[dict]) -> list[tuple[int | None, int | None]]:
+    """Greedy best-overlap pairing of predicted rows to gold rows.
+
+    Index-by-index pairing would let one dropped row shift every later row out
+    of alignment and zero the rest of the table. Pairs need at least one equal
+    field; leftovers on either side stay unpaired (all-wrong / all-spurious).
+    """
+    scored = []
+    for gi, g in enumerate(gold):
+        for pi, p in enumerate(pred):
+            overlap = sum(1 for k, v in g.items() if p.get(k) == v)
+            if overlap:
+                scored.append((-overlap, gi, pi))
+    scored.sort()
+    used_g: set[int] = set()
+    used_p: set[int] = set()
+    pairs: list[tuple[int | None, int | None]] = []
+    for _, gi, pi in scored:
+        if gi in used_g or pi in used_p:
+            continue
+        used_g.add(gi)
+        used_p.add(pi)
+        pairs.append((pi, gi))
+    pairs += [(None, gi) for gi in range(len(gold)) if gi not in used_g]
+    pairs += [(pi, None) for pi in range(len(pred)) if pi not in used_p]
+    return pairs
+
+
+def _rows(path: str, pred: Any, gold: Any):
+    p = [_row(path, i) for i in (pred if isinstance(pred, list) else [])]
+    g = [_row(path, i) for i in (gold if isinstance(gold, list) else [])]
+    for pi, gi in _align(p, g):
+        yield (p[pi] if pi is not None else {}), (g[gi] if gi is not None else {})
+
+
+def counts(pred: dict, gold: dict) -> tuple[int, int, int]:
+    """(true_positives, predicted_count, gold_count) for one document.
+
+    Every non-empty leaf is one unit, including each cell of each row.
+    """
+    tp = n_pred = n_gold = 0
     for path in scored_fields():
-        pv, gv = p.get(path), g.get(path)
-        if isinstance(pv, list) or isinstance(gv, list):
-            pi, gi = pv or [], gv or []
+        pv, gv = _get(pred, path), _get(gold, path)
+        if _is_row_list(pv, gv):
+            for prow, grow in _rows(path, pv, gv):
+                n_pred += len(prow)
+                n_gold += len(grow)
+                tp += sum(1 for k, v in grow.items() if prow.get(k) == v)
+        elif isinstance(pv, list) or isinstance(gv, list):
+            pi = [_norm(path, i) for i in (pv or []) if _norm(path, i)]
+            gi = [_norm(path, i) for i in (gv or []) if _norm(path, i)]
             n_pred += len(pi)
             n_gold += len(gi)
             remaining = list(gi)
@@ -150,14 +167,68 @@ def counts(pred: dict, gold: dict) -> tuple[int, int, int]:
                 if item in remaining:
                     remaining.remove(item)
                     tp += 1
-            continue
-        has_p, has_g = path in p, path in g
-        n_pred += int(has_p)
-        n_gold += int(has_g)
-        if has_p and has_g and p[path] == g[path]:
-            tp += 1
-
+        else:
+            p, g = _norm(path, pv), _norm(path, gv)
+            n_pred += int(p != "")
+            n_gold += int(g != "")
+            if p != "" and p == g:
+                tp += 1
     return tp, n_pred, n_gold
+
+
+def field_hits(pred: dict, gold: dict) -> dict[str, tuple[int, int]]:
+    """Per-field (hits, total) for one document, over fields gold has a value for.
+
+    Fields inside list-of-dicts rows are reported as `path.*.field`. A gold row
+    with no predicted counterpart counts every one of its fields as missed.
+    """
+    out: dict[str, list[int]] = {}
+
+    def bump(key: str, hit: bool) -> None:
+        cell = out.setdefault(key, [0, 0])
+        cell[1] += 1
+        cell[0] += int(hit)
+
+    for path in scored_fields():
+        pv, gv = _get(pred, path), _get(gold, path)
+        if _is_row_list(pv, gv):
+            for prow, grow in _rows(path, pv, gv):
+                for key, value in grow.items():
+                    bump(f"{path}.*.{key}", prow.get(key) == value)
+        elif isinstance(pv, list) or isinstance(gv, list):
+            continue
+        else:
+            g = _norm(path, gv)
+            if g != "":
+                bump(path, _norm(path, pv) == g)
+    return {k: (v[0], v[1]) for k, v in out.items()}
+
+
+def drop_fields(doc: Any, paths: list[str]) -> Any:
+    """A copy of `doc` without the given fields, for excluding ambiguous ones.
+
+    Paths are dotted, with `*` for "every row": `issuer_name`,
+    `transactions.*.price_per_share`. Missing paths are ignored. Never mutates.
+    """
+    import copy
+
+    out = copy.deepcopy(doc)
+    for path in paths:
+        parts = path.split(".")
+
+        def walk(node: Any, i: int) -> None:
+            if i == len(parts) - 1:
+                if isinstance(node, dict):
+                    node.pop(parts[i], None)
+                return
+            if parts[i] == "*":
+                for item in node if isinstance(node, list) else []:
+                    walk(item, i + 1)
+            elif isinstance(node, dict) and parts[i] in node:
+                walk(node[parts[i]], i + 1)
+
+        walk(out, 0)
+    return out
 
 
 def f1(tp: int, n_pred: int, n_gold: int) -> float:

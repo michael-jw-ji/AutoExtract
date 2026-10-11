@@ -20,20 +20,13 @@ from verify.validate import strip_fences, validate
 def _mechanical(payload: dict) -> dict:
     """The active domain's deterministic repair.
 
-    Resolved lazily and cached, with the invoice implementation as the
-    fallback, matching verify/validate.py::_active(). This used to call
-    repair.mechanical directly, which is invoice-only: its allow-list wiped
-    every key of a support-email payload, so nothing ever reached the
-    verifier and the whole email track reported zero repairs.
+    Resolved lazily and cached. No fallback: a wrong domain's repair would
+    strip keys the real schema needs and look like a model failure.
     """
     global _MECH
     if _MECH is None:
-        try:
-            from domains import get_domain
-            _MECH = get_domain().mechanical
-        except Exception:
-            from repair.mechanical import repair as _fallback
-            _MECH = _fallback
+        from domains import get_domain
+        _MECH = get_domain().mechanical
     return _MECH(payload)
 
 

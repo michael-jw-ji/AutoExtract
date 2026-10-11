@@ -1,0 +1,73 @@
+{
+  "accession": "0001628280-26-065002",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001393052",
+    "issuer_name": "VEEVA SYSTEMS INC",
+    "issuer_ticker": "VEEV",
+    "period_of_report": "2026-10-01",
+    "reporting_owners": [
+      {
+        "name": "Faddis Jonathan",
+        "is_director": false,
+        "is_officer": true,
+        "is_ten_percent_owner": false,
+        "officer_title": "SVP, Gen. Counsel, Secretary"
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-01",
+        "code": "M",
+        "shares": "1636",
+        "price_per_share": "0",
+        "acquired_disposed": "A",
+        "shares_owned_after": "10964",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-01",
+        "code": "F",
+        "shares": "833",
+        "price_per_share": "281.93",
+        "acquired_disposed": "D",
+        "shares_owned_after": "10131",
+        "direct_or_indirect": "D",
+        "value": "234847.69"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-02",
+        "code": "G",
+        "shares": "803",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "9328",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      },
+      {
+        "security_title": "Restricted Stock Units",
+        "is_derivative": true,
+        "date": "2026-10-01",
+        "code": "M",
+        "shares": "1636",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "3270",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

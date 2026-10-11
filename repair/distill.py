@@ -41,7 +41,7 @@ Corrected JSON:"""
 
 
 def _domain():
-    """The active domain, lazily, with the invoice domain as the fallback.
+    """The active domain, lazily.
 
     This module used to hardcode the invoice schema, the invoice vendor
     registry and invoice-only rules about payment_terms and line_total. On the
@@ -70,10 +70,16 @@ def repair(doc_text: str, attempt: str, errors: list[dict]) -> dict | None:
     user = USER.format(
         registry=domain.reference_prompt(),
         document=doc_text,
-        attempt=attempt[:4000],
+        # Big enough for the longest real attempt (~8.3k chars, 30 rows) with
+        # margin; still bounded so a runaway answer cannot blow the context.
+        # 4000 was sized for invoices and showed the repairer half a filing.
+        attempt=attempt[:12000],
         errors=describe(errors),
     )
-    raw, _ = chat(settings.large_model, system, user, temperature=0.0, max_tokens=2048)
+    # The repaired answer is as long as a full extraction (see serve/extract.py).
+    # vLLM rejects prompt + max_tokens > its context, so this pairs with
+    # MAX_MODEL_LEN in infra/modal_llm.py: worst prompt ~9.4k + 8192 < 20480.
+    raw, _ = chat(settings.large_model, system, user, temperature=0.0, max_tokens=8192)
     try:
         payload = json.loads(strip_fences(raw))
     except json.JSONDecodeError:

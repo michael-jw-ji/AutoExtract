@@ -1,0 +1,11 @@
+# Local small model with a 16K context window.
+#
+# Ollama sizes the default context from VRAM: 4096 tokens on an 8 GB card.
+# A long Form 4 filing (up to ~5k tokens) plus the system prompt and a
+# 2k-token answer overflows that, and Ollama truncates the INPUT silently --
+# which shows up as model error. 16K costs ~1 GB of extra KV cache.
+#
+#   ollama create qwen2.5-7b-16k -f infra/qwen2.5-7b-16k.Modelfile
+#   SMALL_MODEL=qwen2.5-7b-16k   (in .env)
+FROM qwen2.5:7b
+PARAMETER num_ctx 16384

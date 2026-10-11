@@ -1,0 +1,21 @@
+{
+  "accession": "0001140361-26-039027",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "check",
+  "points": [
+    "Voluntary filing. The P rows are NOT single purchases: footnotes 1-2 say each row aggregates many purchases made over a period, dated by the period's END.",
+    "Price column holds only footnote markers; no price exists for an aggregate.",
+    "Reaches back to 2022, and the preferred stock appears in both tables.",
+    "Script check: all 9 transaction row(s) match the page field by field (date, code, shares, A/D, price, owned-after, D/I, table).",
+    "Null prices: P x5 (see footnote) -- the price column shows no number for these."
+  ],
+  "suggest": {
+    "status": "ambiguous",
+    "ambiguous_fields": [
+      "transactions.*.date",
+      "transactions.*.shares",
+      "transactions.*.price_per_share"
+    ],
+    "note": "P rows aggregate many purchases over a period (F1/F2); date is a period end, no price. Not single transactions."
+  }
+}

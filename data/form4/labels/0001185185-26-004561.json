@@ -1,0 +1,61 @@
+{
+  "accession": "0001185185-26-004561",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001759186",
+    "issuer_name": "Z Squared Inc.",
+    "issuer_ticker": "ZSQR",
+    "period_of_report": "2026-04-27",
+    "reporting_owners": [
+      {
+        "name": "Halabu David Elias",
+        "is_director": true,
+        "is_officer": true,
+        "is_ten_percent_owner": false,
+        "officer_title": "Chief Executive Officer"
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-07-27",
+        "code": "M",
+        "shares": "19737",
+        "price_per_share": "0",
+        "acquired_disposed": "A",
+        "shares_owned_after": "19737",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      },
+      {
+        "security_title": "Restricted Stock Units",
+        "is_derivative": true,
+        "date": "2026-04-27",
+        "code": "A",
+        "shares": "78947",
+        "price_per_share": "0",
+        "acquired_disposed": "A",
+        "shares_owned_after": "78947",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      },
+      {
+        "security_title": "Restricted Stock Units",
+        "is_derivative": true,
+        "date": "2026-07-27",
+        "code": "M",
+        "shares": "19737",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "59210",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

@@ -1,0 +1,15 @@
+{
+  "accession": "0001522767-26-000197",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "looks_right",
+  "points": [
+    "Script check: all 3 transaction row(s) match the page field by field (date, code, shares, A/D, price, owned-after, D/I, table).",
+    "1 line(s) without a date/code are holdings, correctly left out of the gold.",
+    "Some prices carry a footnote (usually a weighted average with a range); the column value is the gold."
+  ],
+  "suggest": {
+    "status": "confirmed",
+    "ambiguous_fields": [],
+    "note": ""
+  }
+}

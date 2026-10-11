@@ -1,21 +1,23 @@
-"""Baseten inference client. OpenAI-compatible, so we use the OpenAI SDK."""
+"""Inference client for any OpenAI-compatible server (Ollama by default)."""
 
 from __future__ import annotations
 
+import sys
 import time
 from functools import lru_cache
 
 from openai import OpenAI
 
 from core.config import settings
-from serve import mock
 
 
-@lru_cache(maxsize=1)
-def client() -> OpenAI:
+@lru_cache(maxsize=2)
+def client(large: bool = False) -> OpenAI:
+    """The OpenAI client for the small or the large model's server."""
+    key = settings.require_key()
     return OpenAI(
-        api_key=settings.require_key(),
-        base_url=settings.baseten_base_url,
+        api_key=settings.large_llm_api_key if large else key,
+        base_url=settings.large_llm_base_url if large else settings.llm_base_url,
         timeout=180.0,
         # The SDK retries 429s with its own backoff. Bumped from the default
         # because a rate-limited call that surfaces as an exception used to
@@ -46,9 +48,6 @@ def chat(
     """
     started = time.perf_counter()
 
-    if mock.enabled():
-        return mock.respond(system, user), int((time.perf_counter() - started) * 1000)
-
     extra: dict = {}
     if settings.json_mode if json_mode is None else json_mode:
         extra["response_format"] = {"type": "json_object"}
@@ -65,13 +64,18 @@ def chat(
     # simply asking again fixes it.
     text = ""
     for attempt in range(3):
-        resp = client().chat.completions.create(
+        resp = client(model == settings.large_model).chat.completions.create(
             model=model, messages=messages,
             temperature=temperature, max_tokens=max_tokens, **extra,
         )
         text = resp.choices[0].message.content or ""
         if text.strip():
             break
+    # A truncated answer is invalid JSON and would be scored as a model
+    # failure. Say so loudly instead of letting it pass as one.
+    if resp.choices[0].finish_reason == "length":
+        print(f"  ! {model}: output hit max_tokens={max_tokens}; answer truncated",
+              file=sys.stderr, flush=True)
     latency_ms = int((time.perf_counter() - started) * 1000)
     return text, latency_ms
 

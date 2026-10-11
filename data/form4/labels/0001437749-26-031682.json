@@ -1,0 +1,87 @@
+{
+  "accession": "0001437749-26-031682",
+  "status": "ambiguous",
+  "changed": false,
+  "ambiguous_fields": [
+    "transactions.*.price_per_share"
+  ],
+  "notes": "Price column footnote-only; F1 states $17.25/share merger cash (options: $17.25 minus exercise price).",
+  "gold": {
+    "issuer_cik": "0001943802",
+    "issuer_name": "First Seacoast Bancorp, Inc.",
+    "issuer_ticker": "FSEA",
+    "period_of_report": "2026-10-01",
+    "reporting_owners": [
+      {
+        "name": "Tremblay Jean",
+        "is_director": false,
+        "is_officer": true,
+        "is_ten_percent_owner": false,
+        "officer_title": "SVP and Sr. RLO"
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-01",
+        "code": "D",
+        "shares": "12104",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-01",
+        "code": "D",
+        "shares": "4161",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-01",
+        "code": "D",
+        "shares": "2597",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Stock Options",
+        "is_derivative": true,
+        "date": "2026-10-01",
+        "code": "D",
+        "shares": "15000",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Stock Options",
+        "is_derivative": true,
+        "date": "2026-10-01",
+        "code": "D",
+        "shares": "15500",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "D",
+        "value": null
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

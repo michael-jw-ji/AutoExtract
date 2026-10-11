@@ -1,0 +1,61 @@
+{
+  "accession": "0001493152-26-046428",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001742770",
+    "issuer_name": "Viomi Technology Co., Ltd",
+    "issuer_ticker": "VIOT",
+    "period_of_report": "2026-10-08",
+    "reporting_owners": [
+      {
+        "name": "Chen Xiaoping",
+        "is_director": true,
+        "is_officer": true,
+        "is_ten_percent_owner": true,
+        "officer_title": "Chief Executive Officer"
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Class A ordinary shares",
+        "is_derivative": false,
+        "date": "2026-10-08",
+        "code": "J",
+        "shares": "2200000",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Class B ordinary shares",
+        "is_derivative": false,
+        "date": "2026-10-08",
+        "code": "J",
+        "shares": "6800000",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "60836364",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "American depositary shares",
+        "is_derivative": false,
+        "date": "2026-10-08",
+        "code": "J",
+        "shares": "3000000",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "3000000",
+        "direct_or_indirect": "I",
+        "value": null
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

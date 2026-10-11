@@ -1,0 +1,14 @@
+{
+  "accession": "0001193125-26-405544",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "looks_right",
+  "points": [
+    "Script check: all 4 transaction row(s) match the page field by field (date, code, shares, A/D, price, owned-after, D/I, table).",
+    "Null prices: M x4 (option/RSU exercise) -- the price column shows no number for these."
+  ],
+  "suggest": {
+    "status": "confirmed",
+    "ambiguous_fields": [],
+    "note": ""
+  }
+}

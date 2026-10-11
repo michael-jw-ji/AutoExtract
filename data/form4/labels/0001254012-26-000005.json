@@ -1,0 +1,97 @@
+{
+  "accession": "0001254012-26-000005",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001971213",
+    "issuer_name": "Sinclair, Inc.",
+    "issuer_ticker": "SBGI",
+    "period_of_report": "2026-09-30",
+    "reporting_owners": [
+      {
+        "name": "SMITH FREDERICK G",
+        "is_director": true,
+        "is_officer": true,
+        "is_ten_percent_owner": true,
+        "officer_title": "Vice President"
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "J",
+        "shares": "48000",
+        "price_per_share": "12.76",
+        "acquired_disposed": "D",
+        "shares_owned_after": "51900",
+        "direct_or_indirect": "I",
+        "value": "612480.00"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "J",
+        "shares": "48000",
+        "price_per_share": "12.76",
+        "acquired_disposed": "A",
+        "shares_owned_after": "237000",
+        "direct_or_indirect": "D",
+        "value": "612480.00"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "J",
+        "shares": "48000",
+        "price_per_share": "12.76",
+        "acquired_disposed": "D",
+        "shares_owned_after": "51900",
+        "direct_or_indirect": "I",
+        "value": "612480.00"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "J",
+        "shares": "48000",
+        "price_per_share": "12.76",
+        "acquired_disposed": "A",
+        "shares_owned_after": "285000",
+        "direct_or_indirect": "D",
+        "value": "612480.00"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "J",
+        "shares": "48000",
+        "price_per_share": "12.76",
+        "acquired_disposed": "D",
+        "shares_owned_after": "51008",
+        "direct_or_indirect": "I",
+        "value": "612480.00"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "J",
+        "shares": "48000",
+        "price_per_share": "12.76",
+        "acquired_disposed": "A",
+        "shares_owned_after": "333000",
+        "direct_or_indirect": "D",
+        "value": "612480.00"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

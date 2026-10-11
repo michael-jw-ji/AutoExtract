@@ -19,7 +19,7 @@ from concurrent.futures import ThreadPoolExecutor
 from core.db import insert, one, rows, tx
 from core.freeze import current_hash, holdout_ids
 from serve.extract import extract_text
-from verify.compare import counts, f1, flatten, scored_fields
+from verify.compare import counts, drop_fields, f1, field_hits
 from verify.validate import validate
 
 
@@ -28,7 +28,8 @@ def holdout_docs() -> list[dict]:
     with tx() as conn:
         return [
             r for r in rows(
-                conn, "SELECT id, text, gold_json FROM documents WHERE split='holdout'"
+                conn, "SELECT id, text, gold_json, ambiguous_json FROM documents "
+                      "WHERE split='holdout'"
             ) if r["id"] in ids
         ]
 
@@ -44,7 +45,7 @@ def score_model(
     """Run the frozen holdout through one model and score it."""
     docs = holdout_docs()
     if not docs:
-        raise RuntimeError("Holdout is empty. Run scripts/gen_docs.py then freeze.")
+        raise RuntimeError("Holdout is empty. Run scripts/fetch_form4.py then scripts/freeze_eval.py.")
 
     n_valid = 0
     tp_total = pred_total = gold_total = 0
@@ -64,38 +65,20 @@ def score_model(
         # Best-effort payload, not just validated output -- see Outcome.scorable.
         pred = outcome.scorable
         gold = json.loads(doc["gold_json"]) if doc["gold_json"] else {}
+        # Fields a human marked ambiguous have no single right answer, so
+        # they are taken out of BOTH sides rather than scored either way.
+        skip = json.loads(doc.get("ambiguous_json") or "[]")
+        if skip:
+            pred, gold = drop_fields(pred, skip), drop_fields(gold, skip)
         if gold:
             tp, n_pred, n_gold = counts(pred, gold)
             tp_total += tp
             pred_total += n_pred
             gold_total += n_gold
 
-            fp, fg = flatten(pred), flatten(gold)
-            for path in scored_fields():
-                if isinstance(fg.get(path), list):
-                    continue
-                if path in fg:
-                    per_field_hits[path][1] += 1
-                    if fp.get(path) == fg[path]:
-                        per_field_hits[path][0] += 1
-
-            # line_items.category is the single biggest business-rule field,
-            # and the per-field loop skips line_items wholesale -- so without
-            # this it never appears in the analytics at all. Match items by
-            # description, which the model reads off the page and usually gets
-            # right, then compare only the code it had to infer.
-            pred_by_desc = {
-                str(i.get("description", "")).strip().lower(): i.get("category")
-                for i in (pred.get("line_items") or [])
-                if isinstance(i, dict)
-            }
-            for item in gold.get("line_items") or []:
-                if not isinstance(item, dict):
-                    continue
-                desc = str(item.get("description", "")).strip().lower()
-                per_field_hits["line_items.category"][1] += 1
-                if pred_by_desc.get(desc) == item.get("category"):
-                    per_field_hits["line_items.category"][0] += 1
+            for path, (hit, total) in field_hits(pred, gold).items():
+                per_field_hits[path][0] += hit
+                per_field_hits[path][1] += total
 
         if progress:
             print(f"  [{i}/{len(docs)}] valid={outcome.valid}", flush=True)

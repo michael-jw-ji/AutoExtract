@@ -1,0 +1,133 @@
+{
+  "accession": "0001887627-26-000012",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001819989",
+    "issuer_name": "Cipher Digital Inc.",
+    "issuer_ticker": "CIFR",
+    "period_of_report": "2026-09-30",
+    "reporting_owners": [
+      {
+        "name": "Iwaschuk William",
+        "is_director": false,
+        "is_officer": true,
+        "is_ten_percent_owner": false,
+        "officer_title": "Co-President and CLO"
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "M",
+        "shares": "33967",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "1635658",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "F",
+        "shares": "18784",
+        "price_per_share": "15.83",
+        "acquired_disposed": "D",
+        "shares_owned_after": "1616874",
+        "direct_or_indirect": "D",
+        "value": "297350.72"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "M",
+        "shares": "29611",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "1646485",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "F",
+        "shares": "16375",
+        "price_per_share": "15.83",
+        "acquired_disposed": "D",
+        "shares_owned_after": "1630110",
+        "direct_or_indirect": "D",
+        "value": "259216.25"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "M",
+        "shares": "76427",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "1706537",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "F",
+        "shares": "42265",
+        "price_per_share": "15.83",
+        "acquired_disposed": "D",
+        "shares_owned_after": "1664272",
+        "direct_or_indirect": "D",
+        "value": "669054.95"
+      },
+      {
+        "security_title": "Restricted Stock Units",
+        "is_derivative": true,
+        "date": "2026-09-30",
+        "code": "M",
+        "shares": "33967",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "936171",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      },
+      {
+        "security_title": "Restricted Stock Units",
+        "is_derivative": true,
+        "date": "2026-09-30",
+        "code": "M",
+        "shares": "29611",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "906560",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      },
+      {
+        "security_title": "Performance Stock Units",
+        "is_derivative": true,
+        "date": "2026-09-30",
+        "code": "M",
+        "shares": "76427",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "382132",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

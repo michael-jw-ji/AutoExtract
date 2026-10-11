@@ -1,0 +1,61 @@
+{
+  "accession": "0000943819-26-000085",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0000943819",
+    "issuer_name": "RESMED INC",
+    "issuer_ticker": "RMD",
+    "period_of_report": "2026-10-07",
+    "reporting_owners": [
+      {
+        "name": "Farrell Michael J.",
+        "is_director": true,
+        "is_officer": true,
+        "is_ten_percent_owner": false,
+        "officer_title": "Chairman and CEO"
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "ResMed Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-07",
+        "code": "M",
+        "shares": "4991",
+        "price_per_share": "146.34",
+        "acquired_disposed": "A",
+        "shares_owned_after": "484794",
+        "direct_or_indirect": "D",
+        "value": "730382.94"
+      },
+      {
+        "security_title": "ResMed Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-07",
+        "code": "S",
+        "shares": "4991",
+        "price_per_share": "226.3349",
+        "acquired_disposed": "D",
+        "shares_owned_after": "479803",
+        "direct_or_indirect": "D",
+        "value": "1129637.49"
+      },
+      {
+        "security_title": "ResMed  Common Stock Options",
+        "is_derivative": true,
+        "date": "2026-10-07",
+        "code": "M",
+        "shares": "4991",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "4993",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

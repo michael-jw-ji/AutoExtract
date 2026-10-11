@@ -19,12 +19,17 @@ def _f(name: str, default: float) -> float:
 
 
 class Settings:
-    baseten_api_key: str = os.getenv("BASETEN_API_KEY", "")
-    baseten_base_url: str = os.getenv(
-        "BASETEN_BASE_URL", "https://inference.baseten.co/v1"
-    )
-    small_model: str = os.getenv("SMALL_MODEL", "thinkingmachines/inkling-small")
-    large_model: str = os.getenv("LARGE_MODEL", "moonshotai/Kimi-K2.6")
+    #: Any OpenAI-compatible endpoint. Defaults to a local Ollama server, which
+    #: ignores the key but whose client requires a non-empty one.
+    llm_api_key: str = os.getenv("LLM_API_KEY", "ollama")
+    llm_base_url: str = os.getenv("LLM_BASE_URL", "http://localhost:11434/v1")
+    #: The LARGE model (repairs) may live on a different server than the small
+    #: one -- e.g. Modal for large, local Ollama for small. Unset, both use the
+    #: endpoint above.
+    large_llm_base_url: str = os.getenv("LARGE_LLM_BASE_URL", "").strip() or llm_base_url
+    large_llm_api_key: str = os.getenv("LARGE_LLM_API_KEY", "").strip() or llm_api_key
+    small_model: str = os.getenv("SMALL_MODEL", "qwen2.5:7b")
+    large_model: str = os.getenv("LARGE_MODEL", "qwen2.5:14b")
 
     # The HF base model that training actually fine-tunes. This is NOT
     # necessarily SMALL_MODEL: Baseten's Model APIs serve a fixed catalogue,
@@ -71,22 +76,21 @@ class Settings:
     #: destroying one that already holds a complete result. Relative paths
     #: resolve against the repo root.
     db_path: Path = (
-        (ROOT / os.getenv("DB_PATH", "autoextract.db")).resolve()
-        if not os.path.isabs(os.getenv("DB_PATH", "autoextract.db"))
-        else Path(os.getenv("DB_PATH", "autoextract.db"))
+        (ROOT / os.getenv("DB_PATH", "form4.db")).resolve()
+        if not os.path.isabs(os.getenv("DB_PATH", "form4.db"))
+        else Path(os.getenv("DB_PATH", "form4.db"))
     )
     data_dir: Path = ROOT / "data"
     dataset_dir: Path = ROOT / "data" / "datasets"
 
     @classmethod
     def require_key(cls) -> str:
-        if not cls.baseten_api_key:
+        if not cls.llm_api_key:
             raise RuntimeError(
-                "BASETEN_API_KEY is not set.\n"
-                "  1. cp .env.example .env\n"
-                "  2. paste your key from https://app.baseten.co/settings/api_keys\n"
+                "LLM_API_KEY is empty. Unset it to use the Ollama default, or "
+                "set it to your provider's key (and LLM_BASE_URL to its URL)."
             )
-        return cls.baseten_api_key
+        return cls.llm_api_key
 
 
 settings = Settings()

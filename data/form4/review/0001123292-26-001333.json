@@ -1,0 +1,19 @@
+{
+  "accession": "0001123292-26-001333",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "check",
+  "points": [
+    "Forward-contract settlement. Table I price column holds only footnote markers, so gold is null; footnote 3 says the Settlement Price was $17.83.",
+    "Code is rendered 'J/K' (J with the equity-swap flag); gold code is J, which is right. A model copying 'J/K' would fail validation.",
+    "Script check: all 2 transaction row(s) match the page field by field (date, code, shares, A/D, price, owned-after, D/I, table).",
+    "Null prices: J x1 (other (see footnote)) -- the price column shows no number for these.",
+    "5 reporting owners; their box-5 checkboxes match the gold."
+  ],
+  "suggest": {
+    "status": "ambiguous",
+    "ambiguous_fields": [
+      "transactions.*.price_per_share"
+    ],
+    "note": "Price column footnote-only; F3 gives settlement price $17.83. Code shown as J/K, gold J."
+  }
+}

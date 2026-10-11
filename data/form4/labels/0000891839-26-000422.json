@@ -1,0 +1,49 @@
+{
+  "accession": "0000891839-26-000422",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001104038",
+    "issuer_name": "VerifyMe, Inc.",
+    "issuer_ticker": "VRME",
+    "period_of_report": "2026-09-30",
+    "reporting_owners": [
+      {
+        "name": "GREENBERG SCOTT N",
+        "is_director": true,
+        "is_officer": false,
+        "is_ten_percent_owner": false,
+        "officer_title": null
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Common Stock, par value $0.001",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "M",
+        "shares": "3500",
+        "price_per_share": "0",
+        "acquired_disposed": "A",
+        "shares_owned_after": "10902",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      },
+      {
+        "security_title": "Restricted Stock Units",
+        "is_derivative": true,
+        "date": "2026-09-30",
+        "code": "M",
+        "shares": "3500",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

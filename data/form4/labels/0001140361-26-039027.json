@@ -1,0 +1,137 @@
+{
+  "accession": "0001140361-26-039027",
+  "status": "ambiguous",
+  "changed": false,
+  "ambiguous_fields": [
+    "transactions.*.date",
+    "transactions.*.shares",
+    "transactions.*.price_per_share"
+  ],
+  "notes": "P rows aggregate many purchases over a period (F1/F2); date is a period end, no price. Not single transactions.",
+  "gold": {
+    "issuer_cik": "0001163573",
+    "issuer_name": "ProText Mobility, Inc.",
+    "issuer_ticker": "TXTM",
+    "period_of_report": "2026-10-06",
+    "reporting_owners": [
+      {
+        "name": "Jamaloodeen Ahmed",
+        "is_director": false,
+        "is_officer": true,
+        "is_ten_percent_owner": true,
+        "officer_title": "Chairman and President"
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Series D Preferred Stock",
+        "is_derivative": false,
+        "date": "2022-06-03",
+        "code": "A",
+        "shares": "66667",
+        "price_per_share": "0.001",
+        "acquired_disposed": "A",
+        "shares_owned_after": "66667",
+        "direct_or_indirect": "D",
+        "value": "66.67"
+      },
+      {
+        "security_title": "Series A Preferred Stock",
+        "is_derivative": false,
+        "date": "2022-06-03",
+        "code": "A",
+        "shares": "33333",
+        "price_per_share": "0.001",
+        "acquired_disposed": "A",
+        "shares_owned_after": "33333",
+        "direct_or_indirect": "D",
+        "value": "33.33"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2024-12-31",
+        "code": "P",
+        "shares": "89866874",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "202366874",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2025-09-30",
+        "code": "P",
+        "shares": "7170075",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "209536949",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-04-07",
+        "code": "P",
+        "shares": "45212287",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "254749236",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-05-20",
+        "code": "P",
+        "shares": "520905768",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "775655004",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-06",
+        "code": "P",
+        "shares": "55646456",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "831301460",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Series D Convertible Preferred Stock",
+        "is_derivative": true,
+        "date": "2022-06-03",
+        "code": "A",
+        "shares": "66667",
+        "price_per_share": "0.001",
+        "acquired_disposed": "A",
+        "shares_owned_after": "66667",
+        "direct_or_indirect": "D",
+        "value": "66.67"
+      },
+      {
+        "security_title": "Series A Convertible Preferred Stock",
+        "is_derivative": true,
+        "date": "2022-06-03",
+        "code": "A",
+        "shares": "33333",
+        "price_per_share": "0.001",
+        "acquired_disposed": "A",
+        "shares_owned_after": "33333",
+        "direct_or_indirect": "D",
+        "value": "33.33"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

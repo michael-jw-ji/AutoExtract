@@ -1,0 +1,37 @@
+{
+  "accession": "0001104659-26-113258",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001969302",
+    "issuer_name": "Pony AI Inc.",
+    "issuer_ticker": "PONY",
+    "period_of_report": "2026-09-30",
+    "reporting_owners": [
+      {
+        "name": "Peng Jun",
+        "is_director": true,
+        "is_officer": true,
+        "is_ten_percent_owner": false,
+        "officer_title": "Chief Executive Officer"
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Forward Sale Contract (obligation to sell)",
+        "is_derivative": true,
+        "date": "2026-09-30",
+        "code": "J",
+        "shares": "3000000",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "3000000",
+        "direct_or_indirect": "I",
+        "value": null
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

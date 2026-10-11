@@ -1,0 +1,61 @@
+{
+  "accession": "0002117905-26-000044",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001468642",
+    "issuer_name": "Aura Minerals Inc.",
+    "issuer_ticker": "AUGO",
+    "period_of_report": "2026-09-24",
+    "reporting_owners": [
+      {
+        "name": "Sousa Mauad Bruno",
+        "is_director": true,
+        "is_officer": false,
+        "is_ten_percent_owner": false,
+        "officer_title": null
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Common Shares",
+        "is_derivative": false,
+        "date": "2026-09-24",
+        "code": "C",
+        "shares": "8000",
+        "price_per_share": "83.1391",
+        "acquired_disposed": "A",
+        "shares_owned_after": "190541",
+        "direct_or_indirect": "I",
+        "value": "665112.80"
+      },
+      {
+        "security_title": "Brazilian Depositary Receipts",
+        "is_derivative": true,
+        "date": "2026-09-24",
+        "code": "C",
+        "shares": "24000",
+        "price_per_share": "27.7424",
+        "acquired_disposed": "D",
+        "shares_owned_after": "11434676",
+        "direct_or_indirect": "I",
+        "value": "665817.60"
+      },
+      {
+        "security_title": "Cash-Settled Total Return Swap",
+        "is_derivative": true,
+        "date": "2026-09-24",
+        "code": "S",
+        "shares": "32000",
+        "price_per_share": "27.5316",
+        "acquired_disposed": "D",
+        "shares_owned_after": "321446",
+        "direct_or_indirect": "I",
+        "value": "881011.20"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

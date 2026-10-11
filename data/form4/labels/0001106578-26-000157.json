@@ -1,0 +1,181 @@
+{
+  "accession": "0001106578-26-000157",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001082554",
+    "issuer_name": "UNITED THERAPEUTICS Corp",
+    "issuer_ticker": "UTHR",
+    "period_of_report": "2026-10-05",
+    "reporting_owners": [
+      {
+        "name": "ROTHBLATT MARTINE A",
+        "is_director": true,
+        "is_officer": true,
+        "is_ten_percent_owner": false,
+        "officer_title": "Chairperson & CEO"
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-05",
+        "code": "M",
+        "shares": "9500.00",
+        "price_per_share": "117.76",
+        "acquired_disposed": "A",
+        "shares_owned_after": "333943.00",
+        "direct_or_indirect": "I",
+        "value": "1118720.00"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-05",
+        "code": "S",
+        "shares": "501.00",
+        "price_per_share": "536.2579",
+        "acquired_disposed": "D",
+        "shares_owned_after": "333442.00",
+        "direct_or_indirect": "I",
+        "value": "268665.21"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-05",
+        "code": "S",
+        "shares": "905.00",
+        "price_per_share": "537.4289",
+        "acquired_disposed": "D",
+        "shares_owned_after": "332537.00",
+        "direct_or_indirect": "I",
+        "value": "486373.15"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-05",
+        "code": "S",
+        "shares": "655.00",
+        "price_per_share": "538.6187",
+        "acquired_disposed": "D",
+        "shares_owned_after": "331882.00",
+        "direct_or_indirect": "I",
+        "value": "352795.25"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-05",
+        "code": "S",
+        "shares": "931.00",
+        "price_per_share": "539.5047",
+        "acquired_disposed": "D",
+        "shares_owned_after": "330951.00",
+        "direct_or_indirect": "I",
+        "value": "502278.88"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-05",
+        "code": "S",
+        "shares": "1028.00",
+        "price_per_share": "540.4988",
+        "acquired_disposed": "D",
+        "shares_owned_after": "329923.00",
+        "direct_or_indirect": "I",
+        "value": "555632.77"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-05",
+        "code": "S",
+        "shares": "1239.00",
+        "price_per_share": "541.6628",
+        "acquired_disposed": "D",
+        "shares_owned_after": "328684.00",
+        "direct_or_indirect": "I",
+        "value": "671120.21"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-05",
+        "code": "S",
+        "shares": "918.00",
+        "price_per_share": "542.5566",
+        "acquired_disposed": "D",
+        "shares_owned_after": "327766.00",
+        "direct_or_indirect": "I",
+        "value": "498066.96"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-05",
+        "code": "S",
+        "shares": "783.00",
+        "price_per_share": "543.5419",
+        "acquired_disposed": "D",
+        "shares_owned_after": "326983.00",
+        "direct_or_indirect": "I",
+        "value": "425593.31"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-05",
+        "code": "S",
+        "shares": "1260.00",
+        "price_per_share": "544.5928",
+        "acquired_disposed": "D",
+        "shares_owned_after": "325723.00",
+        "direct_or_indirect": "I",
+        "value": "686186.93"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-05",
+        "code": "S",
+        "shares": "920.00",
+        "price_per_share": "545.6922",
+        "acquired_disposed": "D",
+        "shares_owned_after": "324803.00",
+        "direct_or_indirect": "I",
+        "value": "502036.82"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-05",
+        "code": "S",
+        "shares": "360.00",
+        "price_per_share": "546.6322",
+        "acquired_disposed": "D",
+        "shares_owned_after": "324443.00",
+        "direct_or_indirect": "I",
+        "value": "196787.59"
+      },
+      {
+        "security_title": "Stock Option",
+        "is_derivative": true,
+        "date": "2026-10-05",
+        "code": "M",
+        "shares": "9500.00",
+        "price_per_share": "0.00",
+        "acquired_disposed": "D",
+        "shares_owned_after": "299910.00",
+        "direct_or_indirect": "I",
+        "value": "0.00"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

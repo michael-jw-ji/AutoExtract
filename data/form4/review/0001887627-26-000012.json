@@ -1,0 +1,15 @@
+{
+  "accession": "0001887627-26-000012",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "looks_right",
+  "points": [
+    "Amendment adds the F (tax-withholding) rows; the M rows are restated.",
+    "Script check: all 9 transaction row(s) match the page field by field (date, code, shares, A/D, price, owned-after, D/I, table).",
+    "Null prices: M x3 (option/RSU exercise) -- the price column shows no number for these."
+  ],
+  "suggest": {
+    "status": "confirmed",
+    "ambiguous_fields": [],
+    "note": ""
+  }
+}

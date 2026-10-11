@@ -14,6 +14,7 @@ able to re-run everything around it without paying for it again.
 from __future__ import annotations
 
 import argparse
+import os
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -65,7 +66,7 @@ def stage_serve(n: int, workers: int = 10) -> dict:
             (n,),
         )
     if not docs:
-        print("no unprocessed live documents -- generate more with scripts/gen_docs.py")
+        print("no unprocessed live documents -- fetch more with scripts/fetch_form4.py")
         return {"processed": 0}
 
     failures = 0
@@ -176,7 +177,13 @@ def main() -> None:
     ap.add_argument("--job", type=str, help="baseten job id")
     ap.add_argument("--no-distill", action="store_true", help="mechanical repairs only")
     ap.add_argument("--workers", type=int, default=10, help="parallel API calls")
+    ap.add_argument("--domain", default=None,
+                    help="domain to run (default: $DOMAIN, else form4)")
     args = ap.parse_args()
+    if args.domain:
+        # Every module resolves the domain lazily from $DOMAIN on first use,
+        # so setting it here, before any stage runs, is enough.
+        os.environ["DOMAIN"] = args.domain
 
     init_db()
 

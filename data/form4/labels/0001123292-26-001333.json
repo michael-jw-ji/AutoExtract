@@ -1,0 +1,79 @@
+{
+  "accession": "0001123292-26-001333",
+  "status": "ambiguous",
+  "changed": false,
+  "ambiguous_fields": [
+    "transactions.*.price_per_share"
+  ],
+  "notes": "Price column footnote-only; F3 gives settlement price $17.83. Code shown as J/K, gold J.",
+  "gold": {
+    "issuer_cik": "0001819989",
+    "issuer_name": "Cipher Digital Inc.",
+    "issuer_ticker": "CIFR",
+    "period_of_report": "2026-09-28",
+    "reporting_owners": [
+      {
+        "name": "V3 Holding Ltd",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "Bitfury Top HoldCo B.V.",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "Bitfury Holding B.V.",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "Vavilovs Valerijs",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "Bitfury Group Ltd",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "J",
+        "shares": "1805000",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "56511694",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Forward sale contract (obligation to sell)",
+        "is_derivative": true,
+        "date": "2026-09-28",
+        "code": "J",
+        "shares": "1805000",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "3610000",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

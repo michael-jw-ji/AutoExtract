@@ -28,35 +28,27 @@ def ping(label: str, model: str) -> bool:
 
 
 def main() -> None:
-    if not settings.baseten_api_key:
-        raise SystemExit(
-            "BASETEN_API_KEY is not set.\n"
-            "  1. cp .env.example .env\n"
-            "  2. paste your key from https://app.baseten.co/settings/api_keys"
-        )
-
-    print(f"base_url: {settings.baseten_base_url}")
-    print(f"key:      ...{settings.baseten_api_key[-6:]}")
-
-    try:
-        available = [m.id for m in client().models.list().data]
-        print(f"\n{len(available)} models visible to this key:")
-        for m in sorted(available)[:40]:
-            print(f"  {m}")
-    except Exception as exc:
-        print(f"\ncould not list models ({type(exc).__name__}) -- pinging directly")
+    for label, large in (("small", False), ("large", True)):
+        url = settings.large_llm_base_url if large else settings.llm_base_url
+        key = settings.large_llm_api_key if large else settings.llm_api_key
+        print(f"{label}: {url}  (key ...{key[-4:]})")
+        try:
+            available = [m.id for m in client(large).models.list().data]
+            print(f"  {len(available)} models: {', '.join(sorted(available)[:8])}")
+        except Exception as exc:
+            print(f"  could not list models ({type(exc).__name__}) -- pinging directly")
 
     ok_small = ping("SMALL_MODEL (serves + gets fine-tuned)", settings.small_model)
     ok_large = ping("LARGE_MODEL (data gen + repairs)", settings.large_model)
 
     if not (ok_small and ok_large):
         print(
-            "\nFix the failing id(s) in .env, then re-run. If you are unsure which "
-            "models are available, ask the Baseten booth -- you also want to know "
-            "which small model is both servable AND trainable."
+            "\nFix the failing id(s) or URL(s) in .env, then re-run. Model ids must "
+            "match what the server reports above (`ollama list` for local, "
+            "MODEL_NAME in infra/modal_llm.py for Modal)."
         )
         sys.exit(1)
-    print("\nBoth models respond. Next: python scripts/gen_docs.py --live 120 --holdout 100")
+    print("\nBoth models respond.")
 
 
 if __name__ == "__main__":

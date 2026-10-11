@@ -11,7 +11,7 @@ domain-agnostic. What changes between use cases is only:
 
 A Domain bundles exactly those five things. Everything else is shared.
 
-Select one with DOMAIN=invoice or DOMAIN=support_email.
+Select one with DOMAIN=form4.
 """
 
 from __future__ import annotations
@@ -86,8 +86,8 @@ def register(domain: Domain) -> Domain:
 
 
 def get_domain(name: str | None = None) -> Domain:
-    """Resolve the active domain. Defaults to DOMAIN, then 'invoice'."""
-    key = (name or os.getenv("DOMAIN", "invoice")).strip().lower()
+    """Resolve the active domain. Defaults to DOMAIN, then 'form4'."""
+    key = (name or os.getenv("DOMAIN", "form4")).strip().lower()
     _load_all()
     if key not in _REGISTRY:
         raise ValueError(
@@ -105,7 +105,7 @@ _LOADED = False
 _LOCK = threading.Lock()
 
 #: Every module that registers a domain. Loaded by name, not by attribute.
-_MODULES = ("domains.invoice", "domains.support_email")
+_MODULES = ("domains.form4",)
 
 
 def _load_all() -> None:

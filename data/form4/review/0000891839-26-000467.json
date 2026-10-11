@@ -1,0 +1,15 @@
+{
+  "accession": "0000891839-26-000467",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "looks_right",
+  "points": [
+    "Amendment corrects the stock-option information from the original Form 4; rows shown are the corrected ones.",
+    "Script check: all 2 transaction row(s) match the page field by field (date, code, shares, A/D, price, owned-after, D/I, table).",
+    "Null prices: A x2 (grant/award) -- the price column shows no number for these."
+  ],
+  "suggest": {
+    "status": "confirmed",
+    "ambiguous_fields": [],
+    "note": ""
+  }
+}

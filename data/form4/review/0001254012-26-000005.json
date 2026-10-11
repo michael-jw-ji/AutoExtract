@@ -1,0 +1,15 @@
+{
+  "accession": "0001254012-26-000005",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "looks_right",
+  "points": [
+    "Amendment corrects a date in footnote 1; the table rows are unaffected.",
+    "Script check: all 6 transaction row(s) match the page field by field (date, code, shares, A/D, price, owned-after, D/I, table).",
+    "Some prices carry a footnote (usually a weighted average with a range); the column value is the gold."
+  ],
+  "suggest": {
+    "status": "confirmed",
+    "ambiguous_fields": [],
+    "note": ""
+  }
+}

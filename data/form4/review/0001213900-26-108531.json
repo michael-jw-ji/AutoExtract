@@ -1,0 +1,15 @@
+{
+  "accession": "0001213900-26-108531",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "looks_right",
+  "points": [
+    "Amendment adds two reporting persons; the transactions are unchanged.",
+    "Script check: all 8 transaction row(s) match the page field by field (date, code, shares, A/D, price, owned-after, D/I, table).",
+    "4 reporting owners; their box-5 checkboxes match the gold."
+  ],
+  "suggest": {
+    "status": "confirmed",
+    "ambiguous_fields": [],
+    "note": ""
+  }
+}

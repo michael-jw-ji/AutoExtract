@@ -1,0 +1,18 @@
+{
+  "accession": "0001437749-26-031682",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "check",
+  "points": [
+    "Merger cash-out (code D). Price column holds only a footnote marker, so gold is null.",
+    "But footnote 1 says each share became the right to $17.25 cash, and footnote 3 says options got $17.25 less exercise price.",
+    "Script check: all 5 transaction row(s) match the page field by field (date, code, shares, A/D, price, owned-after, D/I, table).",
+    "Null prices: D x5 (disposition to issuer) -- the price column shows no number for these."
+  ],
+  "suggest": {
+    "status": "ambiguous",
+    "ambiguous_fields": [
+      "transactions.*.price_per_share"
+    ],
+    "note": "Price column footnote-only; F1 states $17.25/share merger cash (options: $17.25 minus exercise price)."
+  }
+}

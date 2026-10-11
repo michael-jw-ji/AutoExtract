@@ -1,0 +1,81 @@
+{
+  "accession": "0000921895-26-002756",
+  "status": "ambiguous",
+  "changed": false,
+  "ambiguous_fields": [
+    "transactions.*.price_per_share"
+  ],
+  "notes": "price column shows only a footnote; exercise price $0.00001 is stated in footnotes 1 and 4. Gold null by the price-column convention",
+  "gold": {
+    "issuer_cik": "0001482541",
+    "issuer_name": "BNB Standard Corp",
+    "issuer_ticker": "BNC",
+    "period_of_report": "2026-09-17",
+    "reporting_owners": [
+      {
+        "name": "YZILabs Management Ltd.",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "Zhao Changpeng",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Common Stock, par value $0.00001 per share",
+        "is_derivative": false,
+        "date": "2026-09-17",
+        "code": "X",
+        "shares": "2180631",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "4331112",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Common Stock, par value $0.00001 per share",
+        "is_derivative": false,
+        "date": "2026-09-17",
+        "code": "X",
+        "shares": "5418633",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "9749745",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Strategic Advisor Warrants",
+        "is_derivative": true,
+        "date": "2026-09-17",
+        "code": "X",
+        "shares": "2180631",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "1383728",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Pre-Funded Warrants",
+        "is_derivative": true,
+        "date": "2026-09-17",
+        "code": "X",
+        "shares": "5418633",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "2331877",
+        "direct_or_indirect": "D",
+        "value": null
+      }
+    ]
+  }
+}

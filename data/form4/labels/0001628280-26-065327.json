@@ -1,0 +1,85 @@
+{
+  "accession": "0001628280-26-065327",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001447362",
+    "issuer_name": "CASTLE BIOSCIENCES INC",
+    "issuer_ticker": "CSTL",
+    "period_of_report": "2026-10-05",
+    "reporting_owners": [
+      {
+        "name": "MAETZOLD DEREK J",
+        "is_director": true,
+        "is_officer": true,
+        "is_ten_percent_owner": false,
+        "officer_title": "Pres. & Chief Exec. Officer"
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-05",
+        "code": "M",
+        "shares": "8165",
+        "price_per_share": "2.39",
+        "acquired_disposed": "A",
+        "shares_owned_after": "29644",
+        "direct_or_indirect": "D",
+        "value": "19514.35"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-05",
+        "code": "S",
+        "shares": "8580",
+        "price_per_share": "35.566",
+        "acquired_disposed": "D",
+        "shares_owned_after": "21064",
+        "direct_or_indirect": "D",
+        "value": "305156.28"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-05",
+        "code": "S",
+        "shares": "3198",
+        "price_per_share": "35.566",
+        "acquired_disposed": "D",
+        "shares_owned_after": "8038",
+        "direct_or_indirect": "I",
+        "value": "113740.07"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-05",
+        "code": "S",
+        "shares": "2718",
+        "price_per_share": "35.566",
+        "acquired_disposed": "D",
+        "shares_owned_after": "6832",
+        "direct_or_indirect": "I",
+        "value": "96668.39"
+      },
+      {
+        "security_title": "Stock option (right to buy)",
+        "is_derivative": true,
+        "date": "2026-10-05",
+        "code": "M",
+        "shares": "8165",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

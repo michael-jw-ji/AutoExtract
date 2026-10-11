@@ -1,0 +1,49 @@
+{
+  "accession": "0001193125-26-417582",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001771514",
+    "issuer_name": "ExchangeRight Income Fund",
+    "issuer_ticker": "NONE",
+    "period_of_report": "2026-10-06",
+    "reporting_owners": [
+      {
+        "name": "Ungerecht Joshua",
+        "is_director": true,
+        "is_officer": false,
+        "is_ten_percent_owner": false,
+        "officer_title": null
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "NLP 53 Common Units",
+        "is_derivative": true,
+        "date": "2026-10-06",
+        "code": "A",
+        "shares": "16347.2675",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "16347.2675",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "NLP 53 Common Units",
+        "is_derivative": true,
+        "date": "2026-10-06",
+        "code": "A",
+        "shares": "6084.5925",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "6084.5925",
+        "direct_or_indirect": "I",
+        "value": null
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

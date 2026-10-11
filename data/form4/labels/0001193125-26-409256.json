@@ -1,0 +1,172 @@
+{
+  "accession": "0001193125-26-409256",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001830043",
+    "issuer_name": "Bumble Inc.",
+    "issuer_ticker": "BMBL",
+    "period_of_report": "2026-09-28",
+    "reporting_owners": [
+      {
+        "name": "BX Buzz ML-1 GP LLC",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "BX Buzz ML-2 GP LLC",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "BX Buzz ML-3 GP LLC",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "BX Buzz ML-4 GP LLC",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "BX Buzz ML-5 GP LLC",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "BX Buzz ML-6 GP LLC",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "BX Buzz ML-7 GP LLC",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "Blackstone Inc.",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "Blackstone Group Management L.L.C.",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "SCHWARZMAN STEPHEN A",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "S",
+        "shares": "91376",
+        "price_per_share": "2.9381",
+        "acquired_disposed": "D",
+        "shares_owned_after": "452654",
+        "direct_or_indirect": "I",
+        "value": "268471.83"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "S",
+        "shares": "1257280",
+        "price_per_share": "2.9381",
+        "acquired_disposed": "D",
+        "shares_owned_after": "6228285",
+        "direct_or_indirect": "I",
+        "value": "3694014.37"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "S",
+        "shares": "204109",
+        "price_per_share": "2.9381",
+        "acquired_disposed": "D",
+        "shares_owned_after": "1011108",
+        "direct_or_indirect": "I",
+        "value": "599692.65"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "S",
+        "shares": "544646",
+        "price_per_share": "2.9381",
+        "acquired_disposed": "D",
+        "shares_owned_after": "2698060",
+        "direct_or_indirect": "I",
+        "value": "1600224.41"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "S",
+        "shares": "1652209",
+        "price_per_share": "2.9381",
+        "acquired_disposed": "D",
+        "shares_owned_after": "8184673",
+        "direct_or_indirect": "I",
+        "value": "4854355.26"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "S",
+        "shares": "14902",
+        "price_per_share": "2.9381",
+        "acquired_disposed": "D",
+        "shares_owned_after": "73820",
+        "direct_or_indirect": "I",
+        "value": "43783.57"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "S",
+        "shares": "3254",
+        "price_per_share": "2.9381",
+        "acquired_disposed": "D",
+        "shares_owned_after": "16120",
+        "direct_or_indirect": "I",
+        "value": "9560.58"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

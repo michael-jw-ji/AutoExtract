@@ -1,0 +1,61 @@
+{
+  "accession": "0002090886-26-000010",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001819989",
+    "issuer_name": "Cipher Digital Inc.",
+    "issuer_ticker": "CIFR",
+    "period_of_report": "2026-09-30",
+    "reporting_owners": [
+      {
+        "name": "Mumford Gregory J.D.",
+        "is_director": false,
+        "is_officer": true,
+        "is_ten_percent_owner": false,
+        "officer_title": "Chief Financial Officer"
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "M",
+        "shares": "17109",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "37316",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "F",
+        "shares": "6895",
+        "price_per_share": "15.83",
+        "acquired_disposed": "D",
+        "shares_owned_after": "30421",
+        "direct_or_indirect": "D",
+        "value": "109147.85"
+      },
+      {
+        "security_title": "Restricted Stock Units",
+        "is_derivative": true,
+        "date": "2026-09-30",
+        "code": "M",
+        "shares": "17109",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "528981",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

@@ -64,6 +64,9 @@ MIGRATIONS = [
     # never learned. Next to a row showing 95% that looks like a broken model
     # rather than a different measurement.
     ("evals", "config", "TEXT"),
+    # JSON list of field paths a human marked ambiguous when hand-labelling
+    # (scripts/label_form4.py). NULL for auto-gold documents.
+    ("documents", "ambiguous_json", "TEXT"),
 ]
 
 
