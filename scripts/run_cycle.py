@@ -171,6 +171,28 @@ def stage_evaluate(version_id: int) -> dict:
     return verdict
 
 
+def stage_candidate(name: str, note: str) -> dict:
+    """Register a PIPELINE change (prompt, rendering, code) as a candidate on
+    the same base model, score it, and let the gate decide.
+
+    A prompt revision changes the served system as much as a fine-tune does,
+    so it faces the same bar: +PROMOTION_MARGIN field F1 and no valid-rate
+    regression against the incumbent.
+    """
+    from evalgate.scorer import prompt_hash
+    with tx() as conn:
+        if one(conn, "SELECT id FROM model_versions WHERE name = ?", (name,)):
+            raise SystemExit(f"model version {name!r} already exists; pick a new --name")
+        version_id = insert(
+            conn, "model_versions", name=name, base_model=settings.small_model,
+            adapter_ref=None, status="candidate",
+            notes=json.dumps({"kind": "pipeline change", "note": note,
+                              "prompt": prompt_hash()}),
+        )
+    print(f"registered candidate {name!r} (model_version {version_id}): {note}")
+    return stage_evaluate(version_id)
+
+
 def stage_rescore(version_id: int) -> dict:
     """Re-score a model from its RECORDED answers under the current scorer.
 
@@ -200,7 +222,7 @@ def main() -> None:
     ap.add_argument(
         "--stage",
         required=True,
-        choices=["baseline", "serve", "repair", "train", "finalize", "evaluate", "rescore",
+        choices=["baseline", "serve", "repair", "train", "finalize", "evaluate", "rescore", "candidate",
                  "clusters", "all"],
     )
     ap.add_argument("--n", type=int, default=80, help="documents to serve")
@@ -215,6 +237,8 @@ def main() -> None:
     ap.add_argument("--workers", type=int, default=None,
                     help="parallel API calls (default: LLM_CONCURRENCY for the small "
                          "model, LARGE_LLM_CONCURRENCY for repairs)")
+    ap.add_argument("--name", default=None, help="name for a candidate version")
+    ap.add_argument("--note", default=None, help="what the candidate changes")
     ap.add_argument("--domain", default=None,
                     help="domain to run (default: $DOMAIN, else form4)")
     args = ap.parse_args()
@@ -244,6 +268,10 @@ def _dispatch(args) -> None:
         if not args.version:
             raise SystemExit("--version is required for the evaluate stage")
         stage_evaluate(args.version)
+    elif args.stage == "candidate":
+        if not args.name:
+            raise SystemExit("--name is required for the candidate stage")
+        stage_candidate(args.name, args.note or "")
     elif args.stage == "rescore":
         if not args.version:
             raise SystemExit("--version is required for the rescore stage")

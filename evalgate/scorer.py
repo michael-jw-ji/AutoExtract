@@ -40,6 +40,12 @@ def holdout_docs() -> list[dict]:
         ]
 
 
+def prompt_hash() -> str:
+    """Short hash of the serving system prompt (the 'p...' in cache names)."""
+    from serve.extract import system_prompt
+    return hashlib.sha256(system_prompt().encode()).hexdigest()[:8]
+
+
 def cache_path(model_ref: str) -> Path:
     """Where this model's holdout answers are recorded, one JSON line each.
 
@@ -47,8 +53,7 @@ def cache_path(model_ref: str) -> Path:
     config, and the system prompt itself. Change any of them and you get a
     fresh file, never a stale reuse.
     """
-    from serve.extract import system_prompt
-    prompt = hashlib.sha256(system_prompt().encode()).hexdigest()[:8]
+    prompt = prompt_hash()
     name = re.sub(r"[^A-Za-z0-9._-]+", "_", model_ref)
     return settings.data_dir / "eval_cache" / (
         f"{name}__{current_hash()}__{config_label()}__p{prompt}.jsonl")
@@ -178,6 +183,7 @@ def score_model(
                 field_f1=result["field_f1"],
                 n_docs=result["n_docs"],
                 config=config_label(),
+                prompt=prompt_hash(),
                 per_field_json=json.dumps(result["per_field"]),
             )
     return result

@@ -362,33 +362,59 @@ class Form4Domain:
 
     def system_prompt(self) -> str:
         codes = ", ".join(sorted(CODE_MEANINGS))
+        # v2 (2026-10-11), from FAILURES.md: empty tables, the code column,
+        # holdings lines, $0 prices, decimals. The example rows are INVENTED:
+        # holdout filings must never appear in the prompt (that would leak the
+        # eval set into the system being evaluated).
         return f"""Extract the SEC Form 4 filing below as JSON. Output ONLY the JSON object.
 
 Fields:
   issuer_cik        10 digits, keep leading zeros
-  issuer_name       string
+  issuer_name       string, exactly as printed
   issuer_ticker     trading symbol
   period_of_report  ISO date YYYY-MM-DD
   reporting_owners  list, one per reporting person:
                     {{name, is_director, is_officer, is_ten_percent_owner, officer_title|null}}
-                    the three is_* values are true/false
-  transactions      list, one per row of Table I (is_derivative false) AND
-                    Table II (is_derivative true), in the order shown:
+                    the is_* values are true only where the box shows [X]
+  transactions      list of the TRANSACTION rows of Table I (is_derivative false)
+                    and Table II (is_derivative true), in the order shown:
                     {{security_title, is_derivative, date, code, shares,
                      price_per_share|null, acquired_disposed, shares_owned_after,
                      direct_or_indirect}}
 
+Which rows are transactions:
+  - A transaction row has a transaction date AND a transaction code.
+  - A line with no transaction date and no code is a HOLDING, not a
+    transaction: leave it out. In Table II, a line whose only dates are the
+    exercisable/expiration dates is a holding too.
+  - A table with no transaction rows contributes NOTHING. Never invent a row
+    for an empty table, and never output a row with 0 shares.
+  - Report each row once. If the filing has no transactions, use [].
+
+Reading a Table I row (invented example):
+  Common Stock | 03/14/2026 | S(1) | 1,250 | D | $42.1875(2) | 18,040.5 | D
+  -> date 2026-03-14, code S, shares 1250, acquired_disposed D,
+     price_per_share 42.1875, shares_owned_after 18040.5, direct_or_indirect D
+
+Reading a Table II row (invented example):
+  Stock Option (Right to Buy) | $30.00 | 03/14/2026 | M | 500 (D) | 01/01/2025 | 01/01/2030 | Common Stock | 500 | $0 | 2,000 | D
+  -> security_title "Stock Option (Right to Buy)", date 2026-03-14, code M,
+     shares 500, acquired_disposed D, price_per_share 0, shares_owned_after 2000.
+     $30.00 is the EXERCISE price, not the price: the price is the value after
+     the underlying amount (here $0).
+
 Rules:
-  date             ISO YYYY-MM-DD (the transaction date, column 2)
-  code             one letter from: {codes}
-  shares           the amount in column 4 as a plain number, no commas
-  price_per_share  plain number, no $; null when the price column is blank.
-                   Take it from the Price column, not from a footnote.
-  acquired_disposed  A or D, from column 4
-  shares_owned_after  amount owned after the transaction (column 5)
-  direct_or_indirect  D or I (column 6)
-Table II (derivative securities) rows are transactions too: set is_derivative
-to true. If the filing lists no transactions, use an empty list.
+  code             the letter right after the transaction date, one of:
+                   {codes}
+                   It is NOT the A/D letter: in the Table I example the code
+                   is S and the A/D letter is D.
+  acquired_disposed  the A or D next to the amount
+  shares, shares_owned_after  plain numbers: drop commas and footnote markers
+                   like (1), and KEEP every decimal (18,040.5 -> 18040.5)
+  price_per_share  plain number without $ or markers. $0 means 0, not null.
+                   null only when the price cell is empty or holds only a
+                   footnote marker like (1).
+  direct_or_indirect  D or I
 Do NOT output a `value` field. No extra fields."""
 
     def reference_prompt(self) -> str:
