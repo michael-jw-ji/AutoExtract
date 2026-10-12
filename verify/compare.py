@@ -144,6 +144,22 @@ def _rows(path: str, pred: Any, gold: Any):
         yield (p[pi] if pi is not None else {}), (g[gi] if gi is not None else {})
 
 
+def pair_rows(path: str, pred: Any, gold: Any) -> list[tuple[int | None, int | None]]:
+    """(pred index, gold index) pairs, using the scorer's own row alignment.
+
+    For tools that need to SHOW why a score is what it is: a pair with a None
+    side is an extra (pred only) or a missing (gold only) row.
+    """
+    p = [_row(path, i) for i in (pred if isinstance(pred, list) else [])]
+    g = [_row(path, i) for i in (gold if isinstance(gold, list) else [])]
+    return _align(p, g)
+
+
+def same(path: str, a: Any, b: Any) -> bool:
+    """Whether two leaf values count as equal to the scorer."""
+    return _norm(path, a) == _norm(path, b)
+
+
 def counts(pred: dict, gold: dict) -> tuple[int, int, int]:
     """(true_positives, predicted_count, gold_count) for one document.
 

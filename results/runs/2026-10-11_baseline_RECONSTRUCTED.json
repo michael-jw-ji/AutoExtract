@@ -1,0 +1,55 @@
+{
+  "reconstructed": true,
+  "run": {
+    "stage": "baseline",
+    "commit": "b5aaaaf (code at time of run; committed right after)",
+    "small_model": "Qwen/Qwen2.5-7B-Instruct",
+    "small_endpoint": "Modal vLLM, L40S (infra/modal_small.py)",
+    "concurrency": 8,
+    "config": "enrich+json",
+    "holdout_hash": "9789311604dce853",
+    "answer_cache": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__p4b5b159a.jsonl"
+  },
+  "result": {
+    "score": {
+      "valid_rate": 0.545,
+      "field_f1": 0.8352,
+      "n_docs": 189,
+      "per_field": {
+        "issuer_cik": 0.9947,
+        "issuer_name": 0.9048,
+        "issuer_ticker": 0.9894,
+        "period_of_report": 0.9947,
+        "reporting_owners.*.name": 0.918,
+        "reporting_owners.*.is_director": 0.8577,
+        "reporting_owners.*.is_officer": 0.8745,
+        "reporting_owners.*.is_ten_percent_owner": 0.9836,
+        "reporting_owners.*.officer_title": 0.9355,
+        "transactions.*.security_title": 0.9494,
+        "transactions.*.is_derivative": 0.9096,
+        "transactions.*.date": 0.9926,
+        "transactions.*.code": 0.7414,
+        "transactions.*.shares": 0.9449,
+        "transactions.*.price_per_share": 0.9206,
+        "transactions.*.acquired_disposed": 0.9476,
+        "transactions.*.shares_owned_after": 0.9675,
+        "transactions.*.direct_or_indirect": 0.991
+      }
+    },
+    "latency_s": {
+      "p50": 9.828,
+      "p99": 74.506,
+      "max": 195.412
+    },
+    "gate": {
+      "id": 1,
+      "candidate_id": 1,
+      "incumbent_id": null,
+      "decision": "promoted",
+      "margin": 0.0,
+      "required": 2.0,
+      "reason": "no incumbent -- first scored model becomes the baseline",
+      "created_at": "2026-10-11 21:59:18"
+    }
+  }
+}

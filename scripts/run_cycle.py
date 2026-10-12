@@ -19,6 +19,7 @@ import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from buffer import cluster, store
+from core import runlog
 from core.config import settings
 from core.db import incumbent, init_db, insert, one, rows, tx
 from evalgate import gate, scorer
@@ -33,6 +34,13 @@ def stage_baseline() -> dict:
         existing = one(
             conn, "SELECT * FROM model_versions WHERE name = ?", ("base",)
         )
+        if existing and existing["base_model"] != settings.small_model:
+            # A baseline belongs to one model. Re-scoring a different model
+            # under the same row would label its numbers with the wrong name.
+            raise SystemExit(
+                f"model_version 'base' is registered to {existing['base_model']!r} but "
+                f"SMALL_MODEL is {settings.small_model!r}. Point SMALL_MODEL back, or "
+                f"register the new model as its own version.")
         if existing:
             version_id = existing["id"]
         else:
@@ -52,12 +60,13 @@ def stage_baseline() -> dict:
 
     verdict = gate.decide(version_id)
     print(f"  -> {verdict['decision']}: {verdict['reason']}")
+    runlog.save_result({"score": result, "gate": verdict})
     return verdict
 
 
 def stage_serve(n: int, workers: int | None = None) -> dict:
-    workers = workers or settings.llm_concurrency
     """Run live documents through the incumbent, buffering every failure."""
+    workers = workers or settings.llm_concurrency
     with tx() as conn:
         docs = rows(
             conn,
@@ -158,6 +167,7 @@ def stage_evaluate(version_id: int) -> dict:
     print(f"  margin     {verdict['margin_pp']:+.2f}pp (required +{verdict['required_pp']:.2f}pp)")
     print(f"  reason     {verdict['reason']}")
     print("=" * 62)
+    runlog.save_result({"score": result, "gate": verdict})
     return verdict
 
 
@@ -190,7 +200,12 @@ def main() -> None:
         os.environ["DOMAIN"] = args.domain
 
     init_db()
+    # Every run's terminal output and numbers go to results/runs/ (tracked).
+    with runlog.run(args.stage):
+        _dispatch(args)
 
+
+def _dispatch(args) -> None:
     if args.stage == "baseline":
         stage_baseline()
     elif args.stage == "serve":

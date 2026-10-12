@@ -32,5 +32,5 @@ out/
 dist/
 .DS_Store
 .venv-old/
-# Recorded holdout answers (evalgate/scorer.py). Large; resume cache.
-data/eval_cache/
+# data/eval_cache/ is TRACKED on purpose: recorded holdout answers are the
+# evidence behind every number in RESULTS.md, and Milestone 3's CI replays them.

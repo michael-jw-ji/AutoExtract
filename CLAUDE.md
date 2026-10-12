@@ -48,6 +48,18 @@ docs/PLAN.md; keep it ticked as work lands.
   while labelling: checkboxes render as [X]/[ ], Table II amounts carry
   (A)/(D), and the scorer ignores whitespace. `load_form4.py --refresh-text`
   re-renders stored text, and refuses once the holdout is frozen.
+- Every `run_cycle.py` run tees its terminal output to results/runs/<UTC>_<stage>.log
+  and writes the numbers to a matching .json (core/runlog.py). Both are tracked:
+  they are the record behind RESULTS.md. The header logs commit, models,
+  endpoints, config and holdout hash, never keys. The first baseline's record
+  is marked RECONSTRUCTED (rebuilt from the DB and answer cache).
+- data/eval_cache/ is tracked: the recorded holdout answers behind every score,
+  and what Milestone 3's free CI eval will replay.
+- Milestone 2 failure reading: `python scripts/failures_form4.py`
+  (http://127.0.0.1:8766) shows each failure's page, errors and a row-by-row
+  answer-vs-gold diff from the recorded answers. Theme guesses come from
+  evalgate/failures.py; the human's notes go to data/form4/failure_notes/
+  (tracked) and are what FAILURES.md is written from.
 - SEC fair-access: max 10 requests/sec and a `User-Agent` with a contact email.
 
 ## The loop
