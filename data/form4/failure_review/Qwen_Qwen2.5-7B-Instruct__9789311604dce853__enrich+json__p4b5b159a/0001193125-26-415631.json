@@ -1,7 +1,7 @@
 {
   "accession": "0001193125-26-415631",
   "reviewer": "claude-opus-5-5 pre-review",
-  "verdict": "policy",
+  "verdict": "confirm",
   "why_check": [],
   "primary": "placeholder row for an empty table",
   "themes": [
@@ -9,13 +9,8 @@
       "theme": "placeholder row for an empty table",
       "fix_layer": "prompt",
       "root_cause": "A table with no transactions still gets an invented row (e.g. 'Derivative Security', 0 shares); the prompt asks for rows from both tables and never says an empty table means none."
-    },
-    {
-      "theme": "name formatting",
-      "fix_layer": "gold / eval set",
-      "root_cause": "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); whether that is an error is a scoring-policy decision."
     }
   ],
   "valid": false,
-  "f1": 0.7727
+  "f1": 0.8182
 }

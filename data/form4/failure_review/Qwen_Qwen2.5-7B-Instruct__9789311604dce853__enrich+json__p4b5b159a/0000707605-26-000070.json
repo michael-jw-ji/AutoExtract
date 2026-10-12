@@ -1,7 +1,7 @@
 {
   "accession": "0000707605-26-000070",
   "reviewer": "claude-opus-5-5 pre-review",
-  "verdict": "policy",
+  "verdict": "confirm",
   "why_check": [],
   "primary": "holdings row extracted",
   "themes": [
@@ -9,13 +9,8 @@
       "theme": "holdings row extracted",
       "fix_layer": "prompt",
       "root_cause": "A holdings line (no date, no code) is reported as a transaction."
-    },
-    {
-      "theme": "name formatting",
-      "fix_layer": "gold / eval set",
-      "root_cause": "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); whether that is an error is a scoring-policy decision."
     }
   ],
   "valid": false,
-  "f1": 0.3182
+  "f1": 0.3636
 }

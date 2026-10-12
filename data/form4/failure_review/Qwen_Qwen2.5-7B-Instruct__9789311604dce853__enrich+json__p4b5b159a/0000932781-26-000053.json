@@ -1,7 +1,7 @@
 {
   "accession": "0000932781-26-000053",
   "reviewer": "claude-opus-5-5 pre-review",
-  "verdict": "policy",
+  "verdict": "confirm",
   "why_check": [],
   "primary": "placeholder row for an empty table",
   "themes": [
@@ -19,13 +19,8 @@
       "theme": "footnote-marked amount skipped",
       "fix_layer": "text rendering",
       "root_cause": "An amount printed with a glued footnote marker (e.g. 18.324(1)) is skipped for another number in the row; marked amounts are wrong 10% of the time vs 3% unmarked."
-    },
-    {
-      "theme": "name formatting",
-      "fix_layer": "gold / eval set",
-      "root_cause": "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); whether that is an error is a scoring-policy decision."
     }
   ],
   "valid": false,
-  "f1": 0.6667
+  "f1": 0.7143
 }

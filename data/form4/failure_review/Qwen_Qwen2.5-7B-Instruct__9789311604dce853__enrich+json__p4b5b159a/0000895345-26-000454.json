@@ -1,7 +1,7 @@
 {
   "accession": "0000895345-26-000454",
   "reviewer": "claude-opus-5-5 pre-review",
-  "verdict": "policy",
+  "verdict": "confirm",
   "why_check": [],
   "primary": "holdings row extracted",
   "themes": [
@@ -26,9 +26,9 @@
       "root_cause": "A real transaction is reported a second time under a derivative-sounding title (Restricted Stock, RSUs, PSUs, Warrants), usually a name taken from a footnote."
     },
     {
-      "theme": "name formatting",
-      "fix_layer": "gold / eval set",
-      "root_cause": "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); whether that is an error is a scoring-policy decision."
+      "theme": "officer title from another box",
+      "fix_layer": "prompt",
+      "root_cause": "officer_title holds text from another part of the form (the 'Other (specify)' line or the ownership column) for someone who is not an officer."
     }
   ],
   "valid": false,

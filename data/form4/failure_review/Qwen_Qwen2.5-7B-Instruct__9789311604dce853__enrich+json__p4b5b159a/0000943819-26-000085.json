@@ -1,7 +1,7 @@
 {
   "accession": "0000943819-26-000085",
   "reviewer": "claude-opus-5-5 pre-review",
-  "verdict": "policy",
+  "verdict": "confirm",
   "why_check": [],
   "primary": "code from the V column",
   "themes": [
@@ -9,13 +9,8 @@
       "theme": "code from the V column",
       "fix_layer": "prompt",
       "root_cause": "The code is taken from the 'V' (voluntary) column next to it instead of the code column."
-    },
-    {
-      "theme": "name formatting",
-      "fix_layer": "gold / eval set",
-      "root_cause": "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); whether that is an error is a scoring-policy decision."
     }
   ],
   "valid": true,
-  "f1": 0.9444
+  "f1": 0.9722
 }

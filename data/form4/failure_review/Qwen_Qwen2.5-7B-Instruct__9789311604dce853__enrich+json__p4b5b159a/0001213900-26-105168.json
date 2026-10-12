@@ -1,7 +1,7 @@
 {
   "accession": "0001213900-26-105168",
   "reviewer": "claude-opus-5-5 pre-review",
-  "verdict": "policy",
+  "verdict": "confirm",
   "why_check": [],
   "primary": "holdings row extracted",
   "themes": [
@@ -26,11 +26,11 @@
       "root_cause": "A row is built from a number that appears only in a footnote (e.g. 'Includes 471 unvested RSUs')."
     },
     {
-      "theme": "name formatting",
-      "fix_layer": "gold / eval set",
-      "root_cause": "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); whether that is an error is a scoring-policy decision."
+      "theme": "officer title from another box",
+      "fix_layer": "prompt",
+      "root_cause": "officer_title holds text from another part of the form (the 'Other (specify)' line or the ownership column) for someone who is not an officer."
     }
   ],
   "valid": false,
-  "f1": 0.5357
+  "f1": 0.5714
 }

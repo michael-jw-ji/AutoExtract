@@ -16,13 +16,8 @@
       "theme": "officer title from remarks",
       "fix_layer": "gold / eval set",
       "root_cause": "Gold says 'See Remarks' while the model gave the actual title from the Remarks; the model may be right."
-    },
-    {
-      "theme": "name formatting",
-      "fix_layer": "gold / eval set",
-      "root_cause": "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); whether that is an error is a scoring-policy decision."
     }
   ],
   "valid": true,
-  "f1": 0.8611
+  "f1": 0.9167
 }

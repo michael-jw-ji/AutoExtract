@@ -1,7 +1,7 @@
 {
   "accession": "0001820482-26-000033",
   "reviewer": "claude-opus-5-5 pre-review",
-  "verdict": "policy",
+  "verdict": "confirm",
   "why_check": [],
   "primary": "placeholder row for an empty table",
   "themes": [
@@ -16,9 +16,9 @@
       "root_cause": "The transaction code is filled with the row's acquired/disposed letter (A or D) instead of the code column; both are single letters and A/D are valid codes, so validation cannot catch it."
     },
     {
-      "theme": "name formatting",
-      "fix_layer": "gold / eval set",
-      "root_cause": "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); whether that is an error is a scoring-policy decision."
+      "theme": "issuer name from memory",
+      "fix_layer": "model capability",
+      "root_cause": "The issuer name differs in CONTENT from the page (e.g. page 'SailPoint, Inc.', answer 'SailPoint Technologies Holdings, Inc.'): the model wrote a name it knows instead of the one printed."
     }
   ],
   "valid": false,

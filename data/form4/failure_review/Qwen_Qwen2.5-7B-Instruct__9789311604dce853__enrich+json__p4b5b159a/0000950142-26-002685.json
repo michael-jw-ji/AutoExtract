@@ -1,7 +1,7 @@
 {
   "accession": "0000950142-26-002685",
   "reviewer": "claude-opus-5-5 pre-review",
-  "verdict": "policy",
+  "verdict": "confirm",
   "why_check": [],
   "primary": "code copied from the A/D column",
   "themes": [
@@ -16,11 +16,11 @@
       "root_cause": "A derivative transaction is reported twice: as itself, and again as a row in the underlying stock (e.g. phantom units plus an extra 'Common Stock' row with the underlying amount)."
     },
     {
-      "theme": "name formatting",
-      "fix_layer": "gold / eval set",
-      "root_cause": "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); whether that is an error is a scoring-policy decision."
+      "theme": "owner name misread",
+      "fix_layer": "model capability",
+      "root_cause": "A reporting owner's name differs in content from the page."
     }
   ],
   "valid": false,
-  "f1": 0.8142
+  "f1": 0.9027
 }

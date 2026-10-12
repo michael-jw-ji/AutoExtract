@@ -92,16 +92,25 @@ THEMES: dict[str, tuple[str, str]] = {
     "missing row": ("model capability", "A transaction row on the page is missing from the answer."),
     "officer title from remarks": ("gold / eval set",
         "Gold says 'See Remarks' while the model gave the actual title from the Remarks; the model may be right."),
-    "name formatting": ("gold / eval set",
-        "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); "
-        "whether that is an error is a scoring-policy decision."),
+    "issuer name from memory": ("model capability",
+        "The issuer name differs in CONTENT from the page (e.g. page 'SailPoint, Inc.', answer 'SailPoint "
+        "Technologies Holdings, Inc.'): the model wrote a name it knows instead of the one printed."),
+    "owner name misread": ("model capability", "A reporting owner's name differs in content from the page."),
+    "officer title from another box": ("prompt",
+        "officer_title holds text from another part of the form (the 'Other (specify)' line or the "
+        "ownership column) for someone who is not an officer."),
+    "security title misread": ("model capability",
+        "A Table I row's security title names a different security than the page shows."),
+    "title wording": ("gold / eval set",
+        "A title differs only by wording such as a defined-term suffix ('(\"Common Stock\")'); the "
+        "names policy does not cover titles, so this is a scoring decision."),
     "other": ("model capability", "Did not match any measured pattern; needs reading."),
 }
 
 #: Themes a human must decide (policy, possibly-wrong gold, or not yet explained).
 NEEDS_HUMAN = {"runaway generation", "conversion direction", "amount misread",
                "unexplained extra row", "missing row", "officer title from remarks",
-               "price where the page shows none", "other"}
+               "price where the page shows none", "title wording", "other"}
 
 #: One scoring-policy decision covers all of these; it is asked once, not per filing.
 POLICY = {"name formatting"}
@@ -234,7 +243,9 @@ def classify(a: dict, gold: dict, text: str = "") -> list[str]:
                 else:
                     add(_amount_theme(pv, cells[f]["gold"], text))
         if "security_title" in bad and "is_derivative" not in bad:
-            add("name formatting")
+            pv = re.sub(r"\s*\(.*?\)\s*$", "", str(cells["security_title"]["pred"])).lower()
+            gv = re.sub(r"\s*\(.*?\)\s*$", "", str(cells["security_title"]["gold"])).lower()
+            add("title wording" if pv.strip() == gv.strip() else "security title misread")
 
     for row in a["tables"]["reporting_owners"]:
         if row["kind"] in ("extra", "missing"):
@@ -247,13 +258,14 @@ def classify(a: dict, gold: dict, text: str = "") -> list[str]:
                 add("owner checkboxes misread")
             elif c["field"] == "officer_title":
                 add("officer title from remarks" if "remark" in str(c["gold"]).lower()
-                    else "name formatting")
+                    else "officer title from another box" if c["gold"] is None
+                    else "title wording")
             elif c["field"] == "name":
-                add("name formatting")
+                add("owner name misread")
 
     for s in a["scalars"]:
         if not s["ok"]:
-            add("name formatting" if s["field"] == "issuer_name" else "other")
+            add("issuer name from memory" if s["field"] == "issuer_name" else "other")
 
     order = list(THEMES)
     return sorted(found, key=order.index) or ["other"]

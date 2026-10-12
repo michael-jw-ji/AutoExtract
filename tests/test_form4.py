@@ -317,3 +317,35 @@ def test_html_rows_stay_on_one_line():
             "<td><div>Common Stock</div></td><td>10/05/2026\n</td>"
             "<td><font>P</font></td></tr></table></body></html>")
     assert html_to_text(html) == "Common Stock | 10/05/2026 | P"
+
+
+@pytest.mark.parametrize("pred,gold_name", [
+    ("AMERISERV FINANCIAL INC", "AMERISERV FINANCIAL INC /PA/"),
+    ("UNIVERSAL DISPLAY CORP", r"UNIVERSAL DISPLAY CORP \PA\ ".strip()),
+    ("Amerant Bancorp Inc.", "AMERANT BANCORP INC"),
+])
+def test_issuer_names_forgive_form(pred, gold_name):
+    g = gold(tx()); g["issuer_name"] = gold_name
+    p = gold(tx()); p["issuer_name"] = pred
+    assert matches_gold(p, g)
+
+
+def test_owner_names_forgive_order_and_punctuation():
+    g = gold(tx()); g["reporting_owners"][0]["name"] = "MFA Holding S.a.r.l."
+    p = gold(tx()); p["reporting_owners"][0]["name"] = "MFA Holding S.a r.l."
+    assert matches_gold(p, g)
+    g["reporting_owners"][0]["name"] = "Reed Joshua"
+    p["reporting_owners"][0]["name"] = "Joshua Reed"
+    assert matches_gold(p, g)
+
+
+def test_names_still_need_the_right_words():
+    g = gold(tx()); g["issuer_name"] = "SailPoint, Inc."
+    p = gold(tx()); p["issuer_name"] = "SailPoint Technologies Holdings"
+    assert not matches_gold(p, g)
+
+
+def test_spelled_out_corporate_suffixes_are_the_same_name():
+    g = gold(tx()); g["issuer_name"] = "WORLD KINECT CORP"
+    p = gold(tx()); p["issuer_name"] = "WORLD KINECT CORPORATION"
+    assert matches_gold(p, g)

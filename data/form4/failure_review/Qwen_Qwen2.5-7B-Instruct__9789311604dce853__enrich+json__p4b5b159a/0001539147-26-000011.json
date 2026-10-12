@@ -16,13 +16,8 @@
       "theme": "amount misread",
       "fix_layer": "model capability",
       "root_cause": "A share amount is replaced by a different number with no marker or decimal explanation."
-    },
-    {
-      "theme": "name formatting",
-      "fix_layer": "gold / eval set",
-      "root_cause": "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); whether that is an error is a scoring-policy decision."
     }
   ],
   "valid": true,
-  "f1": 0.7778
+  "f1": 0.8889
 }

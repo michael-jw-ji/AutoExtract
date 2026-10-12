@@ -171,12 +171,36 @@ def stage_evaluate(version_id: int) -> dict:
     return verdict
 
 
+def stage_rescore(version_id: int) -> dict:
+    """Re-score a model from its RECORDED answers under the current scorer.
+
+    For scoring-policy changes (e.g. how names are compared): no model calls,
+    no gate decision, just a new evals row so old and new numbers sit side by
+    side. Refuses if any answer is missing rather than calling the model.
+    """
+    with tx() as conn:
+        version = one(conn, "SELECT * FROM model_versions WHERE id = ?", (version_id,))
+    if not version:
+        raise SystemExit(f"no model version {version_id}")
+    model = version["adapter_ref"] or version["base_model"]
+    if not scorer.cache_path(model).exists():
+        raise SystemExit(f"no recorded answers for {model}; run the baseline/evaluate stage")
+    before = scorer.latest_eval(version_id)
+    print(f"re-scoring {version['name']} ({model}) from recorded answers...")
+    result = scorer.score_model(version_id, model, progress=True)
+    if before:
+        print(f"  before: valid_rate {before['valid_rate']:.1%}   field_f1 {before['field_f1']:.4f}")
+    print(f"  now:    valid_rate {result['valid_rate']:.1%}   field_f1 {result['field_f1']:.4f}")
+    runlog.save_result({"score": result, "previous_eval": before})
+    return result
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="Drive the self-improvement loop")
     ap.add_argument(
         "--stage",
         required=True,
-        choices=["baseline", "serve", "repair", "train", "finalize", "evaluate",
+        choices=["baseline", "serve", "repair", "train", "finalize", "evaluate", "rescore",
                  "clusters", "all"],
     )
     ap.add_argument("--n", type=int, default=80, help="documents to serve")
@@ -220,6 +244,10 @@ def _dispatch(args) -> None:
         if not args.version:
             raise SystemExit("--version is required for the evaluate stage")
         stage_evaluate(args.version)
+    elif args.stage == "rescore":
+        if not args.version:
+            raise SystemExit("--version is required for the rescore stage")
+        stage_rescore(args.version)
     elif args.stage == "clusters":
         for c in cluster.clusters(limit=15):
             print(f"{c['count']:>4}x  {' + '.join(c['labels'])}")

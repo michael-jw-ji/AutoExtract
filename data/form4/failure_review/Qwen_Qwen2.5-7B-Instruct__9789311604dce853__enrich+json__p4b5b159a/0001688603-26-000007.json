@@ -18,9 +18,9 @@
       "root_cause": "The model gives a price where the price column is blank or footnote-only; it may have read a footnote or the exercise price. Convention question, like the ambiguous labels."
     },
     {
-      "theme": "name formatting",
-      "fix_layer": "gold / eval set",
-      "root_cause": "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); whether that is an error is a scoring-policy decision."
+      "theme": "security title misread",
+      "fix_layer": "model capability",
+      "root_cause": "A Table I row's security title names a different security than the page shows."
     }
   ],
   "valid": true,

@@ -59,12 +59,32 @@ eval row 1, config `enrich+json`, holdout `9789311604dce853`.
 
 | Metric | Value |
 |---|---|
-| **Field F1** | **0.8352** |
+| **Field F1** | **0.8395** under the names policy below (0.8352 strict) |
 | Valid rate (passes schema + rules) | 54.5% (103 of 189) |
 | Failure rate | 45.5%: at the top edge of the 25-45% target band, so there is plenty to learn from |
 | Latency per filing | p50 9.8 s, p99 74.5 s (8 concurrent requests) |
 
-### Per-field accuracy
+### Scoring policy: names (decided 2026-10-11)
+
+Issuer and owner names are compared by content, not form: case, punctuation,
+a trailing EDGAR state suffix (`/PA/`, `\PA\`), spelled-out corporate
+suffixes (Corporation = Corp) and word order are ignored. Spelling and any
+different word still count. Rationale: `AMERISERV FINANCIAL INC` vs
+`AMERISERV FINANCIAL INC /PA/`, or `Joshua Reed` vs `Reed Joshua`, name the
+same party; scoring them wrong measured formatting, not reading.
+
+Applied by re-scoring the RECORDED answers (no model calls), so both numbers
+describe the same 189 answers:
+
+| Scoring | Field F1 | Valid rate | issuer_name | owner name | Run record |
+|---|---|---|---|---|---|
+| strict (as first scored) | 0.8352 | 54.5% | 0.905 | 0.918 | `results/runs/2026-10-11_baseline_RECONSTRUCTED` |
+| names policy | **0.8395** | 54.5% | 0.989 | 0.984 | `results/runs/2026-10-12T012930Z_rescore` |
+
+Valid rate is unchanged: validation never depended on name formatting. All
+later results use the names policy.
+
+### Per-field accuracy (strict scoring, as first measured)
 
 Over the fields gold has a value for; rows are paired with gold rows by best
 overlap; the 9 ambiguous field paths are excluded.

@@ -231,6 +231,13 @@ NUMERIC_FIELDS = frozenset({"shares", "price_per_share", "shares_owned_after", "
 #: Derived by code, so scoring it would count one upstream error twice.
 UNSCORED_FIELDS = frozenset({"transactions.*.value"})
 
+#: Names compared by content, not form (see Form4Domain.normalize_field).
+_NAME_FIELDS = frozenset({"issuer_name", "reporting_owners.*.name"})
+#: Spelled-out vs abbreviated corporate suffixes are the same name (form, not
+#: content): "UNITED THERAPEUTICS Corporation" vs "... Corp".
+_SUFFIX = {"corporation": "corp", "incorporated": "inc", "company": "co",
+           "limited": "ltd"}
+
 _TOP = frozenset(SCORED_FIELDS)
 _OWNER = frozenset(Owner.model_fields)
 _TX = frozenset(Transaction.model_fields)
@@ -441,6 +448,22 @@ Do NOT output a `value` field. No extra fields."""
                     row["acquired_disposed"] = want
                     report["direction"] += 1
         return doc, report
+
+    def normalize_field(self, path: str, value: Any) -> Any:
+        """Scoring policy for NAMES (decided 2026-10-11): forgive form, not content.
+
+        `AMERISERV FINANCIAL INC` vs `... INC /PA/`, `Amerant Bancorp Inc.` vs
+        `AMERANT BANCORP INC`, `Joshua Reed` vs `Reed Joshua` name the same
+        party; scoring them wrong measures formatting, not reading. So case,
+        punctuation, a trailing EDGAR state suffix (/PA/, \\PA\\), spelled-out
+        corporate suffixes (Corporation = Corp) and word order are ignored. Spelling and any different word still count:
+        `SailPoint Technologies Holdings` vs `SailPoint, Inc.` stays wrong.
+        """
+        if path not in _NAME_FIELDS or not isinstance(value, str):
+            return value
+        text = re.sub(r"\s*[/\\][A-Za-z]{2}[/\\]\s*$", "", value.strip())
+        words = re.sub(r"[^\w\s]", " ", text.lower()).split()
+        return " ".join(sorted(_SUFFIX.get(w, w) for w in words))
 
     def mechanical(self, payload: dict) -> dict:
         """Deterministic repair: formats, then everything enrich() derives."""

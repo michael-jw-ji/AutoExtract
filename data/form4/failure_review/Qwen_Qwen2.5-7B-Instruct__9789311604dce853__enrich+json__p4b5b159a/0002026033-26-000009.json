@@ -1,7 +1,7 @@
 {
   "accession": "0002026033-26-000009",
   "reviewer": "claude-opus-5-5 pre-review",
-  "verdict": "policy",
+  "verdict": "confirm",
   "why_check": [],
   "primary": "Table II row duplicated as its underlying stock",
   "themes": [
@@ -11,9 +11,9 @@
       "root_cause": "A derivative transaction is reported twice: as itself, and again as a row in the underlying stock (e.g. phantom units plus an extra 'Common Stock' row with the underlying amount)."
     },
     {
-      "theme": "name formatting",
-      "fix_layer": "gold / eval set",
-      "root_cause": "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); whether that is an error is a scoring-policy decision."
+      "theme": "security title misread",
+      "fix_layer": "model capability",
+      "root_cause": "A Table I row's security title names a different security than the page shows."
     }
   ],
   "valid": true,

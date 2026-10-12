@@ -23,11 +23,11 @@
       "root_cause": "A transaction row on the page is missing from the answer."
     },
     {
-      "theme": "name formatting",
-      "fix_layer": "gold / eval set",
-      "root_cause": "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); whether that is an error is a scoring-policy decision."
+      "theme": "officer title from another box",
+      "fix_layer": "prompt",
+      "root_cause": "officer_title holds text from another part of the form (the 'Other (specify)' line or the ownership column) for someone who is not an officer."
     }
   ],
   "valid": true,
-  "f1": 0.8276
+  "f1": 0.8345
 }

@@ -23,9 +23,9 @@
       "root_cause": "A transaction row on the page is missing from the answer."
     },
     {
-      "theme": "name formatting",
-      "fix_layer": "gold / eval set",
-      "root_cause": "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); whether that is an error is a scoring-policy decision."
+      "theme": "security title misread",
+      "fix_layer": "model capability",
+      "root_cause": "A Table I row's security title names a different security than the page shows."
     }
   ],
   "valid": true,

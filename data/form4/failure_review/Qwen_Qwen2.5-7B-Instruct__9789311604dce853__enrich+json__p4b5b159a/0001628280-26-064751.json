@@ -1,7 +1,7 @@
 {
   "accession": "0001628280-26-064751",
   "reviewer": "claude-opus-5-5 pre-review",
-  "verdict": "policy",
+  "verdict": "confirm",
   "why_check": [],
   "primary": "placeholder row for an empty table",
   "themes": [
@@ -14,13 +14,8 @@
       "theme": "owner checkboxes misread",
       "fix_layer": "enrichment (code)",
       "root_cause": "Director/officer/10% flags disagree with explicit [X]/[ ] boxes on the page; those boxes are machine-readable, so code can derive them."
-    },
-    {
-      "theme": "name formatting",
-      "fix_layer": "gold / eval set",
-      "root_cause": "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); whether that is an error is a scoring-policy decision."
     }
   ],
   "valid": false,
-  "f1": 0.7143
+  "f1": 0.7619
 }
