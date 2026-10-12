@@ -529,7 +529,7 @@ Do NOT output a `value` field. No extra fields."""
     #: Version 1 is the text frozen in the DB; later versions are rendered at
     #: serve time from the raw HTML, because rendering is part of the system
     #: under test, not of the answer key. Part of the cache label.
-    render_version = 2
+    render_version = 3
 
     def model_input(self, doc: dict) -> str:
         """The text the model is sent for a stored document."""

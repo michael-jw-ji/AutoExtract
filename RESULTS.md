@@ -345,3 +345,40 @@ no gate decisions re-made; `results/runs/2026-10-12T1726*_rescore.*`):
 | **code-fixes-1** (incumbent) | 0.8708 | **0.8716** | 84.1% |
 
 All move by +0.06 to +0.08, so no ranking or past decision changes.
+
+## Fix 4: rendering v2 (rejected)
+
+Candidate `render-v2` (model_version 5) changes only the text the model
+reads, now rendered at serve time from the raw HTML (FAILURES.md causes 5
+and 7): each data row starts with `[Table I]` / `[Table II]`, and a footnote
+marker glued to a value is split off (`18.324(1)` -> `18.324 (1)`). Prompt v2
+and post-processing v2 unchanged. A fresh model run (189 filings on Modal);
+record `results/runs/2026-10-12T173428Z_candidate.*`.
+
+| | Code fixes 1 (incumbent) | Render v2 |
+|---|---|---|
+| Field F1 | 0.8716 | 0.8721 |
+| Valid rate | 84.1% | 83.6% |
+| Gate | | **rejected**: +0.05 pts, 95% interval [-0.70, +0.81] |
+
+| Rows (553 in gold) | Code fixes 1 | Render v2 |
+|---|---|---|
+| Matched to a gold row | 514 | 508 |
+| Matched but in the wrong table | 53 | **45** |
+| Missing | 39 | 45 |
+| Extra | 132 | 127 |
+
+The table labels did what they were for (wrong-table rows -15%), but three
+filings lost two real rows each, which cancelled it. Reading them found two
+problems with the rendering itself, not the idea:
+
+- **A rendering bug.** In Table II the `(A)`/`(D)` suffix was added before
+  the marker split, so `1,002(1)(2) (A)` stayed glued and inconsistent with
+  the other cells; the model returned no rows for that filing.
+- **Holdings lines got the same `[Table I]` label as transactions**, e.g.
+  `[Table I] Common Stock | 166 | I | by Spouse`, which makes a holding look
+  more like a transaction, not less.
+
+Holdings lines are also the largest cause of the incumbent's 132 extra rows
+(60 of them), despite prompt v2's instruction. Whether a row is a holding is
+fixed by the form: no transaction date and no code. That is render v3.

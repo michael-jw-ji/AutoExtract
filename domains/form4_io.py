@@ -131,8 +131,24 @@ class _Text(HTMLParser):
 
 #: Rendering versions. 1 is what the frozen holdout stores. 2 (2026-10-12,
 #: FAILURES.md causes 5 and 7) labels every data row with its table, and
-#: puts a space between a value and a footnote marker glued to it.
-RENDER_VERSIONS = (1, 2)
+#: puts a space between a value and a footnote marker glued to it. 3 (after
+#: v2 was rejected, RESULTS.md "Fix 4") splits markers BEFORE Table II's
+#: (A)/(D) suffix, which v2 left glued, and labels holdings apart from
+#: transactions.
+RENDER_VERSIONS = (1, 2, 3)
+
+#: (transaction date, code) cell positions in a raw data row. Checked on all
+#: 1,475 data rows of the corpus: every row has both (a transaction) or
+#: neither (a holding), with 12 cells in Table I and 17 in Table II.
+_DATE_CODE = {"I": (1, 3), "II": (2, 4)}
+
+
+def _row_label(table: str, cells: list[str], version: int) -> str:
+    if version < 3:
+        return f"[Table {table}]"
+    d, c = _DATE_CODE[table]
+    is_tx = len(cells) > c and _DATE.match(cells[d]) and cells[c]
+    return f"[Table {table} transaction]" if is_tx else f"[Table {table} holding, not a transaction]"
 
 _MARKER = re.compile(r"(?<=[^\s(|])((?:\(\d{1,2}\))+)$")
 
@@ -157,17 +173,20 @@ def html_to_text(html: bytes | str, version: int = 1) -> str:
             table = heading
         elif any(c.startswith("Explanation of Responses") for c in cells):
             table = None
+        label = _row_label(table, cells, version) if data_row and table else ""
+        if version >= 3:
+            cells = [_MARKER.sub(r" \1", c) for c in cells]
         if table == "II":
             cells = _derivative_direction(cells)
-        if version >= 2:
+        if version == 2:
             # 18,324(1) -> 18,324 (1): a marker glued to a value was read as
             # part of it (shares with a marker wrong 10% of the time vs 3%).
             cells = [_MARKER.sub(r" \1", c) for c in cells]
         line = " | ".join(_checkboxes(cells))
-        if line and version >= 2 and data_row and table:
+        if line and version >= 2 and label:
             # A Table II row also names its underlying stock; without a label
             # the model reported it as a Table I row (29 filings).
-            line = f"[Table {table}] {line}"
+            line = f"{label} {line}"
         if line:
             lines.append(line)
     return "\n".join(lines)

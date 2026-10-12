@@ -414,6 +414,23 @@ def test_render_v1_is_unchanged_and_v2_labels_rows_and_splits_markers():
     assert lines[-1] == "Owner row"                     # outside the tables: no label
 
 
+def test_render_v3_labels_holdings_and_splits_markers_before_the_direction():
+    t1 = "".join(f"<td>{c}</td>" for c in
+                 ["Common Stock", "10/05/2026", "", "S", "", "100(1)", "D", "$5", "900", "D", ""])
+    hold = "".join(f"<td>{c}</td>" for c in
+                   ["Common Stock", "", "", "", "", "", "", "", "166", "I", "by Spouse"])
+    t2 = "".join(f"<td>{c}</td>" for c in
+                 ["Units", "(1)", "10/05/2026", "", "A", "", "1,002(1)(2)", "", "(1)", "(1)",
+                  "Common Stock", "1,002", "$0", "5,276", "D", ""])
+    html = (f"<table><thead><tr><td>Table I - x</td></tr></thead><tbody><tr>{t1}</tr>"
+            f"<tr>{hold}</tr></tbody></table><table><thead><tr><td>Table II - x</td></tr>"
+            f"</thead><tbody><tr>{t2}</tr></tbody></table>")
+    lines = html_to_text(html, 3).splitlines()
+    assert lines[1].startswith("[Table I transaction] Common Stock | 10/05/2026 | S | 100 (1) |")
+    assert lines[2] == "[Table I holding, not a transaction] Common Stock | 166 | I | by Spouse"
+    assert "| 1,002 (1)(2) (A) |" in lines[4] and lines[4].startswith("[Table II transaction]")
+
+
 def test_model_input_renders_from_the_raw_html_and_never_falls_back(tmp_path, monkeypatch):
     from core.config import settings
     monkeypatch.setattr(settings, "data_dir", tmp_path)
@@ -423,7 +440,7 @@ def test_model_input_renders_from_the_raw_html_and_never_falls_back(tmp_path, mo
     (tmp_path / "form4" / "raw").mkdir(parents=True)
     (tmp_path / "form4" / "raw" / "0001-26-1.html").write_text(TABLES, encoding="utf-8")
     text = DOM.model_input(doc)
-    assert text.startswith("Issuer CIK: 0000000001\n") and "[Table I]" in text
+    assert text.startswith("Issuer CIK: 0000000001\n") and "[Table I transaction]" in text
 
 
 def test_html_rows_stay_on_one_line():
