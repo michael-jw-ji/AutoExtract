@@ -75,6 +75,9 @@ def decide(candidate_id: int, against: int | None = None) -> dict:
     margin = (cand_eval["field_f1"] - inc_eval["field_f1"]) * 100
     valid_delta = (cand_eval["valid_rate"] - inc_eval["valid_rate"]) * 100
 
+    if settings.gate_policy == "bootstrap":
+        return _bootstrap_decision(cand, inc, cand_eval, inc_eval, metric, valid_delta)
+
     if margin < required:
         reason = (
             f"{metric} +{margin:.2f}pp < required +{required:.2f}pp "
@@ -95,6 +98,52 @@ def decide(candidate_id: int, against: int | None = None) -> dict:
         f"valid_rate {valid_delta:+.2f}pp"
     )
     return _record(cand, inc, cand_eval, inc_eval, "promoted", margin, required, reason)
+
+
+def _bootstrap_decision(cand, inc, cand_eval, inc_eval, metric, valid_delta) -> dict:
+    """Promote only if the gain is real, no field regresses, and validity holds.
+
+    Built from the RECORDED answers behind both evals, so no model is called
+    and the decision can be re-derived exactly (fixed seed). Refuses to
+    decide if either side's answers are missing.
+    """
+    import json
+
+    from evalgate.scorer import answers_for, per_doc_counts
+    from evalgate.stats import paired_bootstrap
+
+    paths = []
+    for version, ev in ((cand, cand_eval), (inc, inc_eval)):
+        model = version["adapter_ref"] or version["base_model"]
+        if not ev.get("prompt"):
+            raise RuntimeError(f"eval {ev['id']} has no prompt hash; cannot find its answers")
+        path = answers_for(ev, model)
+        if not path.exists():
+            raise RuntimeError(f"no recorded answers for {version['name']} at {path}")
+        paths.append(path)
+
+    delta, lo, hi = paired_bootstrap(per_doc_counts(paths[0]), per_doc_counts(paths[1]),
+                                     resamples=settings.gate_resamples)
+    stat = f"{metric} {delta:+.2f}pp, 95% CI [{lo:+.2f}, {hi:+.2f}]"
+
+    old = json.loads(inc_eval.get("per_field_json") or "{}")
+    new = json.loads(cand_eval.get("per_field_json") or "{}")
+    drops = sorted(((new.get(k, 0.0) - v) * 100, k) for k, v in old.items())
+    drops = [(d, k) for d, k in drops if d < -settings.gate_field_drop]
+
+    if lo <= 0:
+        decision, reason = "rejected", f"{stat}: the interval includes zero, so the gain may be noise"
+    elif drops:
+        listed = ", ".join(f"{k} {d:+.1f}" for d, k in drops[:4])
+        decision, reason = "rejected", (f"{stat}, but fields regressed more than "
+                                        f"{settings.gate_field_drop:.1f}pp: {listed}")
+    elif valid_delta < 0:
+        decision, reason = "rejected", f"{stat}, but valid_rate regressed {valid_delta:.2f}pp"
+    else:
+        decision, reason = "promoted", (f"{stat} excludes zero; no field down more than "
+                                        f"{settings.gate_field_drop:.1f}pp; valid_rate {valid_delta:+.2f}pp")
+    # `required` records the policy's bar: a lower bound above 0.
+    return _record(cand, inc, cand_eval, inc_eval, decision, delta, 0.0, reason)
 
 
 def _record(cand, inc, cand_eval, inc_eval, decision, margin, required, reason) -> dict:

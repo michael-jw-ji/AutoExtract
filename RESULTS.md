@@ -258,3 +258,24 @@ a threshold) would test that directly.
 **The rejection stands as recorded.** Changing the gate after seeing which
 side of it a result landed on is how evaluations get gamed. Any change to the
 rule applies to future candidates only.
+
+### Gate policy from here on (decided 2026-10-11)
+
+From the next candidate, the gate promotes only if all three hold: the
+paired-bootstrap 95% interval of the field-F1 gain is above zero; no scored
+field drops more than 2.0 points; the valid rate does not drop
+(`GATE_POLICY=bootstrap`, `evalgate/stats.py`). The prompt-v2 promotion and
+the prompt-v3 rejection were made under the old rule and stand.
+
+For reference only (not recorded as decisions), the new rule applied to the
+past comparisons:
+
+| Comparison | Δ F1, 95% interval | Fields down > 2 pts | New rule |
+|---|---|---|---|
+| v2 vs baseline | +2.12 [-0.44, +4.63] | 8 | reject |
+| v3 vs v2 | +1.22 [-0.06, +3.15] | 0 | reject (interval; valid rate) |
+| v3 vs baseline | +3.34 [+1.37, +5.35] | 6 | reject (field regressions) |
+
+None of the prompt revisions is a clean improvement: each traded fields for
+other fields. The next fixes target the causes that can be fixed in code,
+where a fix should not trade anything.

@@ -158,8 +158,15 @@ cases `ambiguous: true` rather than forcing a label.
 - Two metrics: `valid_rate` (schema-valid fraction) and `field_f1`
   (field-level F1 vs gold). Pass/fail alone is too coarse at n=100 -- noise
   swamps real movement and we would promote on coin flips.
-- Promotion requires beating the incumbent by a **margin of +2.0pp on
-  field_f1** and not regressing valid_rate. Margin lives in `PROMOTION_MARGIN`.
+- Gate policy (GATE_POLICY, default `bootstrap`, decided 2026-10-11): promote
+  only if the paired-bootstrap 95% interval of the field-F1 gain is above
+  zero (evalgate/stats.py, fixed seed, from the RECORDED answers of both
+  evals), no scored field drops more than GATE_FIELD_DROP (2.0) points, and
+  valid_rate does not drop. The original rule, +2.0pp field_f1
+  (`PROMOTION_MARGIN`), is `GATE_POLICY=margin`; it decided prompt-v2
+  (promoted) and prompt-v3 (rejected), and those records stand. Measured at
+  n=189 the fixed margin was miscalibrated (RESULTS.md). Never re-decide a
+  past candidate under a rule chosen after seeing its result.
 - Every decision is written to `promotions`, including rejections.
 
 ## Rules

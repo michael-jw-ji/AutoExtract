@@ -46,6 +46,32 @@ def prompt_hash() -> str:
     return hashlib.sha256(system_prompt().encode()).hexdigest()[:8]
 
 
+def answers_for(ev: dict, model_ref: str) -> Path:
+    """The recorded answers an eval row was computed from."""
+    name = re.sub(r"[^A-Za-z0-9._-]+", "_", model_ref)
+    return settings.data_dir / "eval_cache" / (
+        f"{name}__{ev['eval_set_hash']}__{ev['config']}__p{ev['prompt']}.jsonl")
+
+
+def per_doc_counts(path: Path) -> dict[int, tuple[int, int, int]]:
+    """(tp, n_pred, n_gold) per holdout document, from recorded answers,
+    scored exactly as score_model scores them (ambiguous fields dropped)."""
+    docs = {d["id"]: d for d in holdout_docs()}
+    out = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        rec = json.loads(line)
+        doc = docs.get(rec["doc_id"])
+        if doc is None:
+            continue
+        pred = validate(rec["raw"]).scorable
+        gold = json.loads(doc["gold_json"]) if doc["gold_json"] else {}
+        skip = json.loads(doc.get("ambiguous_json") or "[]")
+        if skip:
+            pred, gold = drop_fields(pred, skip), drop_fields(gold, skip)
+        out[rec["doc_id"]] = counts(pred, gold) if gold else (0, 0, 0)
+    return out
+
+
 def cache_path(model_ref: str) -> Path:
     """Where this model's holdout answers are recorded, one JSON line each.
 

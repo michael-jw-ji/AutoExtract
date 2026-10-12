@@ -76,6 +76,14 @@ class Settings:
     enrich: bool = os.getenv("ENRICH", "1").strip() in {"1", "true", "yes"}
 
     promotion_margin: float = _f("PROMOTION_MARGIN", 2.0)
+    #: How the gate decides (decided 2026-10-11). "bootstrap": promote only if
+    #: the paired-bootstrap 95% interval of the F1 gain is above zero, no
+    #: scored field drops more than GATE_FIELD_DROP points, and the valid rate
+    #: does not drop. "margin": the original fixed +PROMOTION_MARGIN rule,
+    #: kept so earlier decisions can be reproduced.
+    gate_policy: str = os.getenv("GATE_POLICY", "bootstrap").strip().lower()
+    gate_field_drop: float = _f("GATE_FIELD_DROP", 2.0)
+    gate_resamples: int = int(os.getenv("GATE_RESAMPLES", "2000"))
     repair_fraction: float = _f("REPAIR_FRACTION", 0.7)
     max_cluster_share: float = _f("MAX_CLUSTER_SHARE", 0.25)
 
