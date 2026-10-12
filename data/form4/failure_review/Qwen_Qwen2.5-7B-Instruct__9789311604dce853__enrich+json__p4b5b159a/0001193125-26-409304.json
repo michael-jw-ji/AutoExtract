@@ -1,0 +1,33 @@
+{
+  "accession": "0001193125-26-409304",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "check",
+  "why_check": [
+    "amount misread: A share amount is replaced by a different number with no marker or decimal explanation."
+  ],
+  "primary": "placeholder row for an empty table",
+  "themes": [
+    {
+      "theme": "placeholder row for an empty table",
+      "fix_layer": "prompt",
+      "root_cause": "A table with no transactions still gets an invented row (e.g. 'Derivative Security', 0 shares); the prompt asks for rows from both tables and never says an empty table means none."
+    },
+    {
+      "theme": "code copied from the A/D column",
+      "fix_layer": "prompt",
+      "root_cause": "The transaction code is filled with the row's acquired/disposed letter (A or D) instead of the code column; both are single letters and A/D are valid codes, so validation cannot catch it."
+    },
+    {
+      "theme": "decimals dropped",
+      "fix_layer": "prompt",
+      "root_cause": "A fractional share amount is truncated to a whole number (67,446.241 -> 67446)."
+    },
+    {
+      "theme": "amount misread",
+      "fix_layer": "model capability",
+      "root_cause": "A share amount is replaced by a different number with no marker or decimal explanation."
+    }
+  ],
+  "valid": false,
+  "f1": 0.7879
+}

@@ -1,0 +1,28 @@
+{
+  "accession": "0002098589-26-000013",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "check",
+  "why_check": [
+    "officer title from remarks: Gold says 'See Remarks' while the model gave the actual title from the Remarks; the model may be right."
+  ],
+  "primary": "code copied from the A/D column",
+  "themes": [
+    {
+      "theme": "code copied from the A/D column",
+      "fix_layer": "prompt",
+      "root_cause": "The transaction code is filled with the row's acquired/disposed letter (A or D) instead of the code column; both are single letters and A/D are valid codes, so validation cannot catch it."
+    },
+    {
+      "theme": "officer title from remarks",
+      "fix_layer": "gold / eval set",
+      "root_cause": "Gold says 'See Remarks' while the model gave the actual title from the Remarks; the model may be right."
+    },
+    {
+      "theme": "name formatting",
+      "fix_layer": "gold / eval set",
+      "root_cause": "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); whether that is an error is a scoring-policy decision."
+    }
+  ],
+  "valid": true,
+  "f1": 0.8611
+}

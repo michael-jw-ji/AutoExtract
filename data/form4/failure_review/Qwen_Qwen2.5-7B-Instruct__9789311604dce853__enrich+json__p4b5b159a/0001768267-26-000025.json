@@ -1,0 +1,21 @@
+{
+  "accession": "0001768267-26-000025",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "placeholder row for an empty table",
+  "themes": [
+    {
+      "theme": "placeholder row for an empty table",
+      "fix_layer": "prompt",
+      "root_cause": "A table with no transactions still gets an invented row (e.g. 'Derivative Security', 0 shares); the prompt asks for rows from both tables and never says an empty table means none."
+    },
+    {
+      "theme": "code copied from the A/D column",
+      "fix_layer": "prompt",
+      "root_cause": "The transaction code is filled with the row's acquired/disposed letter (A or D) instead of the code column; both are single letters and A/D are valid codes, so validation cannot catch it."
+    }
+  ],
+  "valid": false,
+  "f1": 0.7727
+}

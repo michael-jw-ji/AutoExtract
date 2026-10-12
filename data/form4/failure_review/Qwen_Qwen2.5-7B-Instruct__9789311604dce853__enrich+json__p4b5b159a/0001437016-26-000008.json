@@ -1,0 +1,21 @@
+{
+  "accession": "0001437016-26-000008",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "row duplicated under another title",
+  "themes": [
+    {
+      "theme": "row duplicated under another title",
+      "fix_layer": "prompt",
+      "root_cause": "A real transaction is reported a second time under a derivative-sounding title (Restricted Stock, RSUs, PSUs, Warrants), usually a name taken from a footnote."
+    },
+    {
+      "theme": "row invented from a footnote",
+      "fix_layer": "prompt",
+      "root_cause": "A row is built from a number that appears only in a footnote (e.g. 'Includes 471 unvested RSUs')."
+    }
+  ],
+  "valid": true,
+  "f1": 0.6667
+}

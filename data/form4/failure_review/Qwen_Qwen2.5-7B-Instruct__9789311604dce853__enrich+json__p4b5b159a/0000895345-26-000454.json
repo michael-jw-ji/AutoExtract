@@ -1,0 +1,36 @@
+{
+  "accession": "0000895345-26-000454",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "policy",
+  "why_check": [],
+  "primary": "holdings row extracted",
+  "themes": [
+    {
+      "theme": "holdings row extracted",
+      "fix_layer": "prompt",
+      "root_cause": "A holdings line (no date, no code) is reported as a transaction."
+    },
+    {
+      "theme": "owner checkboxes misread",
+      "fix_layer": "enrichment (code)",
+      "root_cause": "Director/officer/10% flags disagree with explicit [X]/[ ] boxes on the page; those boxes are machine-readable, so code can derive them."
+    },
+    {
+      "theme": "ownership text in a number field",
+      "fix_layer": "model capability",
+      "root_cause": "The nature-of-ownership text (e.g. 'By ... LP') lands in a numeric field: a column shift."
+    },
+    {
+      "theme": "row duplicated under another title",
+      "fix_layer": "prompt",
+      "root_cause": "A real transaction is reported a second time under a derivative-sounding title (Restricted Stock, RSUs, PSUs, Warrants), usually a name taken from a footnote."
+    },
+    {
+      "theme": "name formatting",
+      "fix_layer": "gold / eval set",
+      "root_cause": "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); whether that is an error is a scoring-policy decision."
+    }
+  ],
+  "valid": false,
+  "f1": 0.4032
+}

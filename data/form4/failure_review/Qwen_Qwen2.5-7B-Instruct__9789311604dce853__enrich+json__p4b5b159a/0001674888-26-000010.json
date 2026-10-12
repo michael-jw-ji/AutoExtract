@@ -1,0 +1,21 @@
+{
+  "accession": "0001674888-26-000010",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "owner checkboxes misread",
+  "themes": [
+    {
+      "theme": "owner checkboxes misread",
+      "fix_layer": "enrichment (code)",
+      "root_cause": "Director/officer/10% flags disagree with explicit [X]/[ ] boxes on the page; those boxes are machine-readable, so code can derive them."
+    },
+    {
+      "theme": "Table II row duplicated as its underlying stock",
+      "fix_layer": "text rendering",
+      "root_cause": "A derivative transaction is reported twice: as itself, and again as a row in the underlying stock (e.g. phantom units plus an extra 'Common Stock' row with the underlying amount)."
+    }
+  ],
+  "valid": true,
+  "f1": 0.7143
+}

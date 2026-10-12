@@ -1,0 +1,36 @@
+{
+  "accession": "0001213900-26-105168",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "policy",
+  "why_check": [],
+  "primary": "holdings row extracted",
+  "themes": [
+    {
+      "theme": "holdings row extracted",
+      "fix_layer": "prompt",
+      "root_cause": "A holdings line (no date, no code) is reported as a transaction."
+    },
+    {
+      "theme": "owner checkboxes misread",
+      "fix_layer": "enrichment (code)",
+      "root_cause": "Director/officer/10% flags disagree with explicit [X]/[ ] boxes on the page; those boxes are machine-readable, so code can derive them."
+    },
+    {
+      "theme": "Table II row duplicated as its underlying stock",
+      "fix_layer": "text rendering",
+      "root_cause": "A derivative transaction is reported twice: as itself, and again as a row in the underlying stock (e.g. phantom units plus an extra 'Common Stock' row with the underlying amount)."
+    },
+    {
+      "theme": "row invented from a footnote",
+      "fix_layer": "prompt",
+      "root_cause": "A row is built from a number that appears only in a footnote (e.g. 'Includes 471 unvested RSUs')."
+    },
+    {
+      "theme": "name formatting",
+      "fix_layer": "gold / eval set",
+      "root_cause": "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); whether that is an error is a scoring-policy decision."
+    }
+  ],
+  "valid": false,
+  "f1": 0.5357
+}

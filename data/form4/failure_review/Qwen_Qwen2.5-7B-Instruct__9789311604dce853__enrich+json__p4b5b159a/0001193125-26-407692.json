@@ -1,0 +1,18 @@
+{
+  "accession": "0001193125-26-407692",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "check",
+  "why_check": [
+    "officer title from remarks: Gold says 'See Remarks' while the model gave the actual title from the Remarks; the model may be right."
+  ],
+  "primary": "officer title from remarks",
+  "themes": [
+    {
+      "theme": "officer title from remarks",
+      "fix_layer": "gold / eval set",
+      "root_cause": "Gold says 'See Remarks' while the model gave the actual title from the Remarks; the model may be right."
+    }
+  ],
+  "valid": true,
+  "f1": 0.9706
+}

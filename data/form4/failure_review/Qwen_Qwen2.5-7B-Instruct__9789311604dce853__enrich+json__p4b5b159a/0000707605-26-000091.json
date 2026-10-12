@@ -1,0 +1,26 @@
+{
+  "accession": "0000707605-26-000091",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "policy",
+  "why_check": [],
+  "primary": "placeholder row for an empty table",
+  "themes": [
+    {
+      "theme": "placeholder row for an empty table",
+      "fix_layer": "prompt",
+      "root_cause": "A table with no transactions still gets an invented row (e.g. 'Derivative Security', 0 shares); the prompt asks for rows from both tables and never says an empty table means none."
+    },
+    {
+      "theme": "holdings row extracted",
+      "fix_layer": "prompt",
+      "root_cause": "A holdings line (no date, no code) is reported as a transaction."
+    },
+    {
+      "theme": "name formatting",
+      "fix_layer": "gold / eval set",
+      "root_cause": "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); whether that is an error is a scoring-policy decision."
+    }
+  ],
+  "valid": false,
+  "f1": 0.5
+}

@@ -1,0 +1,36 @@
+{
+  "accession": "0002034136-26-000009",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "placeholder row for an empty table",
+  "themes": [
+    {
+      "theme": "placeholder row for an empty table",
+      "fix_layer": "prompt",
+      "root_cause": "A table with no transactions still gets an invented row (e.g. 'Derivative Security', 0 shares); the prompt asks for rows from both tables and never says an empty table means none."
+    },
+    {
+      "theme": "owner checkboxes misread",
+      "fix_layer": "enrichment (code)",
+      "root_cause": "Director/officer/10% flags disagree with explicit [X]/[ ] boxes on the page; those boxes are machine-readable, so code can derive them."
+    },
+    {
+      "theme": "number from another column",
+      "fix_layer": "model capability",
+      "root_cause": "A field holds a number that belongs to a different column of the same row (a column shift)."
+    },
+    {
+      "theme": "footnote-marked amount skipped",
+      "fix_layer": "text rendering",
+      "root_cause": "An amount printed with a glued footnote marker (e.g. 18.324(1)) is skipped for another number in the row; marked amounts are wrong 10% of the time vs 3% unmarked."
+    },
+    {
+      "theme": "decimals dropped",
+      "fix_layer": "prompt",
+      "root_cause": "A fractional share amount is truncated to a whole number (67,446.241 -> 67446)."
+    }
+  ],
+  "valid": false,
+  "f1": 0.5714
+}

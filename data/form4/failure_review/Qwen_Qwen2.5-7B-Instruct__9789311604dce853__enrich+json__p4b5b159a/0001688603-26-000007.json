@@ -1,0 +1,28 @@
+{
+  "accession": "0001688603-26-000007",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "check",
+  "why_check": [
+    "price where the page shows none: The model gives a price where the price column is blank or footnote-only; it may have read a footnote or the exercise price. Convention question, like the ambiguous labels."
+  ],
+  "primary": "Table II row read as Table I",
+  "themes": [
+    {
+      "theme": "Table II row read as Table I",
+      "fix_layer": "text rendering",
+      "root_cause": "A derivative row is reported as non-derivative, usually with the UNDERLYING security as its title; nothing in the flattened text says which table a row came from."
+    },
+    {
+      "theme": "price where the page shows none",
+      "fix_layer": "gold / eval set",
+      "root_cause": "The model gives a price where the price column is blank or footnote-only; it may have read a footnote or the exercise price. Convention question, like the ambiguous labels."
+    },
+    {
+      "theme": "name formatting",
+      "fix_layer": "gold / eval set",
+      "root_cause": "A name differs only in form (EDGAR suffix like /PA/, 'Inc.' vs 'INC', 'Last First' order); whether that is an error is a scoring-policy decision."
+    }
+  ],
+  "valid": true,
+  "f1": 0.8571
+}

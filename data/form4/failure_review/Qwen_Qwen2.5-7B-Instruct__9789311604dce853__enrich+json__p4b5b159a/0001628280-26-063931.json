@@ -1,0 +1,16 @@
+{
+  "accession": "0001628280-26-063931",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "row invented from a footnote",
+  "themes": [
+    {
+      "theme": "row invented from a footnote",
+      "fix_layer": "prompt",
+      "root_cause": "A row is built from a number that appears only in a footnote (e.g. 'Includes 471 unvested RSUs')."
+    }
+  ],
+  "valid": false,
+  "f1": 0.6923
+}

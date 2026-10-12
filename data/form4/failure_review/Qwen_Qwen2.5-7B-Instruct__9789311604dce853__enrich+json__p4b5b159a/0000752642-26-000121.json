@@ -1,0 +1,21 @@
+{
+  "accession": "0000752642-26-000121",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "holdings row extracted",
+  "themes": [
+    {
+      "theme": "holdings row extracted",
+      "fix_layer": "prompt",
+      "root_cause": "A holdings line (no date, no code) is reported as a transaction."
+    },
+    {
+      "theme": "Table II holdings row extracted",
+      "fix_layer": "prompt",
+      "root_cause": "A Table II holdings line (exercise and expiry dates, no transaction) is reported as a transaction, with the exercisable date as its 'transaction date'."
+    }
+  ],
+  "valid": true,
+  "f1": 0.2571
+}

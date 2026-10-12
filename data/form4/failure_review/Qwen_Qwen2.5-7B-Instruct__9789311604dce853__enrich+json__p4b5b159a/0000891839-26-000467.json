@@ -1,0 +1,16 @@
+{
+  "accession": "0000891839-26-000467",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "Table II row read as Table I",
+  "themes": [
+    {
+      "theme": "Table II row read as Table I",
+      "fix_layer": "text rendering",
+      "root_cause": "A derivative row is reported as non-derivative, usually with the UNDERLYING security as its title; nothing in the flattened text says which table a row came from."
+    }
+  ],
+  "valid": false,
+  "f1": 0.84
+}

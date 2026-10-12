@@ -1,0 +1,18 @@
+{
+  "accession": "0001104659-26-115066",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "check",
+  "why_check": [
+    "runaway generation: The model kept generating until the JSON broke, on a filing it otherwise reads fine."
+  ],
+  "primary": "runaway generation",
+  "themes": [
+    {
+      "theme": "runaway generation",
+      "fix_layer": "model capability",
+      "root_cause": "The model kept generating until the JSON broke, on a filing it otherwise reads fine."
+    }
+  ],
+  "valid": false,
+  "f1": 0.0
+}

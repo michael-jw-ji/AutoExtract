@@ -1,0 +1,16 @@
+{
+  "accession": "0000897069-26-001832",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "row duplicated under another title",
+  "themes": [
+    {
+      "theme": "row duplicated under another title",
+      "fix_layer": "prompt",
+      "root_cause": "A real transaction is reported a second time under a derivative-sounding title (Restricted Stock, RSUs, PSUs, Warrants), usually a name taken from a footnote."
+    }
+  ],
+  "valid": true,
+  "f1": 0.8095
+}

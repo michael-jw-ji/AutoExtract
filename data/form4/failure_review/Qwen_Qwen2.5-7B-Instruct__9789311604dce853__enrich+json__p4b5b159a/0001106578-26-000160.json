@@ -1,0 +1,26 @@
+{
+  "accession": "0001106578-26-000160",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "code copied from the A/D column",
+  "themes": [
+    {
+      "theme": "code copied from the A/D column",
+      "fix_layer": "prompt",
+      "root_cause": "The transaction code is filled with the row's acquired/disposed letter (A or D) instead of the code column; both are single letters and A/D are valid codes, so validation cannot catch it."
+    },
+    {
+      "theme": "holdings row extracted",
+      "fix_layer": "prompt",
+      "root_cause": "A holdings line (no date, no code) is reported as a transaction."
+    },
+    {
+      "theme": "number from another column",
+      "fix_layer": "model capability",
+      "root_cause": "A field holds a number that belongs to a different column of the same row (a column shift)."
+    }
+  ],
+  "valid": false,
+  "f1": 0.8095
+}

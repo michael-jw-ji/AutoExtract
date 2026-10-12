@@ -1,0 +1,16 @@
+{
+  "accession": "0001225208-26-008145",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "decimals dropped",
+  "themes": [
+    {
+      "theme": "decimals dropped",
+      "fix_layer": "prompt",
+      "root_cause": "A fractional share amount is truncated to a whole number (67,446.241 -> 67446)."
+    }
+  ],
+  "valid": true,
+  "f1": 0.9412
+}

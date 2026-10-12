@@ -1,0 +1,26 @@
+{
+  "accession": "0001374074-26-000012",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "placeholder row for an empty table",
+  "themes": [
+    {
+      "theme": "placeholder row for an empty table",
+      "fix_layer": "prompt",
+      "root_cause": "A table with no transactions still gets an invented row (e.g. 'Derivative Security', 0 shares); the prompt asks for rows from both tables and never says an empty table means none."
+    },
+    {
+      "theme": "holdings row extracted",
+      "fix_layer": "prompt",
+      "root_cause": "A holdings line (no date, no code) is reported as a transaction."
+    },
+    {
+      "theme": "decimals dropped",
+      "fix_layer": "prompt",
+      "root_cause": "A fractional share amount is truncated to a whole number (67,446.241 -> 67446)."
+    }
+  ],
+  "valid": false,
+  "f1": 0.7273
+}
