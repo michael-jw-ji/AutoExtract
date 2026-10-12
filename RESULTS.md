@@ -214,3 +214,47 @@ Why rows were dropped:
 +2.11 pp, just over the bar) while eight per-field scores fell. A single
 aggregate can hide regressions that matter; that is the case for Milestone 3's
 CI rule, "fail if any scored field drops more than a threshold".
+
+## Fix 2: prompt v3 (rejected by the gate)
+
+Candidate `prompt-v3` (model_version 3), compared against the incumbent
+`prompt-v2`. One wording change: v2's "never output a row with 0 shares" was
+being applied to shares OWNED AFTER, so v3 says shares owned after can be 0
+and asks for every transaction row. Prompt hash `ef581452`. Run record
+`results/runs/2026-10-12T014852Z_candidate`.
+
+| | Baseline | Prompt v2 (incumbent) | Prompt v3 |
+|---|---|---|---|
+| Field F1 | 0.8395 | 0.8606 | **0.8729** |
+| Valid rate | 54.5% | **80.4%** | 76.7% |
+| Rows exactly right (of 553) | 329 | 383 | **411** |
+| Real rows dropped | 4 | 39 | 18 |
+| Rows invented | 208 | 141 | 143 |
+| Gate | | promoted | **rejected**: +1.23 pp < +2.00 pp |
+
+v3 fixed what it targeted (dropped rows 39 → 18) but "report every row" let
+non-transaction lines back in: invalid codes 21 → 33, missing dates 5 → 13,
+zero-share rows 4 → 9, and 9 filings went from valid to invalid. The two
+prompt rules pull against each other. Row selection probably belongs in code
+or rendering, not in more prompt wording.
+
+### Is the gate's +2.0 pp margin the right test? (paired bootstrap)
+
+2,000 paired bootstrap resamples over the 189 filings (same filings in both
+arms), field F1:
+
+| Change | Δ F1 | 95% interval | P(Δ ≤ 0) | Gate said |
+|---|---|---|---|---|
+| baseline → v2 | +2.12 pp | [-0.44, +4.63] | 5.1% | promoted |
+| v2 → v3 | +1.22 pp | [-0.07, +3.13] | 4.1% | rejected |
+| baseline → v3 | +3.34 pp | [+1.28, +5.28] | 0.1% | (not compared) |
+
+**The fixed margin is miscalibrated at n = 189.** It promoted a change whose
+interval includes zero and rejected one with equally strong evidence. A fixed
+margin is a crude stand-in for "this is not noise"; a paired-bootstrap rule
+(lower bound of the interval above zero, plus no per-field regression beyond
+a threshold) would test that directly.
+
+**The rejection stands as recorded.** Changing the gate after seeing which
+side of it a result landed on is how evaluations get gamed. Any change to the
+rule applies to future candidates only.
