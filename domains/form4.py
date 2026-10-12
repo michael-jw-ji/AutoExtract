@@ -362,7 +362,9 @@ class Form4Domain:
 
     def system_prompt(self) -> str:
         codes = ", ".join(sorted(CODE_MEANINGS))
-        # v2 (2026-10-11), from FAILURES.md: empty tables, the code column,
+        # v3 (2026-10-11): v2 told the model "never output a row with 0 shares",
+        # which it applied to shares OWNED AFTER and dropped real conversions;
+        # now explicit. v2, from FAILURES.md: empty tables, the code column,
         # holdings lines, $0 prices, decimals. The example rows are INVENTED:
         # holdout filings must never appear in the prompt (that would leak the
         # eval set into the system being evaluated).
@@ -388,8 +390,12 @@ Which rows are transactions:
     transaction: leave it out. In Table II, a line whose only dates are the
     exercisable/expiration dates is a holding too.
   - A table with no transaction rows contributes NOTHING. Never invent a row
-    for an empty table, and never output a row with 0 shares.
-  - Report each row once. If the filing has no transactions, use [].
+    for an empty table.
+  - The amount transacted (shares) is never 0. But shares_owned_after CAN be
+    0, e.g. after a conversion or a full sale: those are real transactions,
+    keep them.
+  - Report every transaction row, each once, however many there are. If the
+    filing has no transactions, use [].
 
 Reading a Table I row (invented example):
   Common Stock | 03/14/2026 | S(1) | 1,250 | D | $42.1875(2) | 18,040.5 | D
