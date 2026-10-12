@@ -62,9 +62,15 @@ docs/PLAN.md; keep it ticked as work lands.
 - A change AFTER the model is a candidate scored by REPLAY:
   `run_cycle.py --stage candidate --name X --replay-from <version>` re-runs
   post-processing over that version's recorded answers, no model calls.
-  Refused if the model or prompt differs. Incumbent is `code-fixes-1`
-  (model_version 4) = prompt v2 + enrich v2. The prompt in domains/form4.py
-  is v2 (b4955a08); v3 was rejected and reverted (commit 3b38eef has it).
+  Refused if anything before the model (prompt, render) differs.
+- Rendering happens at SERVE time from data/form4/raw/<accession>.html
+  (Form4Domain.model_input, render_version in the cache label). documents.text
+  is render v1, kept frozen and reproduced byte for byte by
+  html_to_text(html, 1). Raw HTML is untracked but re-fetchable; a missing
+  file raises, never falls back to the stored text.
+- Incumbent is `render-v3` (model_version 6) = prompt v2 (b4955a08) +
+  enrich v2 + render v3: F1 0.9182, valid 96.3%. Prompt v3 was rejected and
+  reverted (commit 3b38eef has it).
 - Milestone 2 failure reading: `python scripts/failures_form4.py`
   (http://127.0.0.1:8766) shows each failure's page, errors and a row-by-row
   answer-vs-gold diff from the recorded answers. Theme guesses come from

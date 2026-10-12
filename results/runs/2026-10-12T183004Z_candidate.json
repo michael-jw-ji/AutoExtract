@@ -1,0 +1,67 @@
+{
+  "run": {
+    "stage": "candidate",
+    "started_utc": "2026-10-12T18:37:09+00:00",
+    "commit": "5bc2f14",
+    "branch": "feature/sec-form4",
+    "argv": [
+      "--stage",
+      "candidate",
+      "--name",
+      "render-v3",
+      "--note",
+      "render v3 at serve time: rows labelled [Table I/II transaction] or [... holding, not a transaction]; footnote markers split before the Table II (A)/(D) suffix. Prompt v2 and enrich v2 unchanged"
+    ],
+    "small_model": "Qwen/Qwen2.5-7B-Instruct",
+    "small_endpoint": "https://michael-jw-ji--autoextract-small-serve.modal.run/v1",
+    "large_model": "Qwen/Qwen2.5-32B-Instruct",
+    "large_endpoint": "https://michael-jw-ji--autoextract-llm-serve.modal.run/v1",
+    "concurrency": 8,
+    "config": {
+      "enrich": true,
+      "json_mode": true,
+      "compact_prompt": false
+    },
+    "holdout_hash": "9789311604dce853",
+    "db": "form4.db"
+  },
+  "result": {
+    "score": {
+      "model_version_id": 6,
+      "eval_set_hash": "9789311604dce853",
+      "valid_rate": 0.963,
+      "field_f1": 0.9182,
+      "n_docs": 189,
+      "per_field": {
+        "issuer_cik": 1.0,
+        "issuer_name": 0.9841,
+        "issuer_ticker": 0.9947,
+        "period_of_report": 0.9947,
+        "reporting_owners.*.name": 1.0,
+        "reporting_owners.*.is_director": 1.0,
+        "reporting_owners.*.is_officer": 1.0,
+        "reporting_owners.*.is_ten_percent_owner": 1.0,
+        "reporting_owners.*.officer_title": 1.0,
+        "transactions.*.security_title": 0.8644,
+        "transactions.*.is_derivative": 0.8517,
+        "transactions.*.date": 0.932,
+        "transactions.*.code": 0.9186,
+        "transactions.*.shares": 0.9026,
+        "transactions.*.price_per_share": 0.8617,
+        "transactions.*.acquired_disposed": 0.915,
+        "transactions.*.shares_owned_after": 0.9259,
+        "transactions.*.direct_or_indirect": 0.9313
+      }
+    },
+    "gate": {
+      "decision": "promoted",
+      "candidate": "render-v3",
+      "incumbent": "code-fixes-1",
+      "margin_pp": 4.661,
+      "required_pp": 0.0,
+      "reason": "field_f1 +4.66pp, 95% CI [+2.63, +6.70] excludes zero; no field down more than 2.0pp; valid_rate +12.17pp",
+      "candidate_f1": 0.9182,
+      "incumbent_f1": 0.8716
+    }
+  }
+}

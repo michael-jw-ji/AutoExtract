@@ -382,3 +382,46 @@ problems with the rendering itself, not the idea:
 Holdings lines are also the largest cause of the incumbent's 132 extra rows
 (60 of them), despite prompt v2's instruction. Whether a row is a holding is
 fixed by the form: no transaction date and no code. That is render v3.
+
+## Fix 5: rendering v3 (promoted)
+
+Candidate `render-v3` (model_version 6): every data row is labelled
+`[Table I transaction]`, `[Table II transaction]` or `[Table I/II holding,
+not a transaction]`, decided by the form's own transaction-date and code
+cells (both present or both absent on all 1,475 data rows of the corpus),
+and footnote markers are split off before Table II's `(A)`/`(D)` suffix.
+Prompt v2 and post-processing v2 unchanged. Fresh model run; record
+`results/runs/2026-10-12T183004Z_candidate.*`.
+
+| | Code fixes 1 (incumbent) | Render v3 |
+|---|---|---|
+| Field F1 | 0.8716 | **0.9182** |
+| Valid rate | 84.1% | **96.3%** |
+| Gate | | **promoted**: +4.66 pts, 95% interval [+2.63, +6.70]; no field down more than 2 pts; valid +12.2 pts |
+
+| Rows (553 in gold) | Code fixes 1 | Render v3 |
+|---|---|---|
+| Matched to a gold row | 514 | 516 |
+| Matched but in the wrong table | 53 | 45 |
+| Missing | 39 | 37 |
+| Extra | 132 | **52** |
+| ...of which holdings lines | 59 | **4** |
+
+| Field | Code fixes 1 | Render v3 | Δ pts |
+|---|---|---|---|
+| transactions.*.price_per_share | 0.8254 | 0.8617 | +3.6 |
+| transactions.*.code | 0.8861 | 0.9186 | +3.2 |
+| transactions.*.is_derivative | 0.8336 | 0.8517 | +1.8 |
+| transactions.*.shares_owned_after | 0.9114 | 0.9259 | +1.4 |
+| transactions.*.shares | 0.8952 | 0.9026 | +0.7 |
+| transactions.*.direct_or_indirect | 0.9259 | 0.9313 | +0.5 |
+| reporting_owners.*.name | 0.9959 | 1.0000 | +0.4 |
+| transactions.*.acquired_disposed | 0.9132 | 0.9150 | +0.2 |
+| period_of_report | 1.0000 | 0.9947 | -0.5 |
+| transactions.*.security_title | 0.8698 | 0.8644 | -0.5 |
+| transactions.*.date | 0.9430 | 0.9320 | -1.1 |
+
+The lesson across Fixes 1-5: telling the model which rows to skip (prompt
+v2, v3) traded fields; **showing** it, in the input, with a label computed
+from the form's structure, removed 55 of 59 holdings rows at once. The
+prompt said the same thing all along; the page now says it on every line.
