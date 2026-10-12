@@ -51,8 +51,11 @@ class Domain(Protocol):
         an invoice from the wrong reference data.
         """
 
-    def enrich(self, payload: dict) -> tuple[dict, dict[str, Any]]:
+    def enrich(self, payload: dict, text: str | None = None) -> tuple[dict, dict[str, Any]]:
         """Derive every field that has a right answer. Returns (payload, report).
+
+        `text` is the source document, for fields the page states exactly
+        (Form 4's role checkboxes); without it only the answer is used.
 
         This is where most of the value is: anything code can compute should
         never be left to the model. Measured on the invoice domain, moving

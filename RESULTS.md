@@ -279,3 +279,49 @@ past comparisons:
 None of the prompt revisions is a clean improvement: each traded fields for
 other fields. The next fixes target the causes that can be fixed in code,
 where a fix should not trade anything.
+
+## Fix 3: code fixes after the model (promoted, first under the new gate)
+
+Candidate `code-fixes-1` (model_version 4) is prompt v2 plus three changes to
+`enrich()` (post-processing version 2, cache label `enrich2+json`):
+
+1. **Owner role flags come from the page.** The `[X]`/`[ ]` boxes are
+   rendered from the filing's XML, so code reads them instead of the model.
+   Multi-owner pages repeat owner 1's block in the header and then give one
+   block per owner; owners are matched by name, or by position when the
+   counts agree. Checked on all 528 stored filings: the lookup recovers every
+   owner's flags exactly, even from an answer with every flag inverted.
+2. **`S/K` and `J/K` become `S` and `J`.** The `/K` marks an equity swap,
+   which the XML stores as a separate flag.
+3. **Rows no filing can contain are dropped:** a generic "Derivative
+   Security" title, 0 shares transacted, or neither date nor code. None of
+   the 1,177 gold rows has any of these.
+
+**Measured by replay, not by calling the model.** The prompt is unchanged, so
+the model would have been sent identical requests. The candidate's answers
+are prompt v2's recorded answers re-run through the new post-processing
+(`run_cycle.py --stage candidate --replay-from 2`). Both sides of the
+comparison hold the very same model answers, so the difference is the code
+change and nothing else. Run record: `results/runs/2026-10-12T171134Z_candidate.*`.
+
+| | Prompt v2 (incumbent) | Code fixes 1 |
+|---|---|---|
+| Field F1 | 0.8606 | **0.8708** |
+| Valid rate | 80.4% | **84.1%** |
+| Gate | | **promoted**: +1.02 pts, 95% interval [+0.65, +1.47]; no field down; valid +3.7 pts |
+
+What changed, per field (every other scored field is unchanged to 4 places):
+
+| Field | Prompt v2 | Code fixes 1 | Δ pts |
+|---|---|---|---|
+| reporting_owners.*.is_director | 0.8954 | 1.0000 | +10.5 |
+| reporting_owners.*.is_officer | 0.9247 | 1.0000 | +7.5 |
+| transactions.*.code | 0.8807 | 0.8861 | +0.5 |
+| reporting_owners.*.is_ten_percent_owner | 0.9959 | 1.0000 | +0.4 |
+
+48 flags were corrected across 32 filings and 9 rows dropped from 5. The
+dropped rows do not move any per-field number (those count gold fields
+found); they raise precision, which is part of the F1 gain.
+
+Under the old fixed +2.0 margin this would have been rejected: a gain that
+is small but certain is exactly what that rule could not see.

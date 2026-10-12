@@ -55,6 +55,16 @@ docs/PLAN.md; keep it ticked as work lands.
   is marked RECONSTRUCTED (rebuilt from the DB and answer cache).
 - data/eval_cache/ is tracked: the recorded holdout answers behind every score,
   and what Milestone 3's free CI eval will replay.
+- enrich(payload, text) gets the page too (owner role flags come from the
+  [X]/[ ] boxes). Bump Form4Domain.enrich_version whenever enrich's output
+  changes: it is in the cache label (`enrich2+json`), so answers from
+  different post-processing never share a file.
+- A change AFTER the model is a candidate scored by REPLAY:
+  `run_cycle.py --stage candidate --name X --replay-from <version>` re-runs
+  post-processing over that version's recorded answers, no model calls.
+  Refused if the model or prompt differs. Incumbent is `code-fixes-1`
+  (model_version 4) = prompt v2 + enrich v2. The prompt in domains/form4.py
+  is v2 (b4955a08); v3 was rejected and reverted (commit 3b38eef has it).
 - Milestone 2 failure reading: `python scripts/failures_form4.py`
   (http://127.0.0.1:8766) shows each failure's page, errors and a row-by-row
   answer-vs-gold diff from the recorded answers. Theme guesses come from

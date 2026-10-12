@@ -43,7 +43,7 @@ def extract_text(doc_text: str, model: str | None = None) -> tuple[str, int, str
     raw, latency_ms = chat(used, system_prompt(), doc_text, max_tokens=8192)
 
     if settings.enrich:
-        raw = apply_enrichment(raw)
+        raw = apply_enrichment(raw, doc_text)
     return raw, latency_ms, used
 
 
@@ -52,7 +52,7 @@ def _domain():
     return get_domain()
 
 
-def apply_enrichment(raw: str) -> str:
+def apply_enrichment(raw: str, text: str | None = None) -> str:
     """Run deterministic enrichment over a raw model response.
 
     Returns the raw text unchanged if it cannot be parsed -- enrichment has
@@ -67,7 +67,7 @@ def apply_enrichment(raw: str) -> str:
         return raw
     if not isinstance(payload, dict):
         return raw
-    enriched, _report = _domain().enrich(payload)
+    enriched, _report = _domain().enrich(payload, text)
     return json.dumps(enriched, default=str)
 
 

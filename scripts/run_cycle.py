@@ -171,25 +171,48 @@ def stage_evaluate(version_id: int) -> dict:
     return verdict
 
 
-def stage_candidate(name: str, note: str) -> dict:
+def stage_candidate(name: str, note: str, replay_from: int | None = None) -> dict:
     """Register a PIPELINE change (prompt, rendering, code) as a candidate on
     the same base model, score it, and let the gate decide.
 
     A prompt revision changes the served system as much as a fine-tune does,
-    so it faces the same bar: +PROMOTION_MARGIN field F1 and no valid-rate
-    regression against the incumbent.
+    so it faces the same gate as a fine-tune.
+
+    `replay_from` (a model_version id) is for changes AFTER the model only:
+    the candidate's answers are that version's recorded answers re-run
+    through the current post-processing, so no model is called. Refused if
+    the model or prompt differs, because then the model would have been sent
+    a different request.
     """
     from evalgate.scorer import prompt_hash
+    source = None
+    if replay_from is not None:
+        with tx() as conn:
+            src = one(conn, "SELECT * FROM model_versions WHERE id = ?", (replay_from,))
+        ev = scorer.latest_eval(replay_from) if src else None
+        if ev is None:
+            raise SystemExit(f"model version {replay_from} has no eval to replay")
+        model = src["adapter_ref"] or src["base_model"]
+        if src["adapter_ref"] or model != settings.small_model:
+            raise SystemExit(f"cannot replay {src['name']}: model {model} is not {settings.small_model}")
+        if ev["prompt"] != prompt_hash():
+            raise SystemExit(f"cannot replay {src['name']}: its prompt p{ev['prompt']} is not the "
+                             f"current p{prompt_hash()}; that would change two things at once")
+        source = scorer.answers_for(ev, model)
     with tx() as conn:
         if one(conn, "SELECT id FROM model_versions WHERE name = ?", (name,)):
             raise SystemExit(f"model version {name!r} already exists; pick a new --name")
+        notes = {"kind": "pipeline change", "note": note, "prompt": prompt_hash()}
+        if source:
+            notes["replayed_from"] = source.name
         version_id = insert(
             conn, "model_versions", name=name, base_model=settings.small_model,
-            adapter_ref=None, status="candidate",
-            notes=json.dumps({"kind": "pipeline change", "note": note,
-                              "prompt": prompt_hash()}),
+            adapter_ref=None, status="candidate", notes=json.dumps(notes),
         )
     print(f"registered candidate {name!r} (model_version {version_id}): {note}")
+    if source:
+        dest = scorer.replay(source, settings.small_model)
+        print(f"  replayed {source.name}\n        -> {dest.name} (no model calls)")
     return stage_evaluate(version_id)
 
 
@@ -239,6 +262,9 @@ def main() -> None:
                          "model, LARGE_LLM_CONCURRENCY for repairs)")
     ap.add_argument("--name", default=None, help="name for a candidate version")
     ap.add_argument("--note", default=None, help="what the candidate changes")
+    ap.add_argument("--replay-from", type=int, default=None,
+                    help="candidate stage: re-run post-processing over this version's "
+                         "recorded answers instead of calling the model")
     ap.add_argument("--domain", default=None,
                     help="domain to run (default: $DOMAIN, else form4)")
     args = ap.parse_args()
@@ -271,7 +297,7 @@ def _dispatch(args) -> None:
     elif args.stage == "candidate":
         if not args.name:
             raise SystemExit("--name is required for the candidate stage")
-        stage_candidate(args.name, args.note or "")
+        stage_candidate(args.name, args.note or "", args.replay_from)
     elif args.stage == "rescore":
         if not args.version:
             raise SystemExit("--version is required for the rescore stage")

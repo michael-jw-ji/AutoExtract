@@ -80,7 +80,7 @@ def extract(req: ExtractRequest) -> dict:
         try:
             payload = json.loads(strip_fences(raw_model))
             if isinstance(payload, dict):
-                enriched, report = get_domain().enrich(payload)
+                enriched, report = get_domain().enrich(payload, req.text)
                 raw = json.dumps(enriched, default=str)
         except json.JSONDecodeError:
             report = {"skipped": "model output was not parseable"}

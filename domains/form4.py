@@ -287,8 +287,10 @@ def _fix_number(value: Any) -> Any:
 
 
 def _fix_code(value: Any) -> Any:
+    # "/" too: an equity swap prints as "S/K" or "J/K", and the code is the
+    # letter before it (the XML stores K as a separate equitySwapInvolved flag).
     if isinstance(value, str):
-        m = re.match(r"^\s*([A-Za-z])\s*(?:$|[-:(\s])", value)
+        m = re.match(r"^\s*([A-Za-z])\s*(?:$|[-:(\s/])", value)
         if m:
             return m.group(1).upper()
     return value
@@ -321,6 +323,79 @@ def _clean_row(row: dict) -> dict:
         out["direct_or_indirect"] = _fix_letter(
             out["direct_or_indirect"], {"direct": "D", "d": "D", "indirect": "I", "i": "I"})
     return out
+
+
+_GENERIC_TITLE = re.compile(r"^\s*(non-?)?derivative\s+securit(y|ies)\s*$", re.I)
+
+
+def _not_a_transaction(row: Any) -> bool:
+    """Rows no filing can contain: a placeholder for an empty table, 0 shares
+    transacted, or no date AND no code (a holdings line). Gold has none of
+    them (checked over all 1,177 gold rows), so dropping them never loses a
+    real row; keeping them costs precision and fails the schema."""
+    if not isinstance(row, dict):
+        return False
+    if _GENERIC_TITLE.match(str(row.get("security_title") or "")):
+        return True
+    shares = _dec(row.get("shares"))
+    if shares is not None and shares == 0:
+        return True
+    return not row.get("date") and not row.get("code")
+
+
+_PERSON = re.compile(r"Name and Address of Reporting Person\*?[ \t]*\n([^\n]+)")
+_BOXES = re.compile(r"\[(X| )\] Director \| \[(X| )\] 10% Owner[ \t]*\n"
+                    r"\[(X| )\] Officer")
+
+
+def page_owner_flags(text: str) -> list[tuple[str, dict[str, bool]]]:
+    """(name, role flags) per reporting person, read off the [X]/[ ] boxes.
+
+    The boxes are rendered from the filing's own XML (domains/form4_io.py),
+    so this is a lookup, not a guess. A page with several owners repeats the
+    first owner's block in the header and then gives one block per owner,
+    so the header copy is dropped.
+    """
+    heads = list(_PERSON.finditer(text or ""))
+    found = []
+    for i, head in enumerate(heads):
+        end = heads[i + 1].start() if i + 1 < len(heads) else len(text)
+        box = _BOXES.search(text, head.end(), end)
+        if box:
+            found.append((head.group(1).strip(), {
+                "is_director": box.group(1) == "X",
+                "is_ten_percent_owner": box.group(2) == "X",
+                "is_officer": box.group(3) == "X",
+            }))
+    return found[1:] if len(found) > 1 else found
+
+
+def _name_key(name: Any) -> str:
+    return DOMAIN.normalize_field("reporting_owners.*.name", name) if isinstance(name, str) else ""
+
+
+def _apply_owner_flags(doc: dict, text: str) -> int:
+    """Set each answer owner's role flags from the page. Matches by name; if
+    names do not all match but the counts agree, by position (owners are
+    listed in page order). Otherwise leaves the answer alone."""
+    owners = doc.get("reporting_owners")
+    page = page_owner_flags(text)
+    if not isinstance(owners, list) or not page:
+        return 0
+    by_name = {_name_key(n): flags for n, flags in page}
+    matched = [by_name.get(_name_key(o.get("name"))) if isinstance(o, dict) else None
+               for o in owners]
+    if None in matched and len(owners) == len(page):
+        matched = [flags for _, flags in page]
+    changed = 0
+    for owner, flags in zip(owners, matched):
+        if not isinstance(owner, dict) or flags is None:
+            continue
+        for key, val in flags.items():
+            if owner.get(key) != val:
+                owner[key] = val
+                changed += 1
+    return changed
 
 
 def _clean(payload: dict) -> dict:
@@ -362,9 +437,10 @@ class Form4Domain:
 
     def system_prompt(self) -> str:
         codes = ", ".join(sorted(CODE_MEANINGS))
-        # v3 (2026-10-11): v2 told the model "never output a row with 0 shares",
-        # which it applied to shares OWNED AFTER and dropped real conversions;
-        # now explicit. v2, from FAILURES.md: empty tables, the code column,
+        # v2 is the incumbent. v3 (commit 3b38eef: "shares_owned_after can be
+        # 0, report every row") was REJECTED by the gate, so it is reverted
+        # here: a code-fix candidate must change one thing against v2.
+        # v2 (2026-10-11), from FAILURES.md: empty tables, the code column,
         # holdings lines, $0 prices, decimals. The example rows are INVENTED:
         # holdout filings must never appear in the prompt (that would leak the
         # eval set into the system being evaluated).
@@ -390,12 +466,8 @@ Which rows are transactions:
     transaction: leave it out. In Table II, a line whose only dates are the
     exercisable/expiration dates is a holding too.
   - A table with no transaction rows contributes NOTHING. Never invent a row
-    for an empty table.
-  - The amount transacted (shares) is never 0. But shares_owned_after CAN be
-    0, e.g. after a conversion or a full sale: those are real transactions,
-    keep them.
-  - Report every transaction row, each once, however many there are. If the
-    filing has no transactions, use [].
+    for an empty table, and never output a row with 0 shares.
+  - Report each row once. If the filing has no transactions, use [].
 
 Reading a Table I row (invented example):
   Common Stock | 03/14/2026 | S(1) | 1,250 | D | $42.1875(2) | 18,040.5 | D
@@ -453,14 +525,30 @@ Do NOT output a `value` field. No extra fields."""
             "satisfy a consistency rule."
         )
 
-    def enrich(self, payload: dict) -> tuple[dict, dict[str, Any]]:
-        """Normalise formats, then derive every field that has a right answer."""
+    #: Bump when enrich() changes what it outputs. It is part of the scorer's
+    #: config label, so answers post-processed by different versions never
+    #: share a cache file. 2: owner flags from the page, /K codes, impossible
+    #: rows dropped.
+    enrich_version = 2
+
+    def enrich(self, payload: dict, text: str | None = None) -> tuple[dict, dict[str, Any]]:
+        """Normalise formats, then derive every field that has a right answer.
+
+        `text` is the page the answer was read from. With it, the owners' role
+        flags come from the page's checkboxes instead of the model.
+        """
         if not isinstance(payload, dict):
             return payload, {"skipped": "not an object"}
         doc = _clean(payload)
-        report: dict[str, Any] = {"value": 0, "direction": 0}
+        report: dict[str, Any] = {"value": 0, "direction": 0, "dropped_rows": 0,
+                                  "owner_flags": 0}
+        if text:
+            report["owner_flags"] = _apply_owner_flags(doc, text)
         rows = doc.get("transactions")
         if isinstance(rows, list):
+            kept = [r for r in rows if not _not_a_transaction(r)]
+            report["dropped_rows"] = len(rows) - len(kept)
+            doc["transactions"] = rows = kept
             for row in rows:
                 if not isinstance(row, dict):
                     continue

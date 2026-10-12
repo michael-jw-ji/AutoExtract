@@ -23,8 +23,11 @@ def test_a_correct_answer_has_no_themes():
 
 def test_placeholder_row_for_an_empty_table_is_named():
     g = gold(tx())
-    p = gold(tx(), tx(security_title="Derivative Security", is_derivative=True,
-                      shares="0", code="A"))
+    # Appended after enrich, which now drops such rows: the explainer still has
+    # to name them in answers recorded before that (the baseline, prompt v2).
+    p = gold(tx())
+    p["transactions"].append(tx(security_title="Derivative Security", is_derivative=True,
+                                shares="0", code="A"))
     r = run(p, g)
     assert "placeholder row for an empty table" in r["themes"]
     assert [row["kind"] for row in r["tables"]["transactions"]] == ["match", "extra"]

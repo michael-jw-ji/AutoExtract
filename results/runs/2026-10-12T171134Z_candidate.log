@@ -1,0 +1,16 @@
+# run {"stage": "candidate", "started_utc": "2026-10-12T17:11:34+00:00", "commit": "353a74d+uncommitted", "branch": "feature/sec-form4", "argv": ["--stage", "candidate", "--name", "code-fixes-1", "--replay-from", "2", "--note", "post-processing v2: owner role flags from the page checkboxes; S/K, J/K -> S, J; drop placeholder, 0-share and no-date-no-code rows. Prompt v2 unchanged; replayed from prompt-v2's recorded answers"], "small_model": "Qwen/Qwen2.5-7B-Instruct", "small_endpoint": "https://michael-jw-ji--autoextract-small-serve.modal.run/v1", "large_model": "Qwen/Qwen2.5-32B-Instruct", "large_endpoint": "https://michael-jw-ji--autoextract-llm-serve.modal.run/v1", "concurrency": 8, "config": {"enrich": true, "json_mode": true, "compact_prompt": false}, "holdout_hash": "9789311604dce853", "db": "form4.db"}
+registered candidate 'code-fixes-1' (model_version 4): post-processing v2: owner role flags from the page checkboxes; S/K, J/K -> S, J; drop placeholder, 0-share and no-date-no-code rows. Prompt v2 unchanged; replayed from prompt-v2's recorded answers
+  replayed Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__pb4955a08.jsonl
+        -> Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich2+json__pb4955a08.jsonl (no model calls)
+scoring candidate code-fixes-1 on the frozen holdout...
+  189 cached, 0 to run, 8 at a time -> Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich2+json__pb4955a08.jsonl
+  valid_rate 84.1%   field_f1 0.8708
+
+==============================================================
+GATE: PROMOTED
+  candidate  code-fixes-1  f1=0.8708
+  incumbent  prompt-v2  f1=0.8606
+  margin     +1.02pp (required +0.00pp)
+  reason     field_f1 +1.02pp, 95% CI [+0.65, +1.47] excludes zero; no field down more than 2.0pp; valid_rate +3.71pp
+==============================================================
+# end status=ok

@@ -85,6 +85,37 @@ def cache_path(model_ref: str) -> Path:
         f"{name}__{current_hash()}__{config_label()}__p{prompt}.jsonl")
 
 
+def replay(source: Path, model_ref: str) -> Path:
+    """Record answers for the CURRENT pipeline by re-running post-processing
+    over another eval's recorded answers. No model is called.
+
+    Only valid when the model and prompt are unchanged, so the model would be
+    sent the identical request: the caller checks that. What changes is only
+    code after the model (enrich), which is idempotent over its own output.
+    Replaying beats re-asking the model here: both sides of the comparison
+    then hold the very same model answers, so sampling noise cannot pose as
+    an effect of the code change.
+    """
+    from serve.extract import apply_enrichment
+
+    dest = cache_path(model_ref)
+    if dest == source:
+        raise RuntimeError("nothing changed: the replay would overwrite its own source")
+    if dest.exists():
+        raise RuntimeError(f"{dest.name} already exists; it would mix two runs")
+    texts = {d["id"]: d["text"] for d in holdout_docs()}
+    out = []
+    for line in source.read_text(encoding="utf-8").splitlines():
+        rec = json.loads(line)
+        rec["raw"] = apply_enrichment(rec["raw"], texts[rec["doc_id"]])
+        rec["replayed_from"] = source.name
+        out.append(json.dumps(rec))
+    if len(out) != len(texts):
+        raise RuntimeError(f"{source.name} has {len(out)} answers for {len(texts)} documents")
+    dest.write_text("\n".join(out) + "\n", encoding="utf-8")
+    return dest
+
+
 def _collect(docs: list[dict], model_ref: str, workers: int, progress: bool) -> dict[int, str]:
     """Raw model answers for every holdout doc, resumable.
 
@@ -224,7 +255,10 @@ def config_label() -> str:
     """
     parts = []
     if settings.enrich:
-        parts.append("enrich")
+        # Version 1 stays plain "enrich" so earlier cache files keep their names.
+        from domains import get_domain
+        version = getattr(get_domain(), "enrich_version", 1)
+        parts.append("enrich" if version == 1 else f"enrich{version}")
     if settings.json_mode:
         parts.append("json")
     if settings.compact_prompt:

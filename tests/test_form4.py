@@ -176,6 +176,75 @@ def test_mechanical_drops_hallucinated_keys():
     assert "confidence" not in fixed and "footnote" not in fixed["transactions"][0]
 
 
+def test_enrich_strips_the_equity_swap_suffix():
+    fixed, _ = DOM.enrich(filing(tx(code="S/K", acquired_disposed="D"), tx(code="J/K")))
+    assert [r["code"] for r in fixed["transactions"]] == ["S", "J"]
+
+
+def test_enrich_drops_rows_no_filing_can_contain():
+    rows = [tx(), tx(security_title="Derivative Security", is_derivative=True),
+            tx(shares="0"), tx(date=None, code=None), tx(date="", code="")]
+    fixed, report = DOM.enrich(filing(*rows))
+    assert fixed["transactions"] == [DOM.enrich(filing(tx()))[0]["transactions"][0]]
+    assert report["dropped_rows"] == 4
+
+
+def test_enrich_keeps_a_real_row_that_ends_at_zero_owned():
+    fixed, _ = DOM.enrich(filing(tx(code="S", shares="100", shares_owned_after="0")))
+    assert len(fixed["transactions"]) == 1
+
+
+ONE_OWNER = """1. Name and Address of Reporting Person*
+Doe Jane
+(Last) | (First) | (Middle)
+2. Issuer Name and Ticker or Trading Symbol ACME INC [ ACME ] | 5. Relationship
+[ ] Director | [X] 10% Owner
+[X] Officer (give title below) | [ ] Other (specify below)
+Chief Executive Officer
+"""
+
+TWO_OWNERS = ONE_OWNER + """Table I
+1. Name and Address of Reporting Person*
+Doe Jane
+Relationship of Reporting Person(s) to Issuer
+[ ] Director | [X] 10% Owner
+[X] Officer (give title below) | [ ] Other (specify below)
+1. Name and Address of Reporting Person*
+Doe Family Trust
+Relationship of Reporting Person(s) to Issuer
+[ ] Director | [X] 10% Owner
+[ ] Officer (give title below) | [ ] Other (specify below)
+Explanation of Responses:
+"""
+
+
+def test_owner_flags_come_from_the_page_checkboxes():
+    fixed, report = DOM.enrich(filing(), ONE_OWNER)
+    owner = fixed["reporting_owners"][0]
+    assert (owner["is_director"], owner["is_officer"], owner["is_ten_percent_owner"]) == (
+        False, True, True)
+    assert report["owner_flags"] == 3
+
+
+def test_multi_owner_pages_skip_the_header_copy_and_match_by_name():
+    from domains.form4 import page_owner_flags
+    assert [n for n, _ in page_owner_flags(TWO_OWNERS)] == ["Doe Jane", "Doe Family Trust"]
+    doc = filing()
+    trust = {**doc["reporting_owners"][0], "name": "DOE FAMILY TRUST", "is_officer": True}
+    doc["reporting_owners"] = [trust, doc["reporting_owners"][0]]   # answer order differs
+    fixed, _ = DOM.enrich(doc, TWO_OWNERS)
+    flags = [(o["is_officer"], o["is_ten_percent_owner"]) for o in fixed["reporting_owners"]]
+    assert flags == [(False, True), (True, True)]
+
+
+def test_owner_flags_are_left_alone_when_owners_cannot_be_matched():
+    doc = filing()
+    doc["reporting_owners"][0]["name"] = "Someone Else"   # 1 unmatched owner, 2 on the page
+    fixed, report = DOM.enrich(doc, TWO_OWNERS)
+    assert report["owner_flags"] == 0
+    assert fixed["reporting_owners"][0]["is_director"] is True
+
+
 def test_enrich_survives_garbage():
     assert DOM.enrich("nope")[1] == {"skipped": "not an object"}
     assert DOM.mechanical([1]) == {}
