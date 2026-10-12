@@ -153,3 +153,64 @@ them the extra rows have no real shares or direction. Two kinds so far:
 
 The full analysis, with root cause and the right layer to fix each theme in,
 goes in `FAILURES.md`.
+
+## Fix 1: prompt v2 (promoted, with regressions)
+
+Candidate `prompt-v2` (model_version 2): same model, prompt revised for the
+five prompt-layer causes in [FAILURES.md](FAILURES.md): invented rows for
+empty tables, code copied from the A/D column, holdings lines, `$0` prices,
+dropped decimals. Prompt hash `b4955a08` (baseline `4b5b159a`). Run record
+`results/runs/2026-10-12T013929Z_candidate`.
+
+| | Baseline | Prompt v2 | Change |
+|---|---|---|---|
+| Valid rate | 54.5% | **80.4%** | **+25.9 pp** |
+| Field F1 | 0.8395 | **0.8606** | +2.11 pp |
+| Gate | | **promoted** | needed +2.00 pp F1 and no valid-rate drop |
+
+Rows, out of the 553 real transaction rows in the holdout:
+
+| Rows | Baseline | Prompt v2 |
+|---|---|---|
+| exactly right | 329 | **383** |
+| some field wrong | 220 | 131 |
+| invented (extra) | 208 | 141 |
+| **real rows dropped** | **4** | **39** |
+
+Per field:
+
+| Field | Baseline | Prompt v2 | Change |
+|---|---|---|---|
+| `transactions.*.code` | 0.741 | 0.881 | **+13.9** |
+| `reporting_owners.*.is_officer` | 0.875 | 0.925 | +5.0 |
+| `reporting_owners.*.is_director` | 0.858 | 0.895 | +3.8 |
+| `transactions.*.acquired_disposed` | 0.948 | 0.913 | -3.4 |
+| `transactions.*.date` | 0.993 | 0.943 | -5.0 |
+| `transactions.*.shares` | 0.945 | 0.895 | -5.0 |
+| `transactions.*.shares_owned_after` | 0.968 | 0.911 | -5.6 |
+| `transactions.*.direct_or_indirect` | 0.991 | 0.926 | -6.5 |
+| `transactions.*.is_derivative` | 0.910 | 0.834 | -7.6 |
+| `transactions.*.security_title` | 0.949 | 0.870 | -8.0 |
+| `transactions.*.price_per_share` | 0.921 | 0.825 | **-9.5** |
+
+(Fields that moved by 1.2 pp or less are omitted.)
+
+**Read this before quoting the headline.** The +25.9 pp valid rate and the
++13.9 pp on codes are real, but eight transaction fields went DOWN. Nearly all
+of that is the 35 extra real rows the model now drops: per-field accuracy is
+measured over gold rows, so a dropped row counts every one of its fields as
+wrong. 88 filings got better, 60 worse.
+
+Why rows were dropped:
+- **"Never output a row with 0 shares" was misapplied to shares OWNED AFTER.**
+  Rows ending with 0 owned after (conversions, full sales) are dropped 26% of
+  the time, other rows 5%. A wording bug in the prompt.
+- **37 of the 39 dropped rows are in 6 filings.** On one long United
+  Therapeutics filing (18 rows) the model returned 5, four of them holdings
+  lines, the exact thing the prompt now forbids: a breakdown on one long
+  filing, not a misread rule.
+
+**What this says about the gate.** It promoted on one number (field F1,
++2.11 pp, just over the bar) while eight per-field scores fell. A single
+aggregate can hide regressions that matter; that is the case for Milestone 3's
+CI rule, "fail if any scored field drops more than a threshold".
