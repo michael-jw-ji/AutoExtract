@@ -1,0 +1,24 @@
+{
+  "accession": "0001106578-26-000159",
+  "theme": "code copied from the A/D column",
+  "fix_layer": "prompt",
+  "root_cause": "The transaction code is filled with the row's acquired/disposed letter (A or D) instead of the code column; both are single letters and A/D are valid codes, so validation cannot catch it.",
+  "other_themes": [
+    "Table II row read as Table I",
+    "holdings row extracted",
+    "price missed"
+  ],
+  "auto_themes": [
+    "wrong code",
+    "wrong security_title",
+    "table I vs II confusion",
+    "wrong amount",
+    "wrong price_per_share",
+    "holdings row extracted"
+  ],
+  "valid": false,
+  "f1": 0.7834,
+  "answers": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__p4b5b159a.jsonl",
+  "assisted_by": "claude-opus-5-5 pre-review",
+  "human_reviewed": false
+}

@@ -1,0 +1,17 @@
+{
+  "accession": "0001437016-26-000008",
+  "theme": "row duplicated under another title",
+  "fix_layer": "prompt",
+  "root_cause": "A real transaction is reported a second time under a derivative-sounding title (Restricted Stock, RSUs, PSUs, Warrants), usually a name taken from a footnote.",
+  "other_themes": [
+    "row invented from a footnote"
+  ],
+  "auto_themes": [
+    "extra row"
+  ],
+  "valid": true,
+  "f1": 0.6667,
+  "answers": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__p4b5b159a.jsonl",
+  "assisted_by": "claude-opus-5-5 pre-review",
+  "human_reviewed": false
+}

@@ -1,0 +1,15 @@
+{
+  "accession": "0001215315-26-000044",
+  "theme": "Table II row duplicated as its underlying stock",
+  "fix_layer": "text rendering",
+  "root_cause": "A derivative transaction is reported twice: as itself, and again as a row in the underlying stock (e.g. phantom units plus an extra 'Common Stock' row with the underlying amount).",
+  "other_themes": [],
+  "auto_themes": [
+    "extra row"
+  ],
+  "valid": true,
+  "f1": 0.8182,
+  "answers": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__p4b5b159a.jsonl",
+  "assisted_by": "claude-opus-5-5 pre-review",
+  "human_reviewed": false
+}

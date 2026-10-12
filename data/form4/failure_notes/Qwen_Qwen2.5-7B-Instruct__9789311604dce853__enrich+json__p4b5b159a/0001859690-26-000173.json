@@ -1,0 +1,15 @@
+{
+  "accession": "0001859690-26-000173",
+  "theme": "code copied from the A/D column",
+  "fix_layer": "prompt",
+  "root_cause": "The transaction code is filled with the row's acquired/disposed letter (A or D) instead of the code column; both are single letters and A/D are valid codes, so validation cannot catch it.",
+  "other_themes": [],
+  "auto_themes": [
+    "wrong code"
+  ],
+  "valid": true,
+  "f1": 0.9429,
+  "answers": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__p4b5b159a.jsonl",
+  "assisted_by": "claude-opus-5-5 pre-review",
+  "human_reviewed": false
+}

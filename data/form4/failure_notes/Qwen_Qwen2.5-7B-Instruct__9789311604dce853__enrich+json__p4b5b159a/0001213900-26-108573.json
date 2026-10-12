@@ -1,0 +1,15 @@
+{
+  "accession": "0001213900-26-108573",
+  "theme": "officer title from remarks",
+  "fix_layer": "gold / eval set",
+  "root_cause": "Gold says 'See Remarks' while the model gave the actual title from the Remarks; the model may be right.",
+  "other_themes": [],
+  "auto_themes": [
+    "owner roles"
+  ],
+  "valid": true,
+  "f1": 0.9836,
+  "answers": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__p4b5b159a.jsonl",
+  "assisted_by": "claude-opus-5-5 pre-review",
+  "human_reviewed": true
+}

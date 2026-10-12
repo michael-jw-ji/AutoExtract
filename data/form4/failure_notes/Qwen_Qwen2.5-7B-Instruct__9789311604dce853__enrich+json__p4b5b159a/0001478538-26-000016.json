@@ -1,0 +1,23 @@
+{
+  "accession": "0001478538-26-000016",
+  "theme": "Table II row read as Table I",
+  "fix_layer": "text rendering",
+  "root_cause": "A derivative row is reported as non-derivative, usually with the UNDERLYING security as its title; nothing in the flattened text says which table a row came from.",
+  "other_themes": [
+    "price missed",
+    "Table II row duplicated as its underlying stock",
+    "other"
+  ],
+  "auto_themes": [
+    "wrong issuer_ticker",
+    "table I vs II confusion",
+    "wrong amount",
+    "wrong price_per_share",
+    "extra row"
+  ],
+  "valid": true,
+  "f1": 0.619,
+  "answers": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__p4b5b159a.jsonl",
+  "assisted_by": "claude-opus-5-5 pre-review",
+  "human_reviewed": true
+}

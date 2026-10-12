@@ -1,0 +1,15 @@
+{
+  "accession": "0000914190-26-000142",
+  "theme": "placeholder row for an empty table",
+  "fix_layer": "prompt",
+  "root_cause": "A table with no transactions still gets an invented row (e.g. 'Derivative Security', 0 shares); the prompt asks for rows from both tables and never says an empty table means none.",
+  "other_themes": [],
+  "auto_themes": [
+    "placeholder row for an empty table"
+  ],
+  "valid": false,
+  "f1": 0.5263,
+  "answers": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__p4b5b159a.jsonl",
+  "assisted_by": "claude-opus-5-5 pre-review",
+  "human_reviewed": true
+}

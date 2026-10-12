@@ -52,8 +52,8 @@ Form 4 is the right first filing: it is public, structured underneath (SEC also 
 
 This is the part that produces your interview story.
 
-- [ ] Run baseline, then open the failure clusters and read at least 50 failures by hand.
-- [ ] Write `FAILURES.md`: 5 to 8 failure themes, each with count, example filing, root cause, and where the fix belongs (parser, prompt, enrich code, or eval set). Likely ones: price pulled from a footnote, derivative vs non-derivative table confusion, wrong transaction date on amendments, multiple owners.
+- [x] Run baseline, then open the failure clusters and read at least 50 failures by hand.
+- [x] Write `FAILURES.md`: 5 to 8 failure themes, each with count, example filing, root cause, and where the fix belongs (parser, prompt, enrich code, or eval set). Likely ones: price pulled from a footnote, derivative vs non-derivative table confusion, wrong transaction date on amendments, multiple owners.
 - [ ] Fix each in the right place. Record per-field accuracy before and after every change in `RESULTS.md`.
 - [ ] Find at least one failure a bigger model does **not** fix, and document it. Pennant explicitly asks for this.
 
