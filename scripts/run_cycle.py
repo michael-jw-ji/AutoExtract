@@ -195,6 +195,13 @@ def stage_candidate(name: str, note: str, replay_from: int | None = None) -> dic
         model = src["adapter_ref"] or src["base_model"]
         if src["adapter_ref"] or model != settings.small_model:
             raise SystemExit(f"cannot replay {src['name']}: model {model} is not {settings.small_model}")
+        # The model's INPUT must be identical too: everything in the config
+        # label except the enrich step, which runs after the model.
+        def before_model(label: str) -> list[str]:
+            return [p for p in label.split("+") if not p.startswith("enrich")]
+        if before_model(ev["config"]) != before_model(scorer.config_label()):
+            raise SystemExit(f"cannot replay {src['name']}: its config {ev['config']} reads a "
+                             f"different input than {scorer.config_label()}")
         if ev["prompt"] != prompt_hash():
             raise SystemExit(f"cannot replay {src['name']}: its prompt p{ev['prompt']} is not the "
                              f"current p{prompt_hash()}; that would change two things at once")

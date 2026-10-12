@@ -33,6 +33,7 @@ def fake(tmp_path, monkeypatch):
     monkeypatch.setattr(scorer, "holdout_docs", lambda: docs)
     monkeypatch.setattr(scorer, "current_hash", lambda: "testhash")
     monkeypatch.setattr(scorer, "extract_text", extract)
+    monkeypatch.setattr(scorer, "model_input", lambda d: d["text"])
     return calls, state
 
 

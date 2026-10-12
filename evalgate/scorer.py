@@ -34,10 +34,17 @@ def holdout_docs() -> list[dict]:
     with tx() as conn:
         return [
             r for r in rows(
-                conn, "SELECT id, text, gold_json, ambiguous_json FROM documents "
+                conn, "SELECT id, ext_id, text, gold_json, ambiguous_json FROM documents "
                       "WHERE split='holdout'"
             ) if r["id"] in ids
         ]
+
+
+def model_input(doc: dict) -> str:
+    """What the model reads for a stored document, under the current render."""
+    from domains import get_domain
+    dom = get_domain()
+    return dom.model_input(doc) if hasattr(dom, "model_input") else doc["text"]
 
 
 def skip_fields(ambiguous: str | list | None, gold: dict) -> list[str]:
@@ -114,7 +121,7 @@ def replay(source: Path, model_ref: str) -> Path:
         raise RuntimeError("nothing changed: the replay would overwrite its own source")
     if dest.exists():
         raise RuntimeError(f"{dest.name} already exists; it would mix two runs")
-    texts = {d["id"]: d["text"] for d in holdout_docs()}
+    texts = {d["id"]: model_input(d) for d in holdout_docs()}
     out = []
     for line in source.read_text(encoding="utf-8").splitlines():
         rec = json.loads(line)
@@ -152,7 +159,7 @@ def _collect(docs: list[dict], model_ref: str, workers: int, progress: bool) -> 
 
     def run(doc: dict) -> None:
         try:
-            raw, latency_ms, _ = extract_text(doc["text"], model_ref)
+            raw, latency_ms, _ = extract_text(model_input(doc), model_ref)
         except Exception as exc:  # noqa: BLE001 -- reported below, never scored
             with lock:
                 failed.append((doc["id"], f"{type(exc).__name__}: {exc}"[:200]))
@@ -285,6 +292,10 @@ def config_label() -> str:
         from domains import get_domain
         version = getattr(get_domain(), "enrich_version", 1)
         parts.append("enrich" if version == 1 else f"enrich{version}")
+    from domains import get_domain
+    render = getattr(get_domain(), "render_version", 1)
+    if render != 1:   # 1 (the stored text) stays unlabelled, as before
+        parts.append(f"render{render}")
     if settings.json_mode:
         parts.append("json")
     if settings.compact_prompt:

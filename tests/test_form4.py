@@ -393,6 +393,39 @@ def test_table_ii_direction_survives_the_empty_column():
     assert "| J(1) | 100,000 (D) |" in html_to_text(html)
 
 
+TABLES = ("<table><thead><tr><td>Table I - Non-Derivative</td></tr>"
+          "<tr><td>Code</td><td>V</td></tr></thead><tbody>"
+          "<tr><td>Common Stock(1)</td><td>10/05/2026</td><td>S(2)</td>"
+          "<td>18.324(1)(3)</td><td>$81.86(2)</td></tr></tbody></table>"
+          "<table><thead><tr><td>Table II - Derivative</td></tr></thead><tbody>"
+          "<tr><td>Stock Option</td><td>(1)</td><td>Common Stock</td></tr></tbody></table>"
+          "<p>Explanation of Responses:</p><table><tbody><tr><td>Owner row</td></tr>"
+          "</tbody></table>")
+
+
+def test_render_v1_is_unchanged_and_v2_labels_rows_and_splits_markers():
+    assert html_to_text(TABLES, 1).splitlines()[2] == (
+        "Common Stock(1) | 10/05/2026 | S(2) | 18.324(1)(3) | $81.86(2)")
+    lines = html_to_text(TABLES, 2).splitlines()
+    assert lines[1] == "Code | V"                       # header rows stay unlabelled
+    assert lines[2] == ("[Table I] Common Stock (1) | 10/05/2026 | S (2) | "
+                        "18.324 (1)(3) | $81.86 (2)")
+    assert lines[4] == "[Table II] Stock Option | (1) | Common Stock"   # lone marker kept
+    assert lines[-1] == "Owner row"                     # outside the tables: no label
+
+
+def test_model_input_renders_from_the_raw_html_and_never_falls_back(tmp_path, monkeypatch):
+    from core.config import settings
+    monkeypatch.setattr(settings, "data_dir", tmp_path)
+    doc = {"ext_id": "0001-26-1", "text": "Issuer CIK: 0000000001\nold render"}
+    with pytest.raises(FileNotFoundError):
+        DOM.model_input(doc)
+    (tmp_path / "form4" / "raw").mkdir(parents=True)
+    (tmp_path / "form4" / "raw" / "0001-26-1.html").write_text(TABLES, encoding="utf-8")
+    text = DOM.model_input(doc)
+    assert text.startswith("Issuer CIK: 0000000001\n") and "[Table I]" in text
+
+
 def test_html_rows_stay_on_one_line():
     html = ("<html><head><style>.x{}</style></head><body><table><tr>"
             "<td><div>Common Stock</div></td><td>10/05/2026\n</td>"

@@ -84,6 +84,7 @@ _BLOCK = {"p", "div", "br", "tr", "table", "h1", "h2", "h3", "h4", "li", "hr"}
 _CELL = {"td", "th"}
 _SKIP = {"style", "script", "head", "title"}
 _BREAK = "\x00"  # a real line break, distinct from source whitespace
+_ROW = "\x01"    # starts a <tbody> row: a data row, not a header
 
 
 class _Text(HTMLParser):
@@ -92,6 +93,7 @@ class _Text(HTMLParser):
         self.parts: list[str] = []
         self._skip = 0
         self._cell = 0
+        self._body = 0
 
     def _break(self, tag: str) -> None:
         # Inside a table cell, div/p/br are only spacing: a real line break
@@ -103,12 +105,18 @@ class _Text(HTMLParser):
             self._skip += 1
         elif tag in _CELL:
             self._cell += 1
+        elif tag == "tbody":
+            self._body += 1
         elif tag in _BLOCK:
             self._break(tag)
+            if tag == "tr" and self._body:
+                self.parts.append(_ROW)
 
     def handle_endtag(self, tag: str) -> None:
         if tag in _SKIP:
             self._skip = max(0, self._skip - 1)
+        elif tag == "tbody":
+            self._body = max(0, self._body - 1)
         elif tag in _CELL:
             self._cell = max(0, self._cell - 1)
             self.parts.append(" | ")
@@ -121,24 +129,45 @@ class _Text(HTMLParser):
             self.parts.append(re.sub(r"\s+", " ", data))
 
 
-def html_to_text(html: bytes | str) -> str:
+#: Rendering versions. 1 is what the frozen holdout stores. 2 (2026-10-12,
+#: FAILURES.md causes 5 and 7) labels every data row with its table, and
+#: puts a space between a value and a footnote marker glued to it.
+RENDER_VERSIONS = (1, 2)
+
+_MARKER = re.compile(r"(?<=[^\s(|])((?:\(\d{1,2}\))+)$")
+
+
+def html_to_text(html: bytes | str, version: int = 1) -> str:
     """The SEC-rendered view as plain text: one line per table row, cells
     separated by ' | '. Layout noise is dropped; every printed value stays."""
+    if version not in RENDER_VERSIONS:
+        raise ValueError(f"unknown render version {version}")
     if isinstance(html, bytes):
         html = html.decode("utf-8", errors="replace")
     parser = _Text()
     parser.feed(html)
     lines = []
-    table2 = False
+    table = None
     for raw in "".join(parser.parts).split(_BREAK):
-        cells = [re.sub(r"\s+", " ", c).strip() for c in raw.split("|")]
-        if any(c.startswith("Table II") for c in cells):
-            table2 = True
+        data_row = _ROW in raw
+        cells = [re.sub(r"\s+", " ", c).strip() for c in raw.replace(_ROW, "").split("|")]
+        heading = next((m.group(1) for c in cells
+                        if (m := re.match(r"Table (II|I) - ", c))), None)
+        if heading:
+            table = heading
         elif any(c.startswith("Explanation of Responses") for c in cells):
-            table2 = False
-        if table2:
+            table = None
+        if table == "II":
             cells = _derivative_direction(cells)
+        if version >= 2:
+            # 18,324(1) -> 18,324 (1): a marker glued to a value was read as
+            # part of it (shares with a marker wrong 10% of the time vs 3%).
+            cells = [_MARKER.sub(r" \1", c) for c in cells]
         line = " | ".join(_checkboxes(cells))
+        if line and version >= 2 and data_row and table:
+            # A Table II row also names its underlying stock; without a label
+            # the model reported it as a Table I row (29 filings).
+            line = f"[Table {table}] {line}"
         if line:
             lines.append(line)
     return "\n".join(lines)

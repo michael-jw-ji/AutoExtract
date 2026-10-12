@@ -525,6 +525,26 @@ Do NOT output a `value` field. No extra fields."""
             "satisfy a consistency rule."
         )
 
+    #: Which html_to_text version the model reads (domains/form4_io.py).
+    #: Version 1 is the text frozen in the DB; later versions are rendered at
+    #: serve time from the raw HTML, because rendering is part of the system
+    #: under test, not of the answer key. Part of the cache label.
+    render_version = 2
+
+    def model_input(self, doc: dict) -> str:
+        """The text the model is sent for a stored document."""
+        if self.render_version == 1:
+            return doc["text"]
+        from core.config import settings
+        from domains.form4_io import html_to_text
+        path = settings.data_dir / "form4" / "raw" / f"{doc['ext_id']}.html"
+        if not path.exists():
+            # No fallback to the stored text: that would silently score a
+            # different input under this render version's label.
+            raise FileNotFoundError(f"{path} is missing; re-run scripts/fetch_form4.py")
+        cik_line = doc["text"].split("\n", 1)[0]   # "Issuer CIK: ...", added at load
+        return f"{cik_line}\n{html_to_text(path.read_bytes(), self.render_version)}"
+
     #: Bump when enrich() changes what it outputs. It is part of the scorer's
     #: config label, so answers post-processed by different versions never
     #: share a cache file. 2: owner flags from the page, /K codes, impossible
