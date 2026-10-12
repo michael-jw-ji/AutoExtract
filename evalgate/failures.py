@@ -55,7 +55,8 @@ def _is_holding(row: dict, text: str) -> bool:
 def analyze(text: str, gold: dict, raw: str, ambiguous: list[str] | None = None) -> dict:
     outcome = validate(raw)
     pred = outcome.scorable if isinstance(outcome.scorable, dict) else {}
-    skip = ambiguous or []
+    from evalgate.scorer import skip_fields
+    skip = skip_fields(ambiguous or [], gold)
     p_s, g_s = drop_fields(pred, skip), drop_fields(gold, skip)
     tp, n_pred, n_gold = counts(p_s, g_s)
 

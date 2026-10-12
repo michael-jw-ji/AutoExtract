@@ -228,11 +228,13 @@ def stage_rescore(version_id: int) -> dict:
     if not version:
         raise SystemExit(f"no model version {version_id}")
     model = version["adapter_ref"] or version["base_model"]
-    if not scorer.cache_path(model).exists():
-        raise SystemExit(f"no recorded answers for {model}; run the baseline/evaluate stage")
     before = scorer.latest_eval(version_id)
+    # The answers THIS version's eval was computed from, not whatever the
+    # current prompt/config would name: those may belong to another version.
+    if not before or not before.get("prompt") or not scorer.answers_for(before, model).exists():
+        raise SystemExit(f"no recorded answers for {version['name']}; run the evaluate stage")
     print(f"re-scoring {version['name']} ({model}) from recorded answers...")
-    result = scorer.score_model(version_id, model, progress=True)
+    result = scorer.score_model(version_id, model, progress=True, recorded=before)
     if before:
         print(f"  before: valid_rate {before['valid_rate']:.1%}   field_f1 {before['field_f1']:.4f}")
     print(f"  now:    valid_rate {result['valid_rate']:.1%}   field_f1 {result['field_f1']:.4f}")

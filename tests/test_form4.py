@@ -245,6 +245,18 @@ def test_owner_flags_are_left_alone_when_owners_cannot_be_matched():
     assert fixed["reporting_owners"][0]["is_director"] is True
 
 
+def test_see_remarks_titles_are_ambiguous_by_rule():
+    from evalgate.scorer import skip_fields
+    g = filing()
+    assert skip_fields(None, g) == []
+    g["reporting_owners"][0]["officer_title"] = "See remarks"
+    assert skip_fields(None, g) == ["reporting_owners.*.officer_title"]
+    assert skip_fields('["issuer_name", "reporting_owners.*.officer_title"]', g) == [
+        "issuer_name", "reporting_owners.*.officer_title"]
+    g["reporting_owners"][0]["officer_title"] = "CEO; see remarks for details"
+    assert skip_fields([], g) == []
+
+
 def test_enrich_survives_garbage():
     assert DOM.enrich("nope")[1] == {"skipped": "not an object"}
     assert DOM.mechanical([1]) == {}

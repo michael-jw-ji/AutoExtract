@@ -585,6 +585,22 @@ Do NOT output a `value` field. No extra fields."""
         words = re.sub(r"[^\w\s]", " ", text.lower()).split()
         return " ".join(sorted(_SUFFIX.get(w, w) for w in words))
 
+    def ambiguous_fields(self, gold: dict) -> list[str]:
+        """Fields with no single right answer, by RULE (decided 2026-10-12).
+
+        A title of "See Remarks" points to the Remarks section, where the real
+        title is written. The XML keeps the pointer, a reader reports the
+        title; both are right, so the field is scored for neither side. The
+        `*` drops every owner's title on that filing (the holdout's only
+        multi-owner case is already hand-marked ambiguous on it).
+        """
+        owners = gold.get("reporting_owners") if isinstance(gold, dict) else None
+        for o in owners if isinstance(owners, list) else []:
+            if isinstance(o, dict) and re.fullmatch(r"\s*see\s+remarks\.?\s*",
+                                                    str(o.get("officer_title") or ""), re.I):
+                return ["reporting_owners.*.officer_title"]
+        return []
+
     def mechanical(self, payload: dict) -> dict:
         """Deterministic repair: formats, then everything enrich() derives."""
         if not isinstance(payload, dict):

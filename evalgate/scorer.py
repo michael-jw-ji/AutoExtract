@@ -40,6 +40,17 @@ def holdout_docs() -> list[dict]:
         ]
 
 
+def skip_fields(ambiguous: str | list | None, gold: dict) -> list[str]:
+    """Fields scored for neither side: hand-marked ambiguous ones (a list, or
+    the stored JSON) plus any the domain's rules call ambiguous (e.g. Form 4
+    "See Remarks" titles)."""
+    from domains import get_domain
+    marked = json.loads(ambiguous or "[]") if isinstance(ambiguous, (str, type(None))) \
+        else list(ambiguous)
+    rule = getattr(get_domain(), "ambiguous_fields", lambda g: [])(gold) if gold else []
+    return marked + [p for p in rule if p not in marked]
+
+
 def prompt_hash() -> str:
     """Short hash of the serving system prompt (the 'p...' in cache names)."""
     from serve.extract import system_prompt
@@ -65,7 +76,7 @@ def per_doc_counts(path: Path) -> dict[int, tuple[int, int, int]]:
             continue
         pred = validate(rec["raw"]).scorable
         gold = json.loads(doc["gold_json"]) if doc["gold_json"] else {}
-        skip = json.loads(doc.get("ambiguous_json") or "[]")
+        skip = skip_fields(doc.get("ambiguous_json"), gold)
         if skip:
             pred, gold = drop_fields(pred, skip), drop_fields(gold, skip)
         out[rec["doc_id"]] = counts(pred, gold) if gold else (0, 0, 0)
@@ -179,8 +190,13 @@ def score_model(
     persist: bool = True,
     progress: bool = False,
     workers: int | None = None,
+    recorded: dict | None = None,
 ) -> dict:
-    """Run the frozen holdout through one model and score it."""
+    """Run the frozen holdout through one model and score it.
+
+    `recorded` (an evals row) re-scores the answers THAT eval was computed
+    from, under that eval's own prompt and config, and never calls a model.
+    """
     docs = holdout_docs()
     if not docs:
         raise RuntimeError("Holdout is empty. Run scripts/fetch_form4.py then scripts/freeze_eval.py.")
@@ -193,7 +209,17 @@ def score_model(
     # Default concurrency matches the server: local Ollama runs ONE request at
     # a time, and queueing ten against it made requests wait past the client
     # timeout, retry, and pile up -- over half failed in the first attempt.
-    answers = _collect(docs, model_ref, workers or settings.llm_concurrency, progress)
+    if recorded is not None:
+        source = answers_for(recorded, model_ref)
+        answers = {r["doc_id"]: r["raw"] for r in map(
+            json.loads, source.read_text(encoding="utf-8").splitlines())}
+        missing = [d["id"] for d in docs if d["id"] not in answers]
+        if missing:
+            raise RuntimeError(f"{source.name} has no answer for {len(missing)} documents")
+        if progress:
+            print(f"  {len(answers)} recorded answers <- {source.name}", flush=True)
+    else:
+        answers = _collect(docs, model_ref, workers or settings.llm_concurrency, progress)
     results = [(doc, validate(answers[doc["id"]])) for doc in docs]
 
     for doc, outcome in results:
@@ -205,7 +231,7 @@ def score_model(
         gold = json.loads(doc["gold_json"]) if doc["gold_json"] else {}
         # Fields a human marked ambiguous have no single right answer, so
         # they are taken out of BOTH sides rather than scored either way.
-        skip = json.loads(doc.get("ambiguous_json") or "[]")
+        skip = skip_fields(doc.get("ambiguous_json"), gold)
         if skip:
             pred, gold = drop_fields(pred, skip), drop_fields(gold, skip)
         if gold:
@@ -239,8 +265,8 @@ def score_model(
                 valid_rate=result["valid_rate"],
                 field_f1=result["field_f1"],
                 n_docs=result["n_docs"],
-                config=config_label(),
-                prompt=prompt_hash(),
+                config=recorded["config"] if recorded else config_label(),
+                prompt=recorded["prompt"] if recorded else prompt_hash(),
                 per_field_json=json.dumps(result["per_field"]),
             )
     return result

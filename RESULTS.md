@@ -325,3 +325,23 @@ found); they raise precision, which is part of the F1 gain.
 
 Under the old fixed +2.0 margin this would have been rejected: a gain that
 is small but certain is exactly what that rule could not see.
+
+### Scoring policy: "See Remarks" titles (decided 2026-10-12)
+
+In 6 holdout filings the officer title box says "See Remarks" and the real
+title is written in the Remarks section. The XML keeps the pointer; a reader
+reports the title. Both are right, so `officer_title` on those filings is now
+ambiguous **by rule** (`Form4Domain.ambiguous_fields`) and scored for neither
+side, like the hand-marked ambiguous fields. No stored data changed.
+
+Every version was re-scored from its own recorded answers (no model calls,
+no gate decisions re-made; `results/runs/2026-10-12T1726*_rescore.*`):
+
+| Version | Field F1 before | After | Valid rate |
+|---|---|---|---|
+| base | 0.8395 | 0.8401 | 54.5% |
+| prompt-v2 | 0.8606 | 0.8614 | 80.4% |
+| prompt-v3 (rejected) | 0.8729 | 0.8736 | 76.7% |
+| **code-fixes-1** (incumbent) | 0.8708 | **0.8716** | 84.1% |
+
+All move by +0.06 to +0.08, so no ranking or past decision changes.
