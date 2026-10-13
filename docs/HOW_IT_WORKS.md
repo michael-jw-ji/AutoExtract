@@ -1,6 +1,6 @@
-# How AutoExtract works
+# How Insider Reading works
 
-AutoExtract turns messy documents into strict, validated JSON, measures
+Insider Reading turns messy documents into strict, validated JSON, measures
 exactly where it is wrong, and is built to retrain itself on its own verified
 corrections, shipping a new model only if it beats the old one on a frozen
 test set.
@@ -315,7 +315,7 @@ which prompt v2 caused: see FAILURES.md, "Where each cause stands".
 
 - **CI eval:** every PR replays 30 recorded answers through its code, with no
   model calls, and fails on any field drop over 0.5 points.
-  [PR #2](https://github.com/michael-jw-ji/AutoExtract/pull/2) shows it catching
+  [PR #2](https://github.com/michael-jw-ji/insider-reading/pull/2) shows it catching
   a regression that all unit tests pass.
 - **Tracing:** OpenTelemetry spans per model call. The 7B costs **$0.0012 per
   filing**, with latency **p50 8.3 s and p99 158.7 s**.

@@ -43,7 +43,7 @@ from verify.validate import validate  # noqa: E402
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 server = MCPServer(
-    name="autoextract-form4",
+    name="insider-reading",
     instructions=("Extracts SEC Form 4 insider-transaction filings into JSON with a small "
                   "model and code checks, and reports the pipeline's measured accuracy. "
                   "Pass an EDGAR filing URL to also get a check against the filing's XML."),

@@ -8,14 +8,14 @@ qwen2.5:7b is a 4-bit GGUF -- a different model numerically -- so a baseline
 there and a fine-tune here would change two things at once.
 
 LoRA support is switched on: every adapter that infra/modal_train.py wrote to
-the `autoextract-adapters` volume is served by this same server under its own
+the `insider-reading-adapters` volume is served by this same server under its own
 name (e.g. model="form4-lora-v1"), so base and fine-tune are compared like for
 like. Redeploy after training to pick up a new adapter.
 
     modal deploy infra/modal_small.py
 
 Then in .env:
-    LLM_BASE_URL=https://<workspace>--autoextract-small-serve.modal.run/v1
+    LLM_BASE_URL=https://<workspace>--insider-reading-small-serve.modal.run/v1
     LLM_API_KEY=<the same string as LARGE_LLM_API_KEY>
     SMALL_MODEL=Qwen/Qwen2.5-7B-Instruct
     LLM_CONCURRENCY=8
@@ -43,7 +43,7 @@ MAX_LORA_RANK = 64
 PORT = 8000
 MINUTES = 60
 
-app = modal.App("autoextract-small")
+app = modal.App("insider-reading-small")
 
 image = (
     modal.Image.from_registry("nvidia/cuda:12.9.0-devel-ubuntu22.04", add_python="3.12")
@@ -52,9 +52,9 @@ image = (
     .env({"HF_HUB_ENABLE_HF_TRANSFER": "1"})
 )
 
-hf_cache = modal.Volume.from_name("autoextract-hf-cache", create_if_missing=True)
-vllm_cache = modal.Volume.from_name("autoextract-vllm-cache", create_if_missing=True)
-adapters = modal.Volume.from_name("autoextract-adapters", create_if_missing=True)
+hf_cache = modal.Volume.from_name("insider-reading-hf-cache", create_if_missing=True)
+vllm_cache = modal.Volume.from_name("insider-reading-vllm-cache", create_if_missing=True)
+adapters = modal.Volume.from_name("insider-reading-adapters", create_if_missing=True)
 
 
 @app.function(
@@ -64,7 +64,7 @@ adapters = modal.Volume.from_name("autoextract-adapters", create_if_missing=True
     timeout=20 * MINUTES,
     volumes={"/root/.cache/huggingface": hf_cache, "/root/.cache/vllm": vllm_cache,
              "/adapters": adapters},
-    secrets=[modal.Secret.from_name("autoextract-llm")],
+    secrets=[modal.Secret.from_name("insider-reading-llm")],
 )
 @modal.concurrent(max_inputs=MAX_CONCURRENT)
 @modal.web_server(port=PORT, startup_timeout=15 * MINUTES)

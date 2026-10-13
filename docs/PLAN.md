@@ -1,6 +1,6 @@
 # Project 1: AutoExtract for SEC filings (extend, do not restart)
 
-**Repo:** extend `michael-jw-ji/AutoExtract` (public)
+**Repo:** extend `michael-jw-ji/AutoExtract` (public), renamed `michael-jw-ji/insider-reading` on 2026-10-13
 **Time:** 2 to 3 weeks part-time, target ship early November
 **Proves:** applied AI eval discipline, a public failure story, MCP, document extraction on financial filings
 **Best for:** Pennant, Keye, KelAI, Soria, Gecko, Numeral, Financial Datasets, Elimentary, F2

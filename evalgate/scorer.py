@@ -161,10 +161,10 @@ def _collect(docs: list[dict], model_ref: str, workers: int, progress: bool) -> 
     def run(doc: dict) -> None:
         try:
             with tracer.start_as_current_span("extract document") as span:
-                span.set_attribute("autoextract.doc_id", doc["id"])
-                span.set_attribute("autoextract.accession", doc.get("ext_id") or "")
+                span.set_attribute("insider_reading.doc_id", doc["id"])
+                span.set_attribute("insider_reading.accession", doc.get("ext_id") or "")
                 text = model_input(doc)
-                span.set_attribute("autoextract.input_chars", len(text))
+                span.set_attribute("insider_reading.input_chars", len(text))
                 model_raw, latency_ms, _ = extract_text(text, model_ref, enrich=False)
                 raw = apply_enrichment(model_raw, text) if settings.enrich else model_raw
         except Exception as exc:  # noqa: BLE001 -- reported below, never scored

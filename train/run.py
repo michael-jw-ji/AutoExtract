@@ -19,7 +19,7 @@ def launch_retrain(*, max_examples: int = 800, **train_kwargs) -> dict:
             "Dataset is empty -- no verified repairs yet. Run the repair pass."
         )
 
-    run_name = f"autoextract-{datetime.now():%Y%m%d-%H%M%S}"
+    run_name = f"insider-reading-{datetime.now():%Y%m%d-%H%M%S}"
     job = backend.launch(manifest["path"], run_name, **train_kwargs)
 
     with tx() as conn:

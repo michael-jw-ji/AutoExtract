@@ -3,7 +3,7 @@
 Fine-tunes Qwen/Qwen2.5-7B-Instruct, the same bf16 weights the server in
 infra/modal_small.py serves (same Hugging Face cache volume), so a before/after
 comparison changes one thing: the adapter. The adapter is written to the
-`autoextract-adapters` volume, which the server mounts and loads by name.
+`insider-reading-adapters` volume, which the server mounts and loads by name.
 
 Loss is on the assistant tokens only (the JSON answer); the system prompt and
 the page are context. A small fixed validation slice reports held-out loss.
@@ -28,7 +28,7 @@ GPU = "H100"
 MAX_LEN = 8192
 MINUTES = 60
 
-app = modal.App("autoextract-train")
+app = modal.App("insider-reading-train")
 
 image = (
     modal.Image.debian_slim(python_version="3.12")
@@ -37,8 +37,8 @@ image = (
     .env({"HF_HUB_ENABLE_HF_TRANSFER": "1"})
 )
 
-hf_cache = modal.Volume.from_name("autoextract-hf-cache", create_if_missing=True)
-adapters = modal.Volume.from_name("autoextract-adapters", create_if_missing=True)
+hf_cache = modal.Volume.from_name("insider-reading-hf-cache", create_if_missing=True)
+adapters = modal.Volume.from_name("insider-reading-adapters", create_if_missing=True)
 
 
 @app.function(image=image, gpu=GPU, timeout=90 * MINUTES,

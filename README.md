@@ -1,6 +1,6 @@
-# AutoExtract: SEC Form 4 extraction with a CI-enforced eval gate
+# Insider Reading: SEC Form 4 extraction with a CI-enforced eval gate
 
-[![eval](https://github.com/michael-jw-ji/AutoExtract/actions/workflows/eval.yml/badge.svg)](https://github.com/michael-jw-ji/AutoExtract/actions/workflows/eval.yml)
+[![eval](https://github.com/michael-jw-ji/insider-reading/actions/workflows/eval.yml/badge.svg)](https://github.com/michael-jw-ji/insider-reading/actions/workflows/eval.yml)
 
 Extracts insider transactions from real SEC Form 4 filings with a 7B open
 model, scores every change against a frozen holdout whose gold comes from each
@@ -39,7 +39,7 @@ No keys, no downloads, no model: the tests, plus the CI eval replaying 30
 recorded model answers through the current code.
 
 ```
-git clone https://github.com/michael-jw-ji/AutoExtract && cd AutoExtract
+git clone https://github.com/michael-jw-ji/insider-reading && cd insider-reading
 make setup
 make ci
 ```
@@ -85,7 +85,7 @@ free and deterministic, and any score change comes from the code. It fails if
 any scored field drops more than 0.5 points, and refuses to score at all if
 the prompt or rendered input changed (that needs a live eval).
 
-**Demo:** [PR #2](https://github.com/michael-jw-ji/AutoExtract/pull/2) is a
+**Demo:** [PR #2](https://github.com/michael-jw-ji/insider-reading/pull/2) is a
 deliberate regression that looks like a harmless cleanup (round share counts
 to whole numbers). All 75 unit tests pass; the eval catches it, because real
 filings report fractional holdings:
@@ -111,15 +111,15 @@ Developer -> Edit Config), with your own paths, then restart Claude Desktop:
 ```json
 {
   "mcpServers": {
-    "autoextract-form4": {
-      "command": "/path/to/AutoExtract/.venv/bin/python",
-      "args": ["/path/to/AutoExtract/mcp_server.py"]
+    "insider-reading": {
+      "command": "/path/to/insider-reading/.venv/bin/python",
+      "args": ["/path/to/insider-reading/mcp_server.py"]
     }
   }
 }
 ```
 
-On Windows the command is `C:/path/to/AutoExtract/.venv/Scripts/python.exe`.
+On Windows the command is `C:/path/to/insider-reading/.venv/Scripts/python.exe`.
 The server reads `.env` from the repo (the model endpoint's `LLM_BASE_URL` /
 `LLM_API_KEY`, and `SEC_USER_AGENT` for URLs). Then ask, for example:
 *"Extract this Form 4 and tell me if it matches the filing:
@@ -156,5 +156,5 @@ make help                 # everything else
 | `buffer/`, `repair/`, `train/` | the self-improvement loop (failure clustering, verified repairs, LoRA), inherited from the hackathon version |
 | `results/runs/`, `data/eval_cache/` | every run's log, numbers, trace and recorded answers |
 
-Started as a Hack the North 2026 self-improving invoice extractor; the design
+Started as AutoExtract, a Hack the North 2026 self-improving invoice extractor; the design
 rules (verified repairs only, frozen holdout, gate) are in [CLAUDE.md](CLAUDE.md).

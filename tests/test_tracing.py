@@ -29,7 +29,7 @@ def test_a_chat_call_is_one_span_with_tokens_summed_over_retries(tmp_path, monke
     a = span["attributes"]
     assert span["name"] == "chat test-model" and a["gen_ai.request.model"] == "test-model"
     assert (a["gen_ai.usage.input_tokens"], a["gen_ai.usage.output_tokens"]) == (200, 7)
-    assert a["autoextract.attempts"] == 2 and a["gen_ai.request.max_tokens"] == 64
+    assert a["insider_reading.attempts"] == 2 and a["gen_ai.request.max_tokens"] == 64
 
 
 def test_no_file_means_no_output(tmp_path, monkeypatch):

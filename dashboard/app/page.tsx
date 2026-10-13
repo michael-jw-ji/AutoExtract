@@ -170,7 +170,7 @@ export default function Page() {
   return (
     <div className="wrap">
       <header>
-        <h1>AUTOEXTRACT</h1>
+        <h1>INSIDER READING</h1>
         <span className="sub">serve → verify → buffer → cluster → repair → train → gate</span>
         <button className="linkbtn pause" onClick={() => setPaused((p) => !p)}>
           {paused ? "▶ resume" : "❚❚ pause"}

@@ -41,7 +41,9 @@ def report(path: Path) -> dict:
               for d in docs if d["span_id"] in calls]
     tok_out = [calls[d["span_id"]]["attributes"]["gen_ai.usage.output_tokens"]
                for d in docs if d["span_id"] in calls]
-    server = next(iter(calls.values()))["attributes"]["autoextract.server"]
+    first = next(iter(calls.values()))["attributes"]
+    # Traces recorded before the rename (2026-10-13) use "autoextract.*".
+    server = first.get("insider_reading.server") or first["autoextract.server"]
     gpu, rate = GPU_PER_SECOND[server]
     wall = (max(d["end_ns"] for d in docs) - min(d["start_ns"] for d in docs)) / 1e9
     model = next(iter(calls.values()))["attributes"]["gen_ai.request.model"]

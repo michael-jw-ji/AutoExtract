@@ -1,4 +1,12 @@
-# Self-improving extraction service
+# Insider Reading (formerly AutoExtract)
+
+Renamed 2026-10-13: GitHub repo michael-jw-ji/insider-reading; Modal apps
+insider-reading-small / -llm / -train, secret insider-reading-llm, volumes
+insider-reading-hf-cache / -vllm-cache / -adapters (renamed, contents kept).
+Endpoint URLs now carry a region: <workspace>--insider-reading-small-serve.us-east.modal.run.
+Run records in results/runs/ before that date keep the old names.
+
+## Self-improving extraction service
 
 ## What this is
 An API that extracts structured JSON from messy documents, validates its own
@@ -31,7 +39,7 @@ docs/PLAN.md; keep it ticked as work lands.
   arrives, resumes on re-run, and REFUSES to score if any document got no
   answer. Never score a missing answer as a wrong one.
 - Large model is Qwen2.5-32B-Instruct on Modal (infra/modal_llm.py), routed
-  by LARGE_LLM_BASE_URL. It scales to zero; `modal app stop autoextract-llm`.
+  by LARGE_LLM_BASE_URL. It scales to zero; `modal app stop insider-reading-llm`.
 - The invoice and support_email domains, their generators, mock mode, demo
   scripts and the hackathon docs were deleted. The shared modules no longer
   fall back to an invoice schema; a broken domain now fails loudly.

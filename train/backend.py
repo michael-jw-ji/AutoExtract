@@ -294,7 +294,7 @@ def build_job(
 
 def launch(dataset_path: str, run_name: str | None = None, **kwargs) -> dict:
     """Push a training job. Returns {job_id, job_dir, dry_run, run_name}."""
-    run_name = run_name or f"autoextract-{datetime.now():%Y%m%d-%H%M%S}"
+    run_name = run_name or f"insider-reading-{datetime.now():%Y%m%d-%H%M%S}"
     job_dir = build_job(dataset_path, run_name, **kwargs)
 
     if dry_run_enabled():
@@ -347,7 +347,7 @@ def deploy_checkpoint(
     if cli is None:
         raise RuntimeError("Baseten CLI not found.")
 
-    model_name = model_name or f"autoextract-{job_id[:8]}"
+    model_name = model_name or f"insider-reading-{job_id[:8]}"
     deploy_dir = JOBS_DIR / "_deploy"
     deploy_dir.mkdir(parents=True, exist_ok=True)
     deploy_path = deploy_dir / f"deploy-{job_id[:12]}.py"

@@ -22,7 +22,7 @@ from core.config import settings
 from serve.extract import extract_text
 from verify.validate import strip_fences, validate
 
-app = FastAPI(title="AutoExtract", version="0.1.0")
+app = FastAPI(title="Insider Reading", version="0.1.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
