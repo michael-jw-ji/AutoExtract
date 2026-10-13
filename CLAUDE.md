@@ -24,6 +24,7 @@ results/runs/ keep whatever names were current when they ran.
 - `scripts/`             fetch, load, label, failure tools, run_cycle, CI eval, LoRA dataset, reports
 - `infra/`               Modal: 7B server (+ LoRA), 32B server, LoRA training
 - `mcp_server.py`        MCP tools: extract_form4, get_eval_summary
+- `web/index.html`       results page; `scripts/build_site.py` embeds results/runs/ into site/ (untracked)
 - `results/runs/`, `data/eval_cache/`, `data/live_cache/`, `data/ci/`  the evidence (tracked)
 
 Named `evalgate`, not `eval`, to avoid shadowing the builtin.

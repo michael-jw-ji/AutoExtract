@@ -139,6 +139,7 @@ make candidate NAME=x NOTE="what changed"      # score a change and let the gate
 make replay NAME=x FROM=<version> NOTE="..."   # same, for changes after the model: no model calls
 make failures             # failure reader, http://127.0.0.1:8766
 make trace-report T=results/runs/<run>.traces.jsonl
+make site                 # results page from results/runs/, then open site/index.html
 make help                 # everything else
 ```
 
@@ -153,6 +154,7 @@ make help                 # everything else
 | `scripts/` | fetch, load, label, failure reader, cycle driver, CI eval, 32B comparison, reports |
 | `infra/` | Modal deployments for the 7B (L40S) and 32B (H100) |
 | `mcp_server.py` | the MCP tools |
+| `web/` | the results page, built into `site/` by `scripts/build_site.py` |
 | `results/runs/`, `data/eval_cache/` | every run's log, numbers, trace and recorded answers |
 
 Started as AutoExtract, a Hack the North 2026 self-improving invoice extractor; the design
