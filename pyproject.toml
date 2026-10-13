@@ -13,6 +13,8 @@ dependencies = [
     # Tracing of model calls (serve/tracing.py), GenAI semantic conventions.
     "opentelemetry-api>=1.30",
     "opentelemetry-sdk>=1.30",
+    # MCP server (mcp_server.py); 2.x API (MCPServer).
+    "mcp>=2.3",
     # uvicorn --reload calls watchfiles.watch(ignore_permission_denied=...).
     # A partial install leaves the Rust extension out of sync with the Python
     # wrapper, so the kwarg exists in source but the loaded module rejects it

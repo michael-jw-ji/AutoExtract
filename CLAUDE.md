@@ -77,6 +77,10 @@ docs/PLAN.md; keep it ticked as work lands.
 - Judge: evalgate/judge.py (officer_title, LARGE_MODEL, verdicts cached in
   data/judge_cache/), validated by scripts/judge_eval.py (TPR 0.989, TNR 0.984).
 - Makefile: `make ci` = what GitHub Actions runs.
+- mcp_server.py (mcp 2.x: MCPServer, not FastMCP): extract_form4 calls chat()
+  directly (no DB needed) and, for EDGAR URLs, compares with the filing's XML;
+  get_eval_summary reads the DB, else the tracked results/runs records. stdio
+  carries the protocol on stdout: tool bodies redirect stdout to stderr.
 - CI (.github/workflows/eval.yml): pytest + scripts/ci_eval.py, which replays
   the 30 recorded 7B answers in data/ci/form4_ci.jsonl (model_raw, BEFORE
   enrich) through the current code; fails on a field drop > 0.5pt vs
