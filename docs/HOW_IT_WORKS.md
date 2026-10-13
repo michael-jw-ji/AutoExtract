@@ -41,7 +41,7 @@ filing's official XML as an exact answer key.
 | 2. Failure analysis | read failures, write `FAILURES.md`, fix each in the right layer, before/after per field | **done**: F1 0.9204, valid 96.3%; a 32B check |
 | 3. CI, tracing, judge | GitHub Actions eval gate, OpenTelemetry cost/latency, LLM judge checked against labels | **done** (see section 9) |
 | 4. MCP server, polish | `extract_form4` as an MCP tool, README with results | planned |
-| Loop: repair, train, gate | repairs verified against gold, LoRA, promotion gate | inherited from the invoice version; **not yet run on Form 4** |
+| Loop: repair, train, gate | repairs verified against gold, LoRA, promotion gate | **done**: LoRA on 186 verified repairs + 80 replay, F1 0.9204 → 0.9932 (RESULTS.md, Fix 8) |
 
 ---
 
@@ -398,7 +398,8 @@ The large model is only needed for repairs:
   which fields count as "business rules").
 - **`train/dataset.py`'s negative-control dataset** is invoice-specific and
   needs a Form 4 equivalent.
-- **Missed rows.** The 7B leaves out 37 of 553 real transactions (the
-  baseline missed 4, while inventing 208). F1 hides this trade.
+- **Missed rows (before the LoRA).** The prompt-only 7B left out 37 of 553
+  real transactions (the baseline missed 4, while inventing 208); the LoRA
+  misses 6 and invents none.
 - **One corpus window.** All filings were filed between late September and
   early October 2026; seasonal filing patterns are not covered.

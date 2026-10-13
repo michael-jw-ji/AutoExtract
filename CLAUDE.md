@@ -68,7 +68,14 @@ docs/PLAN.md; keep it ticked as work lands.
   is render v1, kept frozen and reproduced byte for byte by
   html_to_text(html, 1). Raw HTML is untracked but re-fetchable; a missing
   file raises, never falls back to the stored text.
-- Incumbent is `enrich-v4` (model_version 8) = prompt v2 (b4955a08) +
+- Incumbent is `lora-v1` (adapter `form4-lora-v1`) = the 7B + a rank-16 LoRA
+  trained on 186 verified repairs of LIVE failures + 80 replay
+  (scripts/build_lora_dataset.py, infra/modal_train.py), served by name from
+  infra/modal_small.py (adapters volume; redeploy AND restart the container
+  after training: a warm old container keeps serving without the adapter).
+  F1 0.9932, valid 99.5%. serve.extract.served_model() resolves it for the
+  MCP server and ci_eval --build. Its parent pipeline:
+- Previous incumbent `enrich-v4` (model_version 8) = prompt v2 (b4955a08) +
   enrich v4 + render v3: F1 0.9204, valid 96.3%. Prompt v4 (code may equal
   its A/D letter) was rejected (+1.50pp, CI [-0.14, +4.07]) and reverted.
 - Tracing: serve/tracing.py makes each chat call an OpenTelemetry span

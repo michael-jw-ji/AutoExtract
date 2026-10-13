@@ -225,3 +225,7 @@ F1 rewards the trade (0.84 -> 0.92), but a reader who needs every
 transaction would not. Prompt v3's wording ("report every row") halved the
 missing rows but was rejected under the old fixed-margin rule; with render v3
 now doing the row selection, that wording is the obvious next candidate.
+
+**Update (Fix 8, RESULTS.md):** the LoRA fine-tune trained on the 7B's own
+verified failures fixed this: 547 of 553 rows matched, 6 missing, 0 extra,
+F1 0.9932 (0.9923 on filings from companies and people unseen in training).

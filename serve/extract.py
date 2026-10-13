@@ -25,6 +25,19 @@ def system_prompt() -> str:
     return get_domain().system_prompt()
 
 
+def served_model() -> str:
+    """The model id the promoted pipeline serves: the incumbent's LoRA adapter
+    (served by name from the small model's vLLM) or the base small model.
+    Without a database (a fresh clone), SERVE_MODEL or SMALL_MODEL."""
+    import os
+    if settings.db_path.exists():
+        with tx() as conn:
+            inc = incumbent(conn)
+        if inc:
+            return serving_model(inc["adapter_ref"])
+    return os.getenv("SERVE_MODEL") or settings.small_model
+
+
 def extract_text(doc_text: str, model: str | None = None,
                  enrich: bool | None = None) -> tuple[str, int, str]:
     """Raw extraction call. Returns (raw_output, latency_ms, model_used).

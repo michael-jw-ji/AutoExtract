@@ -34,7 +34,7 @@ from core.config import settings  # noqa: E402
 from domains import get_domain  # noqa: E402
 from domains.form4_io import html_to_text, parse_xml  # noqa: E402
 from serve.client import chat  # noqa: E402
-from serve.extract import apply_enrichment, system_prompt  # noqa: E402
+from serve.extract import apply_enrichment, served_model, system_prompt  # noqa: E402
 from verify.compare import counts, f1, field_hits  # noqa: E402
 from verify.validate import validate  # noqa: E402
 
@@ -111,7 +111,8 @@ def extract_form4(url_or_text: str) -> dict:
             text = html_to_text(source, get_domain().render_version)
         else:
             text = source
-        model_raw, latency_ms = chat(settings.small_model, system_prompt(), text, max_tokens=8192)
+        model = served_model()
+        model_raw, latency_ms = chat(model, system_prompt(), text, max_tokens=8192)
         raw = apply_enrichment(model_raw, text)
         outcome = validate(raw)
         result = {
@@ -119,7 +120,7 @@ def extract_form4(url_or_text: str) -> dict:
             "valid": outcome.valid,
             "errors": [{"field": ".".join(map(str, e.get("loc", ()))), "problem": e.get("msg")}
                        for e in outcome.errors][:10],
-            "model": settings.small_model,
+            "model": model,
             "latency_ms": latency_ms,
             "pipeline": {"render": get_domain().render_version,
                          "enrich": get_domain().enrich_version},

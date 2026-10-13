@@ -10,7 +10,8 @@ better.
 | On 189 frozen holdout filings (553 transactions) | Field F1 | Schema-valid |
 |---|---|---|
 | Qwen2.5-7B, first prompt (baseline) | 0.8401 | 54.5% |
-| **Qwen2.5-7B, after 5 promoted changes (8 tried)** | **0.9204** | **96.3%** |
+| Qwen2.5-7B, after 5 promoted pipeline changes (8 tried) | 0.9204 | 96.3% |
+| **Qwen2.5-7B + LoRA trained on its own verified failures** | **0.9932** | **99.5%** |
 | Qwen2.5-32B, same pipeline (reference, not served) | 0.9965 | 100% |
 
 - **What moved it:** fixes in the *right layer*, not the model: owner
@@ -22,10 +23,13 @@ better.
 - **A failure a bigger model does not fix:** the 32B turns footnote-only prices
   into `0` three times as often as the 7B, and answers code `V` when a code
   equals its A/D letter. It follows the prompt's rules more literally.
-- **What is still wrong:** the 7B leaves out 37 of 553 real rows. The
-  baseline missed 4 but invented 208. F1 hides that trade; FAILURES.md does not.
-- **Cost:** $0.0012 per filing on a Modal L40S, latency p50 8.3 s / p99 159 s
-  (OpenTelemetry traces).
+- **The loop, closed:** the pipeline served 339 live filings, its 186
+  failures were repaired from their XML gold (verified by construction), and a
+  LoRA trained on those plus replay lifted F1 0.9204 → 0.9932, matching the
+  32B. On holdout filings whose company and people never appear in training:
+  0.9255 → 0.9923. Rows missed 37 → 6, rows invented 52 → 0.
+- **Cost:** $0.0007 per filing on a Modal L40S, latency p50 7.6 s / p99 63 s
+  (OpenTelemetry traces). Training took 283 s on an H100.
 - **Judge:** an LLM judge for officer titles, validated against human labels:
   TPR 0.989, TNR 0.984.
 
