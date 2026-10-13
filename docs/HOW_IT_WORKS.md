@@ -38,8 +38,8 @@ filing's official XML as an exact answer key.
 | Milestone | What | State |
 |---|---|---|
 | 1. Form 4 domain | fetch filings, XML to gold, schema and rules, labelled frozen holdout, baseline | **done**: field F1 0.8352, valid 54.5% |
-| 2. Failure analysis | read failures, write `FAILURES.md`, fix each in the right layer, before/after per field | next |
-| 3. CI, tracing, judge | GitHub Actions eval gate, OpenTelemetry cost/latency, LLM judge checked against labels | planned |
+| 2. Failure analysis | read failures, write `FAILURES.md`, fix each in the right layer, before/after per field | **done**: F1 0.9204, valid 96.3%; a 32B check |
+| 3. CI, tracing, judge | GitHub Actions eval gate, OpenTelemetry cost/latency, LLM judge checked against labels | **done** (see section 9) |
 | 4. MCP server, polish | `extract_form4` as an MCP tool, README with results | planned |
 | Loop: repair, train, gate | repairs verified against gold, LoRA, promotion gate | inherited from the invoice version; **not yet run on Form 4** |
 
@@ -161,31 +161,35 @@ document appears in training data.
 
 ```mermaid
 sequenceDiagram
-    participant D as Filing text
+    participant H as Filing HTML
+    participant R as render (code)
     participant M as Qwen2.5-7B (vLLM on Modal)
     participant E as enrich (code)
     participant V as validate (code)
     participant S as scorer (code)
-    D->>M: system prompt (fields + rules) + page text
-    M->>E: JSON (JSON mode on)
-    E->>E: strip formats, ISO dates, 10-digit CIK,<br/>value = shares x price,<br/>direction from code (P,S,A,D,F,M)
+    H->>R: SEC-rendered page
+    R->>M: text, rows labelled [Table I transaction] /<br/>[... holding, not a transaction], markers split
+    M->>E: JSON (JSON mode on), traced as an OpenTelemetry span
+    E->>E: formats, ISO dates, 10-digit CIK,<br/>owner flags from the [X] boxes,<br/>drop impossible rows, marker-only price = null,<br/>value = shares x price, direction from code
     E->>V: normalised JSON
     V->>V: pydantic schema + rules:<br/>code→direction, value, owned-after chain
     V-->>S: valid? + failure signature
     S->>S: field-level F1 vs gold,<br/>rows aligned by best overlap,<br/>ambiguous fields dropped
 ```
 
-**The input** is the SEC-rendered page converted to plain text, one table row
-per line. An excerpt from a real filing (United Therapeutics, an option
-exercise followed by sales):
+**The input** is the SEC-rendered page converted to plain text at serve
+time (render v3), one table row per line, each data row labelled by what the
+form's own columns say it is. An excerpt from a real filing (United
+Therapeutics, an option exercise followed by sales, plus holdings):
 
 ```
 Issuer CIK: 0001082554
 [X] Director | [ ] 10% Owner
 [X] Officer (give title below) | [ ] Other (specify below)
-Common Stock | 10/05/2026 | M(1) | 9,500 | A | $117.76 | 333,943 | I | by Trust(2)
-Common Stock | 10/05/2026 | S(1) | 501 | D | $536.2579(3) | 333,442 | I | by Trust(2)
-Stock Option | $117.76 | 10/05/2026 | M(1) | 9,500 (D) | (17) | 03/15/2027 | Common Stock | 9,500 | $0.00 | 299,910 | I | by Trust(18)
+[Table I transaction] Common Stock | 10/08/2026 | M (1) | 9,500 | A | $117.76 | 333,943 | I | by Trust (2)
+[Table I transaction] Common Stock | 10/08/2026 | S (1) | 200 | D | $525.4958 (3) | 333,743 | I | by Trust (2)
+[Table I holding, not a transaction] Common Stock | 166 | I | by Spouse
+[Table II transaction] Stock Option | $117.76 | 10/08/2026 | M (1) | 9,500 (D) | (21) | 03/15/2027 | Common Stock | 9,500 | $0.00 | 271,410 | I | by Trust (22)
 ```
 
 The `(1)`, `(3)` and so on are footnote markers. Footnote 3 here says $536.2579
@@ -286,23 +290,40 @@ rendering fixes, failed validation on 85% of documents with `qwen2.5:3b` (it
 mostly stopped after four fields) and 25% with `qwen2.5:7b`. That is why the
 7B serves. The real baseline will replace this.
 
-### Expected, to be tested in Milestone 2
+### After Milestone 2 (all in [RESULTS.md](../RESULTS.md))
 
-These are hypotheses from reading the corpus, not measurements:
+| Version | Change | Field F1 | Valid | Gate |
+|---|---|---|---|---|
+| base | prompt v1 | 0.8401 | 54.5% | baseline |
+| prompt-v2 | prompt from FAILURES.md | 0.8614 | 80.4% | promoted (old margin rule) |
+| prompt-v3 | "report every row" | 0.8736 | 76.7% | rejected (old margin rule) |
+| code-fixes-1 | owner flags from the page, `/K`, impossible rows | 0.8716 | 84.1% | promoted |
+| render-v2 | table labels, marker split | 0.8721 | 83.6% | rejected |
+| render-v3 | rows labelled transaction / holding | 0.9182 | 96.3% | promoted |
+| enrich-v3 | markers stripped from titles | 0.9194 | 96.3% | promoted |
+| enrich-v4 | marker-only price cell = null | **0.9204** | **96.3%** | promoted |
 
-- **Footnote markers glued to values** will be the biggest single failure
-  source: 359 of the 528 documents contain values like `2,180,631(5)` or
-  `D(2)(3)`. This is expected to be fixable in code (enrichment), not by a
-  bigger model.
-- **Codes rendered with an equity-swap flag** (`J/K`, `S/K`) will fail code
-  validation when copied verbatim; also a code fix.
-- **Holdings rows extracted as transactions**, and **Table II column
-  confusion** (exercise price vs derivative price; derivative count vs
-  underlying shares), are expected to be prompt or model problems.
-- **Footnote-only prices** (a merger cash-out, a forward settlement) are
-  expected to stay wrong even for the 32B model, because they are
-  convention questions, not reading errors. This is the "a bigger model does
-  not fix it" case the plan asks for.
+What the early hypotheses got right and wrong: holdings rows and Table II
+confusion were fixed in the RENDERING, not the prompt (two prompt revisions
+traded fields; one rendering change removed 55 of 59 holdings rows). The
+footnote-only price was predicted to defeat a bigger model, and it did, but
+not as predicted: the 32B makes it worse, by applying the prompt's "$0 means
+0" literally. The remaining weakness is rows the 7B leaves out (37 of 553),
+which prompt v2 caused: see FAILURES.md, "Where each cause stands".
+
+### Milestone 3
+
+- **CI eval:** every PR replays 30 recorded answers through its code, with no
+  model calls, and fails on any field drop over 0.5 points.
+  [PR #2](https://github.com/michael-jw-ji/AutoExtract/pull/2) shows it catching
+  a regression that all unit tests pass.
+- **Tracing:** OpenTelemetry spans per model call. The 7B costs **$0.0012 per
+  filing**, with latency **p50 8.3 s and p99 158.7 s**.
+- **LLM judge** for officer titles (Qwen2.5-32B): **TPR 0.989, TNR 0.984** on
+  217 items with human-confirmed truth. Exact match in code scores 0.0 on
+  titles stated in the Remarks and on abbreviations.
+- **Prompt v4** (the code may equal its A/D letter) was better on every row
+  measure but rejected: the F1 interval [-0.14, +4.07] includes zero.
 
 ---
 
@@ -377,7 +398,7 @@ The large model is only needed for repairs:
   which fields count as "business rules").
 - **`train/dataset.py`'s negative-control dataset** is invoice-specific and
   needs a Form 4 equivalent.
-- **Windows-first scripts.** The run scripts are PowerShell; cross-platform
-  equivalents are Milestone 3.
+- **Missed rows.** The 7B leaves out 37 of 553 real transactions (the
+  baseline missed 4, while inventing 208). F1 hides this trade.
 - **One corpus window.** All filings were filed between late September and
   early October 2026; seasonal filing patterns are not covered.

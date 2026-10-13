@@ -20,6 +20,7 @@ reading real filings:
 from __future__ import annotations
 
 import re
+from collections import Counter
 import datetime as dt
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
@@ -375,6 +376,57 @@ def page_owner_flags(text: str) -> list[tuple[str, dict[str, bool]]]:
     return found[1:] if len(found) > 1 else found
 
 
+_TX_LINE = re.compile(r"^\[Table (II|I) transaction\] (.*)$", re.M)
+_ONLY_MARKERS = re.compile(r"^(\(\d{1,2}\)\s*)+$")
+_PAGE_DATE = re.compile(r"^(\d{2})/(\d{2})/(\d{4})")
+
+
+def _amount(cell: str) -> Decimal | None:
+    return _dec(re.sub(r"\s*(\(\d{1,2}\))+|\s*\((A|D)\)", "", cell))
+
+
+def page_transactions(text: str) -> list[dict]:
+    """(is_derivative, date, code, shares, marker_only_price) per transaction
+    row of a render-v3 page. Reads the cells right after the transaction
+    date (code, then amount) and, from the end, the price two cells before
+    the D/I ownership cell. Rows it cannot read are skipped."""
+    rows = []
+    for m in _TX_LINE.finditer(text or ""):
+        cells = m.group(2).split(" | ")
+        d = next((i for i, c in enumerate(cells) if _PAGE_DATE.match(c)), None)
+        k = max((i for i, c in enumerate(cells) if c in ("D", "I")), default=None)
+        if d is None or k is None or d + 2 >= len(cells) or k < 2:
+            continue
+        mm, dd, yy = _PAGE_DATE.match(cells[d]).groups()
+        code = re.match(r"[A-Z]\b", cells[d + 1])
+        rows.append({"is_derivative": m.group(1) == "II", "date": f"{yy}-{mm}-{dd}",
+                     "code": code.group() if code else None,
+                     "shares": _amount(cells[d + 2]),
+                     "marker_only_price": bool(_ONLY_MARKERS.match(cells[k - 2]))})
+    return rows
+
+
+def _apply_marker_prices(doc: dict, text: str) -> int:
+    """A price cell holding only a footnote marker means the filing states no
+    price: the XML then has none (127 of 127 uniquely matched rows in the
+    corpus). The model, the 32B more than the 7B, writes 0 there instead.
+    Each answer row is matched to ONE page row by table, date, code and
+    shares; ambiguous or unmatched rows are left alone."""
+    page = page_transactions(text)
+    key = lambda r: (r["is_derivative"], r["date"], r["code"], r["shares"])  # noqa: E731
+    counts = Counter(key(r) for r in page)
+    marker = {key(r) for r in page if r["marker_only_price"] and counts[key(r)] == 1}
+    changed = 0
+    for row in doc.get("transactions") or []:
+        if not isinstance(row, dict) or row.get("price_per_share") is None:
+            continue
+        k = (row.get("is_derivative"), row.get("date"), row.get("code"), _dec(row.get("shares")))
+        if k in marker:
+            row["price_per_share"] = None
+            changed += 1
+    return changed
+
+
 def _name_key(name: Any) -> str:
     return DOMAIN.normalize_field("reporting_owners.*.name", name) if isinstance(name, str) else ""
 
@@ -442,7 +494,10 @@ class Form4Domain:
 
     def system_prompt(self) -> str:
         codes = ", ".join(sorted(CODE_MEANINGS))
-        # v2 is the incumbent. v3 (commit 3b38eef: "shares_owned_after can be
+        # v4 (commit 0161151: "the code CAN equal its A/D letter") was
+        # REJECTED by the gate (+1.50pp, 95% CI [-0.14, +4.07]) and is
+        # reverted here, like v3. RESULTS.md, "Prompt v4".
+        # v3 (commit 3b38eef: "shares_owned_after can be
         # 0, report every row") was REJECTED by the gate, so it is reverted
         # here: a code-fix candidate must change one thing against v2.
         # v2 (2026-10-11), from FAILURES.md: empty tables, the code column,
@@ -554,7 +609,8 @@ Do NOT output a `value` field. No extra fields."""
     #: config label, so answers post-processed by different versions never
     #: share a cache file. 2: owner flags from the page, /K codes, impossible
     #: rows dropped. 3: footnote markers stripped from security titles.
-    enrich_version = 3
+    #: 4: a price cell holding only a footnote marker means null.
+    enrich_version = 4
 
     def enrich(self, payload: dict, text: str | None = None) -> tuple[dict, dict[str, Any]]:
         """Normalise formats, then derive every field that has a right answer.
@@ -566,7 +622,7 @@ Do NOT output a `value` field. No extra fields."""
             return payload, {"skipped": "not an object"}
         doc = _clean(payload)
         report: dict[str, Any] = {"value": 0, "direction": 0, "dropped_rows": 0,
-                                  "owner_flags": 0}
+                                  "owner_flags": 0, "marker_prices": 0}
         if text:
             report["owner_flags"] = _apply_owner_flags(doc, text)
         rows = doc.get("transactions")
@@ -574,6 +630,8 @@ Do NOT output a `value` field. No extra fields."""
             kept = [r for r in rows if not _not_a_transaction(r)]
             report["dropped_rows"] = len(rows) - len(kept)
             doc["transactions"] = rows = kept
+            if text:   # before `value` is derived from the price
+                report["marker_prices"] = _apply_marker_prices(doc, text)
             for row in rows:
                 if not isinstance(row, dict):
                     continue

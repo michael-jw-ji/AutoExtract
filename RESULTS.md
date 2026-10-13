@@ -522,3 +522,103 @@ with the PR's code; with the answers fixed, any score change comes from the
 code, so a field may drop at most 0.5 points against `data/ci/baseline.json`.
 If the prompt or the rendered input changed, the recorded answers no longer
 apply and CI fails with "needs a live eval" rather than scoring stale answers.
+
+## Fix 7: post-processing v4, marker-only prices are null (promoted)
+
+The first "bigger model" failure, fixed in code rather than by the model:
+when a transaction row's price cell holds only a footnote marker, the price
+is null. Checked on the whole corpus first: 127 of 127 such rows that match
+one gold row uniquely have no price in the XML. Answer rows are matched to a
+page row by table, date, code and shares; ambiguous rows are left alone.
+Candidate `enrich-v4` (model_version 8), replayed from enrich-v3's answers;
+record `results/runs/2026-10-13T160705Z_candidate.*`.
+
+| | Enrich v3 | Enrich v4 |
+|---|---|---|
+| Field F1 (7B) | 0.9194 | **0.9204** |
+| Gate | | **promoted**: +0.10 pts, 95% interval [+0.03, +0.21] |
+| Field F1 (32B answers, same replay, reference only) | 0.9931 | **0.9965** |
+
+Small for the 7B, which rarely wrote 0 there; it removes most of the 32B's
+largest remaining error. The gain shows in precision: a null gold price is not
+a scored field, so a wrong 0 costs a false positive, not a missed field.
+
+## LLM judge for officer titles (Milestone 3)
+
+`officer_title` is the one field code cannot check exactly: it cannot tell
+that "CEO" is "Chief Executive Officer", and when box 5 only says "See
+Remarks" the gold (from the XML) is the pointer, not the title. The judge
+(`evalgate/judge.py`, Qwen2.5-32B) reads the person's own box-5 block and
+the Remarks and answers PASS or FAIL for a candidate title.
+
+Validated before use (`scripts/judge_eval.py`; record
+`results/runs/2026-10-13T161453Z_judge_eval.*`) on 217 items whose truth
+comes from the 44 human-confirmed labels, never from a model:
+
+| Items | n | true PASS | true FAIL | Judge TPR | Judge TNR | Code TPR | Code TNR |
+|---|---|---|---|---|---|---|---|
+| **All** | 217 | 92 | 125 | **0.989** | **0.984** | 0.793 | 0.944 |
+| Real answers (every title any model gave, plus the label) | 86 | 73 | 13 | 0.986 | 0.923 | 1.000 | 1.000 |
+| "See Remarks" persons (7) | 22 | 7 | 15 | 1.000 | 0.933 | 0.000 | 0.533 |
+| Abbreviations of the label (synthetic) | 12 | 12 | 0 | 1.000 | | 0.000 | |
+| Another person's title, or null for a titled person (synthetic) | 97 | 0 | 97 | | 1.000 | | 1.000 |
+
+Code's check is exact match against the recorded gold after normalising case,
+punctuation and spacing. Exact match is perfect where gold is a plain title,
+and blind exactly where the judge is needed: a title stated in the Remarks,
+or the same title abbreviated.
+
+All 3 disagreements are on one filing, 0000912282-26-001310 (a fund and three
+people, with each person's role given only in the Remarks): "Other" passed for
+the fund, null passed for its Executive Chairman, and null failed for a
+person the Remarks call COO while the XML leaves the title empty. That
+filing's human label had already marked `officer_title` ambiguous; the item
+set should have left its titles out. Reported as built, not re-cut after
+seeing the result: without that filing, the judge agrees on all 201 items.
+
+The "See Remarks" truths were read off each page (listed in
+`scripts/judge_eval.py`, REMARKS_TITLES) and are pending confirmation; one
+of the seven is from a hand-labelled filing.
+
+## Prompt v4 (rejected)
+
+The second "bigger model" failure, addressed in the prompt: v2's "the code is
+NOT the A/D letter" becomes "read it from its own column; the two CAN be the
+same letter; the V column is a separate box". One wording change against
+v2, with render v3 and post-processing v4. Candidate `prompt-v4`
+(model_version 9), a fresh 7B run; record
+`results/runs/2026-10-13T160936Z_candidate.*`.
+
+| | Enrich v4 (incumbent) | Prompt v4 |
+|---|---|---|
+| Field F1 | 0.9204 | 0.9354 |
+| Valid rate | 96.3% | 96.3% |
+| Rows matched / missing / extra | 516 / 37 / 52 | 530 / **23** / 47 |
+| Codes answered `V` | 4 | **0** |
+| Gate | | **rejected**: +1.50 pts, 95% interval [-0.14, +4.07] |
+
+Every transaction field's recall rose 2 to 4 points and `V` disappeared, but
+the interval includes zero, so under the rule fixed before any of these
+results (bootstrap interval above zero) it is rejected and the prompt is
+back to v2. It is the strongest rejected candidate so far, and the obvious
+one to re-test on a larger holdout: the decision stands for this one.
+
+## Cost and latency (Milestone 3)
+
+Every model call is an OpenTelemetry span with the GenAI attributes
+(`gen_ai.request.model`, `gen_ai.usage.input_tokens`,
+`gen_ai.usage.output_tokens`, ...) under an "extract document" span;
+`run_cycle.py` writes them next to each run log, and
+`scripts/trace_report.py` summarises a run. The prompt-v4 run (189 filings,
+Qwen2.5-7B, Modal L40S, 8 requests at a time):
+
+| | |
+|---|---|
+| Latency per filing | **p50 8.3 s, p99 158.7 s** (max 164.6 s) |
+| Tokens per filing | 2,466 in, 455 out (p99 out 2,655) |
+| GPU cost | **$0.0012 per filing**; $0.23 for the 427 s run |
+
+Cost is the run's wall-clock GPU time at Modal's L40S rate ($0.000542/s)
+divided by the filings: the GPU is billed while up, however many requests
+share it. CPU, memory and the idle scale-down window are not included. The
+p99 is the few 20-30-row filings whose answers run to ~2,500 tokens.

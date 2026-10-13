@@ -1,0 +1,15 @@
+# run {"stage": "judge_eval", "started_utc": "2026-10-13T16:14:53+00:00", "commit": "0161151+uncommitted", "branch": "feature/sec-form4", "argv": [], "small_model": "Qwen/Qwen2.5-7B-Instruct", "small_endpoint": "https://michael-jw-ji--autoextract-small-serve.modal.run/v1", "large_model": "Qwen/Qwen2.5-32B-Instruct", "large_endpoint": "https://michael-jw-ji--autoextract-llm-serve.modal.run/v1", "concurrency": 8, "config": {"enrich": true, "json_mode": true, "compact_prompt": false}, "holdout_hash": "9789311604dce853", "db": "form4.db"}
+217 items: {'real': 86, 'paraphrase': 12, 'distractor': 97, 'remarks': 22}; truth {'PASS': 92, 'FAIL': 125}
+judging with Qwen/Qwen2.5-32B-Instruct...
+                n  pos  neg   judge TPR  TNR    code TPR  TNR
+overall       217   92  125      0.989 0.984      0.793 0.944
+real           86   73   13      0.986 0.923        1.0   1.0
+remarks        22    7   15        1.0 0.933        0.0 0.533
+paraphrase     12   12    0        1.0  None        0.0  None
+distractor     97    0   97       None   1.0       None   1.0
+
+judge disagrees with the label on 3 items:
+  doc 471 'Endeavor Blockchain, LLC' [real] candidate='Other' truth=FAIL judge=PASS: The candidate correctly identifies the reporting person as 'Other' since it is marked as 'Other' in the form.
+  doc 471 'Kilgore Joshua Allen' [remarks] candidate=None truth=FAIL judge=PASS: The candidate correctly identifies that the reporting person does not have an officer title listed in the filing.
+  doc 471 'Smith Cody' [real] candidate=None truth=PASS judge=FAIL: The candidate incorrectly provides a null value for an individual who holds an officer title.
+# end status=ok

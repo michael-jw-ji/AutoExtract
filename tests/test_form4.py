@@ -176,6 +176,29 @@ def test_mechanical_drops_hallucinated_keys():
     assert "confidence" not in fixed and "footnote" not in fixed["transactions"][0]
 
 
+MARKER_PAGE = (
+    "[Table II transaction] Stock Option | $2.18 | 10/05/2026 | A | 500 (A) | (1) | "
+    "12/07/2035 | Common Stock | 500 | (2) | 500 | D\n"
+    "[Table I transaction] Common Stock | 10/05/2026 | P | 100 | A | $10.50 | 1,100 | D\n")
+
+
+def test_a_marker_only_price_cell_means_null():
+    rows = [tx(security_title="Stock Option", is_derivative=True, code="A", shares="500",
+               price_per_share="0", shares_owned_after="500", acquired_disposed="A"),
+            tx(price_per_share="10.50")]
+    fixed, report = DOM.enrich(filing(*rows), MARKER_PAGE)
+    assert [r["price_per_share"] for r in fixed["transactions"]] == [None, "10.50"]
+    assert report["marker_prices"] == 1
+
+
+def test_marker_prices_are_left_alone_when_the_row_is_not_unique():
+    page = MARKER_PAGE + MARKER_PAGE.splitlines()[0] + "\n"   # same row twice
+    row = tx(security_title="Stock Option", is_derivative=True, code="A", shares="500",
+             price_per_share="0", shares_owned_after="500", acquired_disposed="A")
+    fixed, report = DOM.enrich(filing(row), page)
+    assert fixed["transactions"][0]["price_per_share"] == "0" and report["marker_prices"] == 0
+
+
 def test_enrich_strips_footnote_markers_from_titles():
     fixed, _ = DOM.enrich(filing(tx(security_title="American depositary shares (1)(2)"),
                                  tx(security_title="Series (A) Preferred")))

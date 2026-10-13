@@ -68,8 +68,15 @@ docs/PLAN.md; keep it ticked as work lands.
   is render v1, kept frozen and reproduced byte for byte by
   html_to_text(html, 1). Raw HTML is untracked but re-fetchable; a missing
   file raises, never falls back to the stored text.
-- Incumbent is `enrich-v3` (model_version 7) = prompt v2 (b4955a08) +
-  enrich v3 + render v3: F1 0.9194, valid 96.3%.
+- Incumbent is `enrich-v4` (model_version 8) = prompt v2 (b4955a08) +
+  enrich v4 + render v3: F1 0.9204, valid 96.3%. Prompt v4 (code may equal
+  its A/D letter) was rejected (+1.50pp, CI [-0.14, +4.07]) and reverted.
+- Tracing: serve/tracing.py makes each chat call an OpenTelemetry span
+  (gen_ai.* attributes); run_cycle writes results/runs/<stamp>_<stage>.traces.jsonl;
+  scripts/trace_report.py gives cost and p50/p99 per document.
+- Judge: evalgate/judge.py (officer_title, LARGE_MODEL, verdicts cached in
+  data/judge_cache/), validated by scripts/judge_eval.py (TPR 0.989, TNR 0.984).
+- Makefile: `make ci` = what GitHub Actions runs.
 - CI (.github/workflows/eval.yml): pytest + scripts/ci_eval.py, which replays
   the 30 recorded 7B answers in data/ci/form4_ci.jsonl (model_raw, BEFORE
   enrich) through the current code; fails on a field drop > 0.5pt vs

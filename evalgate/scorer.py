@@ -25,6 +25,7 @@ from core.config import settings
 from core.db import insert, one, rows, tx
 from core.freeze import current_hash, holdout_ids
 from serve.extract import apply_enrichment, extract_text
+from serve.tracing import tracer
 from verify.compare import counts, drop_fields, f1, field_hits
 from verify.validate import validate
 
@@ -159,9 +160,13 @@ def _collect(docs: list[dict], model_ref: str, workers: int, progress: bool) -> 
 
     def run(doc: dict) -> None:
         try:
-            text = model_input(doc)
-            model_raw, latency_ms, _ = extract_text(text, model_ref, enrich=False)
-            raw = apply_enrichment(model_raw, text) if settings.enrich else model_raw
+            with tracer.start_as_current_span("extract document") as span:
+                span.set_attribute("autoextract.doc_id", doc["id"])
+                span.set_attribute("autoextract.accession", doc.get("ext_id") or "")
+                text = model_input(doc)
+                span.set_attribute("autoextract.input_chars", len(text))
+                model_raw, latency_ms, _ = extract_text(text, model_ref, enrich=False)
+                raw = apply_enrichment(model_raw, text) if settings.enrich else model_raw
         except Exception as exc:  # noqa: BLE001 -- reported below, never scored
             with lock:
                 failed.append((doc["id"], f"{type(exc).__name__}: {exc}"[:200]))

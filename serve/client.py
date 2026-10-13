@@ -9,6 +9,7 @@ from functools import lru_cache
 from openai import DefaultHttpxClient, OpenAI
 
 from core.config import settings
+from serve.tracing import tracer
 
 
 @lru_cache(maxsize=2)
@@ -66,15 +67,36 @@ def chat(
     # An empty string cannot be parsed, so it used to surface as a json_decode
     # failure and get sent all the way to the large model for "repair" -- when
     # simply asking again fixes it.
+    large = model == settings.large_model
     text = ""
-    for attempt in range(3):
-        resp = client(model == settings.large_model).chat.completions.create(
-            model=model, messages=messages,
-            temperature=temperature, max_tokens=max_tokens, **extra,
-        )
-        text = resp.choices[0].message.content or ""
-        if text.strip():
-            break
+    in_tokens = out_tokens = 0
+    # GenAI semantic conventions (gen_ai.*): one span per call, retries
+    # included, so latency and tokens are what the call really cost.
+    with tracer.start_as_current_span(f"chat {model}") as span:
+        span.set_attribute("gen_ai.operation.name", "chat")
+        span.set_attribute("gen_ai.system", "vllm")
+        span.set_attribute("gen_ai.request.model", model)
+        span.set_attribute("gen_ai.request.temperature", temperature)
+        span.set_attribute("gen_ai.request.max_tokens", max_tokens)
+        span.set_attribute("server.address",
+                           settings.large_llm_base_url if large else settings.llm_base_url)
+        span.set_attribute("autoextract.server", "large" if large else "small")
+        for attempt in range(3):
+            resp = client(large).chat.completions.create(
+                model=model, messages=messages,
+                temperature=temperature, max_tokens=max_tokens, **extra,
+            )
+            if resp.usage:
+                in_tokens += resp.usage.prompt_tokens or 0
+                out_tokens += resp.usage.completion_tokens or 0
+            text = resp.choices[0].message.content or ""
+            if text.strip():
+                break
+        span.set_attribute("gen_ai.response.model", resp.model or model)
+        span.set_attribute("gen_ai.response.finish_reasons", [resp.choices[0].finish_reason or ""])
+        span.set_attribute("gen_ai.usage.input_tokens", in_tokens)
+        span.set_attribute("gen_ai.usage.output_tokens", out_tokens)
+        span.set_attribute("autoextract.attempts", attempt + 1)
     # A truncated answer is invalid JSON and would be scored as a model
     # failure. Say so loudly instead of letting it pass as one.
     if resp.choices[0].finish_reason == "length":

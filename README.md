@@ -46,6 +46,11 @@ python scripts/load_form4.py       # re-run: applies your labels, moves them to 
 python scripts/probe.py --n 20     # base failure rate on live documents
 ```
 
+## Common tasks
+
+`make help` lists them: `make setup`, `make ci` (tests + the free cached
+eval), `make candidate NAME=x NOTE="..."`, `make replay`, `make trace-report`.
+
 ## CI eval
 
 Every PR runs the unit tests plus `scripts/ci_eval.py`: 30 recorded model

@@ -63,9 +63,9 @@ This is the part that produces your interview story.
 
 - [x] `.github/workflows/eval.yml`: on every PR, run `pytest` plus a **small cached eval** (20 to 30 holdout docs with recorded model responses so CI is free and deterministic). Fail the build if any scored field drops more than a set threshold vs `main`.
 - [x] Add one deliberate regression in a PR, show CI catching it, and link that PR in the README. _(PR #2: rounding share counts passes all 75 unit tests; the eval fails it on shares -3.6 and shares_owned_after -3.3. The threshold is vs `data/ci/baseline.json`, which is updated on the branch with each promoted change.)_
-- [ ] Tracing: wrap the model client in `serve/client.py` with OpenTelemetry spans using the GenAI attributes (`gen_ai.request.model`, `gen_ai.usage.input_tokens`, `gen_ai.usage.output_tokens`), or use LangSmith (Pennant uses it). Report cost and p50/p99 latency per document.
-- [ ] LLM judge for the one field code cannot check exactly (for example owner relationship from free text): binary PASS/FAIL, validated against your 30 hand labels, report true positive and true negative rates.
-- [ ] Add cross-platform `Makefile` or `scripts/*.sh` next to the `.ps1` files.
+- [x] Tracing: wrap the model client in `serve/client.py` with OpenTelemetry spans using the GenAI attributes (`gen_ai.request.model`, `gen_ai.usage.input_tokens`, `gen_ai.usage.output_tokens`), or use LangSmith (Pennant uses it). Report cost and p50/p99 latency per document. _(serve/tracing.py + scripts/trace_report.py: $0.0012 per filing, p50 8.3 s, p99 158.7 s on the 7B. RESULTS.md.)_
+- [x] LLM judge for the one field code cannot check exactly (for example owner relationship from free text): binary PASS/FAIL, validated against your 30 hand labels, report true positive and true negative rates. _(evalgate/judge.py, officer_title, Qwen2.5-32B: TPR 0.989, TNR 0.984 on 217 items; code's exact match 0.793 / 0.944. RESULTS.md.)_
+- [x] Add cross-platform `Makefile` or `scripts/*.sh` next to the `.ps1` files. _(Makefile; CI runs `make test` and `make eval` on Linux. There were no .ps1 files left to mirror.)_
 
 ## Milestone 4: MCP server and polish (3 to 4 days)
 
