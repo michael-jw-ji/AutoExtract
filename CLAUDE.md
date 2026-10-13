@@ -68,8 +68,8 @@ docs/PLAN.md; keep it ticked as work lands.
   is render v1, kept frozen and reproduced byte for byte by
   html_to_text(html, 1). Raw HTML is untracked but re-fetchable; a missing
   file raises, never falls back to the stored text.
-- Incumbent is `enrich-v3` (model_version 7) = prompt v2 (b4955a08) +
-  enrich v3 + render v3: F1 0.9194, valid 96.3%.
+- Incumbent is `enrich-v4` (model_version 8) = prompt v2 (b4955a08) +
+  enrich v4 + render v3: F1 0.9204, valid 96.3%.
 - CI (.github/workflows/eval.yml): pytest + scripts/ci_eval.py, which replays
   the 30 recorded 7B answers in data/ci/form4_ci.jsonl (model_raw, BEFORE
   enrich) through the current code; fails on a field drop > 0.5pt vs

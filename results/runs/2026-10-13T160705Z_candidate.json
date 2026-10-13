@@ -1,0 +1,69 @@
+{
+  "run": {
+    "stage": "candidate",
+    "started_utc": "2026-10-13T16:07:07+00:00",
+    "commit": "fa4ad7b+uncommitted",
+    "branch": "feature/sec-form4",
+    "argv": [
+      "--stage",
+      "candidate",
+      "--name",
+      "enrich-v4",
+      "--replay-from",
+      "7",
+      "--note",
+      "post-processing v4: a price cell holding only a footnote marker means null (matched to a unique page row). Prompt v2 and render v3 unchanged; replayed from enrich-v3's recorded answers"
+    ],
+    "small_model": "Qwen/Qwen2.5-7B-Instruct",
+    "small_endpoint": "https://michael-jw-ji--autoextract-small-serve.modal.run/v1",
+    "large_model": "Qwen/Qwen2.5-32B-Instruct",
+    "large_endpoint": "https://michael-jw-ji--autoextract-llm-serve.modal.run/v1",
+    "concurrency": 8,
+    "config": {
+      "enrich": true,
+      "json_mode": true,
+      "compact_prompt": false
+    },
+    "holdout_hash": "9789311604dce853",
+    "db": "form4.db"
+  },
+  "result": {
+    "score": {
+      "model_version_id": 8,
+      "eval_set_hash": "9789311604dce853",
+      "valid_rate": 0.963,
+      "field_f1": 0.9204,
+      "n_docs": 189,
+      "per_field": {
+        "issuer_cik": 1.0,
+        "issuer_name": 0.9841,
+        "issuer_ticker": 0.9947,
+        "period_of_report": 0.9947,
+        "reporting_owners.*.name": 1.0,
+        "reporting_owners.*.is_director": 1.0,
+        "reporting_owners.*.is_officer": 1.0,
+        "reporting_owners.*.is_ten_percent_owner": 1.0,
+        "reporting_owners.*.officer_title": 1.0,
+        "transactions.*.security_title": 0.8788,
+        "transactions.*.is_derivative": 0.8517,
+        "transactions.*.date": 0.932,
+        "transactions.*.code": 0.9186,
+        "transactions.*.shares": 0.9026,
+        "transactions.*.price_per_share": 0.8617,
+        "transactions.*.acquired_disposed": 0.915,
+        "transactions.*.shares_owned_after": 0.9259,
+        "transactions.*.direct_or_indirect": 0.9313
+      }
+    },
+    "gate": {
+      "decision": "promoted",
+      "candidate": "enrich-v4",
+      "incumbent": "enrich-v3",
+      "margin_pp": 0.103,
+      "required_pp": 0.0,
+      "reason": "field_f1 +0.10pp, 95% CI [+0.03, +0.21] excludes zero; no field down more than 2.0pp; valid_rate +0.00pp",
+      "candidate_f1": 0.9204,
+      "incumbent_f1": 0.9194
+    }
+  }
+}

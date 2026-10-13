@@ -522,3 +522,23 @@ with the PR's code; with the answers fixed, any score change comes from the
 code, so a field may drop at most 0.5 points against `data/ci/baseline.json`.
 If the prompt or the rendered input changed, the recorded answers no longer
 apply and CI fails with "needs a live eval" rather than scoring stale answers.
+
+## Fix 7: post-processing v4, marker-only prices are null (promoted)
+
+The first "bigger model" failure, fixed in code rather than by the model:
+when a transaction row's price cell holds only a footnote marker, the price
+is null. Checked on the whole corpus first: 127 of 127 such rows that match
+one gold row uniquely have no price in the XML. Answer rows are matched to a
+page row by table, date, code and shares; ambiguous rows are left alone.
+Candidate `enrich-v4` (model_version 8), replayed from enrich-v3's answers;
+record `results/runs/2026-10-13T160705Z_candidate.*`.
+
+| | Enrich v3 | Enrich v4 |
+|---|---|---|
+| Field F1 (7B) | 0.9194 | **0.9204** |
+| Gate | | **promoted**: +0.10 pts, 95% interval [+0.03, +0.21] |
+| Field F1 (32B answers, same replay, reference only) | 0.9931 | **0.9965** |
+
+Small for the 7B, which rarely wrote 0 there; it removes most of the 32B's
+largest remaining error. The gain shows in precision: a null gold price is not
+a scored field, so a wrong 0 costs a false positive, not a missed field.

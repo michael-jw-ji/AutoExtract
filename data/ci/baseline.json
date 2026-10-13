@@ -1,6 +1,6 @@
 {
   "valid_rate": 1.0,
-  "field_f1": 0.9417,
+  "field_f1": 0.944,
   "n_docs": 30,
   "per_field": {
     "issuer_cik": 1.0,
