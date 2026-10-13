@@ -4,12 +4,16 @@
 #   make ci           what GitHub Actions runs: tests + cached eval (free)
 #   make candidate NAME=x NOTE="..."   score a pipeline change and gate it
 
+# A system Python to create the venv. On Windows, `python3` can be the
+# Microsoft Store stub, so use `python` there.
 ifeq ($(OS),Windows_NT)
   VENV_PY := .venv/Scripts/python.exe
+  SYS_PY := python
 else
   VENV_PY := .venv/bin/python
+  SYS_PY := $(shell command -v python3 2>/dev/null || command -v python)
 endif
-PY := $(if $(wildcard $(VENV_PY)),$(VENV_PY),python)
+PY := $(if $(wildcard $(VENV_PY)),$(VENV_PY),$(SYS_PY))
 export PYTHONUTF8 := 1
 
 .PHONY: help setup test eval ci fetch load label failures baseline candidate replay \
@@ -20,7 +24,7 @@ help:
 	@echo "targets: setup test eval ci fetch load label failures baseline candidate replay rescore compare-large trace-report"
 
 setup:
-	python -m venv .venv
+	$(SYS_PY) -m venv .venv
 	$(VENV_PY) -m pip install -e ".[dev]"
 	@test -f .env || cp .env.example .env
 	@echo "edit .env: SEC_USER_AGENT, LLM_BASE_URL, LLM_API_KEY"
