@@ -156,6 +156,3 @@ make help                 # everything else
 | `mcp_server.py` | the MCP tools |
 | `web/` | the results page (Vite + React + TypeScript); `scripts/site_data.py` exports its data from `results/runs/` |
 | `results/runs/`, `data/eval_cache/` | every run's log, numbers, trace and recorded answers |
-
-Started as AutoExtract, a Hack the North 2026 self-improving invoice extractor; the design
-rules (verified repairs only, frozen holdout, gate) are in [CLAUDE.md](CLAUDE.md).
