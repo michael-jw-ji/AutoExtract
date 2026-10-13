@@ -1,0 +1,55 @@
+# run {"stage": "train", "started_utc": "2026-10-13T17:18:58+00:00", "commit": "51ad8ad+uncommitted", "branch": "feature/sec-form4", "argv": ["run", "infra/modal_train.py", "--dataset", "data/datasets/form4_lora_v1.jsonl", "--name", "form4-lora-v1"], "small_model": "Qwen/Qwen2.5-7B-Instruct", "small_endpoint": "https://michael-jw-ji--autoextract-small-serve.modal.run/v1", "large_model": "Qwen/Qwen2.5-32B-Instruct", "large_endpoint": "https://michael-jw-ji--autoextract-llm-serve.modal.run/v1", "concurrency": 8, "config": {"enrich": true, "json_mode": true, "compact_prompt": false}, "holdout_hash": "9789311604dce853", "db": "form4.db"}
+training form4-lora-v1 on 266 examples from data/datasets/form4_lora_v1.jsonl (H100)
+
+[1ALoading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]
+[1ALoading checkpoint shards:  25%|██▌       | 1/4 [00:03<00:09,  3.23s/it]
+[1ALoading checkpoint shards:  50%|█████     | 2/4 [00:06<00:06,  3.28s/it]
+[1ALoading checkpoint shards:  75%|███████▌  | 3/4 [00:09<00:03,  3.29s/it]
+[1ALoading checkpoint shards: 100%|██████████| 4/4 [00:12<00:00,  3.13s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:12<00:00,  3.18s/it]
+`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+epoch 1 step 5/63 train_loss 0.0965
+epoch 1 step 10/63 train_loss 0.0163
+epoch 1 step 15/63 train_loss 0.0108
+epoch 1 step 20/63 train_loss 0.0028
+epoch 1 step 25/63 train_loss 0.0015
+epoch 1 step 30/63 train_loss 0.0031
+epoch 1 done: val_loss 0.0005
+epoch 2 step 35/63 train_loss 0.0009
+epoch 2 step 40/63 train_loss 0.0027
+epoch 2 step 45/63 train_loss 0.0032
+epoch 2 step 50/63 train_loss 0.0016
+epoch 2 step 55/63 train_loss 0.0003
+epoch 2 step 60/63 train_loss 0.0004
+epoch 2 done: val_loss 0.0002
+{
+  "name": "form4-lora-v1",
+  "base_model": "Qwen/Qwen2.5-7B-Instruct",
+  "examples": 266,
+  "dropped_too_long": 0,
+  "train": 253,
+  "val": 13,
+  "epochs": 2,
+  "rank": 16,
+  "lr": 0.0001,
+  "grad_accum": 8,
+  "steps": 62,
+  "history": [
+    {
+      "step": 0,
+      "val_loss": 0.0942
+    },
+    {
+      "step": 31,
+      "epoch": 1,
+      "val_loss": 0.0005
+    },
+    {
+      "step": 62,
+      "epoch": 2,
+      "val_loss": 0.0002
+    }
+  ],
+  "gpu": "H100",
+  "train_seconds": 283
+}
+# end status=ok

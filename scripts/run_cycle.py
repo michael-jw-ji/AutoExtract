@@ -223,6 +223,27 @@ def stage_candidate(name: str, note: str, replay_from: int | None = None) -> dic
     return stage_evaluate(version_id)
 
 
+def stage_adapter(name: str, adapter: str, note: str) -> dict:
+    """Register a LoRA adapter served by the small model's vLLM server (by
+    its adapter name) as a candidate, score it, and let the gate decide.
+
+    Same prompt, render and post-processing as the incumbent: the weights are
+    the only change. infra/modal_train.py trains it; infra/modal_small.py
+    serves it.
+    """
+    from evalgate.scorer import prompt_hash
+    with tx() as conn:
+        if one(conn, "SELECT id FROM model_versions WHERE name = ?", (name,)):
+            raise SystemExit(f"model version {name!r} already exists; pick a new --name")
+        version_id = insert(
+            conn, "model_versions", name=name, base_model=settings.small_model,
+            adapter_ref=adapter, status="candidate",
+            notes=json.dumps({"kind": "lora", "note": note, "prompt": prompt_hash()}),
+        )
+    print(f"registered candidate {name!r} (model_version {version_id}, adapter {adapter}): {note}")
+    return stage_evaluate(version_id)
+
+
 def stage_rescore(version_id: int) -> dict:
     """Re-score a model from its RECORDED answers under the current scorer.
 
@@ -254,7 +275,7 @@ def main() -> None:
     ap.add_argument(
         "--stage",
         required=True,
-        choices=["baseline", "serve", "repair", "train", "finalize", "evaluate", "rescore", "candidate",
+        choices=["baseline", "serve", "repair", "train", "finalize", "evaluate", "rescore", "candidate", "adapter",
                  "clusters", "all"],
     )
     ap.add_argument("--n", type=int, default=80, help="documents to serve")
@@ -271,6 +292,8 @@ def main() -> None:
                          "model, LARGE_LLM_CONCURRENCY for repairs)")
     ap.add_argument("--name", default=None, help="name for a candidate version")
     ap.add_argument("--note", default=None, help="what the candidate changes")
+    ap.add_argument("--adapter", default=None,
+                    help="adapter stage: the LoRA's served name, e.g. form4-lora-v1")
     ap.add_argument("--replay-from", type=int, default=None,
                     help="candidate stage: re-run post-processing over this version's "
                          "recorded answers instead of calling the model")
@@ -307,6 +330,10 @@ def _dispatch(args) -> None:
         if not args.name:
             raise SystemExit("--name is required for the candidate stage")
         stage_candidate(args.name, args.note or "", args.replay_from)
+    elif args.stage == "adapter":
+        if not (args.name and args.adapter):
+            raise SystemExit("--name and --adapter are required for the adapter stage")
+        stage_adapter(args.name, args.adapter, args.note or "")
     elif args.stage == "rescore":
         if not args.version:
             raise SystemExit("--version is required for the rescore stage")
