@@ -89,8 +89,12 @@ def run(stage: str):
     meta = header(stage)
     print("# run " + json.dumps(meta), flush=True)
     status = "ok"
+    from serve.tracing import to_file
     try:
-        yield base
+        # Model-call spans (serve/tracing.py) land next to the log; the file
+        # only appears if the run made a model call.
+        with to_file(base.with_name(base.name + ".traces.jsonl")):
+            yield base
     except BaseException as exc:
         status = f"failed: {type(exc).__name__}: {exc}"
         raise
