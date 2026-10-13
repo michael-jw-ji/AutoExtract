@@ -492,3 +492,33 @@ The remaining 32B errors: 6 `period_of_report` dates (the 32B alone; it
 picks a later date than box 3) and 6 security titles that keep a footnote
 marker, `American depositary shares (1)`, which render v3's marker split made
 easier to copy (the 7B does it too; fixed next, in code).
+
+## Fix 6: post-processing v3, titles without footnote markers (promoted)
+
+Render v3 splits `Units(1)` into `Units (1)`, which both models then copied
+into `security_title`. Post-processing v3 strips trailing markers from titles
+(no gold title ends in one, 1,177 rows). Candidate `enrich-v3`
+(model_version 7), scored by replaying render-v3's recorded answers, no
+model calls; record `results/runs/2026-10-13T154458Z_candidate.*`.
+
+| | Render v3 | Enrich v3 |
+|---|---|---|
+| Field F1 | 0.9182 | **0.9194** |
+| security_title | 0.8644 | 0.8788 |
+| Gate | | **promoted**: +0.12 pts, 95% interval [+0.03, +0.23]; nothing else moved |
+
+The CI eval (below) saw the same change on its 30 filings (security_title
+0.84 -> 0.86) and its baseline was updated in the same commit.
+
+## CI eval (Milestone 3)
+
+`.github/workflows/eval.yml` runs the unit tests and `scripts/ci_eval.py` on
+every PR, free and offline. The fixture `data/ci/form4_ci.jsonl` holds 30
+holdout filings picked by a fixed hash across the difficulty tags (multi-owner,
+amendment, no transactions, many rows, ambiguous, blank price, derivative,
+hand-labelled, plain), each with its raw HTML, gold, and the 7B's answer as the
+model wrote it, before post-processing. CI re-runs post-processing and scoring
+with the PR's code; with the answers fixed, any score change comes from the
+code, so a field may drop at most 0.5 points against `data/ci/baseline.json`.
+If the prompt or the rendered input changed, the recorded answers no longer
+apply and CI fails with "needs a live eval" rather than scoring stale answers.

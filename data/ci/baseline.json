@@ -1,6 +1,6 @@
 {
   "valid_rate": 1.0,
-  "field_f1": 0.9399,
+  "field_f1": 0.9417,
   "n_docs": 30,
   "per_field": {
     "issuer_cik": 1.0,
@@ -11,7 +11,7 @@
     "reporting_owners.*.is_director": 1.0,
     "reporting_owners.*.is_officer": 1.0,
     "reporting_owners.*.is_ten_percent_owner": 1.0,
-    "transactions.*.security_title": 0.84,
+    "transactions.*.security_title": 0.86,
     "transactions.*.is_derivative": 0.9067,
     "transactions.*.date": 0.922,
     "transactions.*.code": 0.9,

@@ -307,6 +307,11 @@ def _fix_letter(value: Any, words: dict[str, str]) -> Any:
 
 def _clean_row(row: dict) -> dict:
     out = {k: v for k, v in row.items() if k in _TX}
+    if isinstance(out.get("security_title"), str):
+        # "American depositary shares (1)": the marker points to a footnote,
+        # it is not part of the title. No gold title ends in one (1,177 rows).
+        out["security_title"] = re.sub(r"(\s*\(\d{1,2}\))+\s*$", "",
+                                       out["security_title"]).strip()
     if "date" in out:
         out["date"] = _fix_date(out["date"])
     if "is_derivative" in out:
@@ -548,8 +553,8 @@ Do NOT output a `value` field. No extra fields."""
     #: Bump when enrich() changes what it outputs. It is part of the scorer's
     #: config label, so answers post-processed by different versions never
     #: share a cache file. 2: owner flags from the page, /K codes, impossible
-    #: rows dropped.
-    enrich_version = 2
+    #: rows dropped. 3: footnote markers stripped from security titles.
+    enrich_version = 3
 
     def enrich(self, payload: dict, text: str | None = None) -> tuple[dict, dict[str, Any]]:
         """Normalise formats, then derive every field that has a right answer.

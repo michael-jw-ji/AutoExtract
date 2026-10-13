@@ -68,8 +68,14 @@ docs/PLAN.md; keep it ticked as work lands.
   is render v1, kept frozen and reproduced byte for byte by
   html_to_text(html, 1). Raw HTML is untracked but re-fetchable; a missing
   file raises, never falls back to the stored text.
-- Incumbent is `render-v3` (model_version 6) = prompt v2 (b4955a08) +
-  enrich v2 + render v3: F1 0.9182, valid 96.3%. Prompt v3 was rejected and
+- Incumbent is `enrich-v3` (model_version 7) = prompt v2 (b4955a08) +
+  enrich v3 + render v3: F1 0.9194, valid 96.3%.
+- CI (.github/workflows/eval.yml): pytest + scripts/ci_eval.py, which replays
+  the 30 recorded 7B answers in data/ci/form4_ci.jsonl (model_raw, BEFORE
+  enrich) through the current code; fails on a field drop > 0.5pt vs
+  data/ci/baseline.json, or if the prompt/render changed. After a promoted
+  change: `ci_eval.py --update-baseline`; after a prompt/render change:
+  `ci_eval.py --build` (calls the 7B). Prompt v3 was rejected and
   reverted (commit 3b38eef has it).
 - Milestone 2 failure reading: `python scripts/failures_form4.py`
   (http://127.0.0.1:8766) shows each failure's page, errors and a row-by-row

@@ -176,6 +176,13 @@ def test_mechanical_drops_hallucinated_keys():
     assert "confidence" not in fixed and "footnote" not in fixed["transactions"][0]
 
 
+def test_enrich_strips_footnote_markers_from_titles():
+    fixed, _ = DOM.enrich(filing(tx(security_title="American depositary shares (1)(2)"),
+                                 tx(security_title="Series (A) Preferred")))
+    assert [r["security_title"] for r in fixed["transactions"]] == [
+        "American depositary shares", "Series (A) Preferred"]
+
+
 def test_enrich_strips_the_equity_swap_suffix():
     fixed, _ = DOM.enrich(filing(tx(code="S/K", acquired_disposed="D"), tx(code="J/K")))
     assert [r["code"] for r in fixed["transactions"]] == ["S", "J"]
