@@ -6,23 +6,23 @@ should be the strongest model you can afford. The small model stays on Ollama.
 One-time setup:
     pip install modal
     modal setup                                        # log in (already done if ~/.modal.toml exists)
-    modal secret create autoextract-llm LLM_API_KEY=<make-up-a-long-random-string>
+    modal secret create insider-reading-llm LLM_API_KEY=<make-up-a-long-random-string>
 
 Deploy:
     modal deploy infra/modal_llm.py
 
 `modal deploy` prints the URL, something like
-    https://<workspace>--autoextract-llm-serve.modal.run
+    https://<workspace>--insider-reading-llm-serve.modal.run
 Then put these in .env (the key is the one you chose above):
-    LARGE_LLM_BASE_URL=https://<workspace>--autoextract-llm-serve.modal.run/v1
+    LARGE_LLM_BASE_URL=https://<workspace>--insider-reading-llm-serve.modal.run/v1
     LARGE_LLM_API_KEY=<same string>
     LARGE_MODEL=Qwen/Qwen2.5-32B-Instruct               # = MODEL_NAME below
-and check it with:  python scripts/check_models.py
+and check it with:  curl -H "Authorization: Bearer $KEY" <url>/v1/models
 
 Cost control: the container scales to ZERO after SCALEDOWN of no requests and
 bills only while a GPU is up. The first request after idle pays a cold start
 (~2-5 min to boot vLLM; the weights are cached in a Volume after the first
-download). `modal app stop autoextract-llm` takes it down entirely.
+download). `modal app stop insider-reading-llm` takes it down entirely.
 
 Not run by the test suite; it needs a Modal account and a GPU.
 """
@@ -42,9 +42,9 @@ MODEL_NAME = "Qwen/Qwen2.5-32B-Instruct"
 #: see modal.com/pricing). Cheaper fallbacks: "A100-80GB", or the 4-bit
 #: "Qwen/Qwen2.5-32B-Instruct-AWQ" on "L40S" (small quality cost).
 GPU = "H100"
-#: Sized from the worst real repair: ~9.4k prompt tokens (schema + reference +
-#: the longest filing + a 12k-char attempt) plus max_tokens=8192 from
-#: repair/distill.py. vLLM REJECTS any request where prompt + max_tokens
+#: Sized from the worst real repair request (since removed): ~9.4k prompt
+#: tokens (schema + reference + the longest filing + a 12k-char attempt) plus
+#: max_tokens=8192. vLLM REJECTS any request where prompt + max_tokens
 #: exceeds this, so the two numbers must move together.
 MAX_MODEL_LEN = 20480
 #: KV cache left after 65 GB of weights holds roughly 35-40k tokens, so only a
@@ -54,7 +54,7 @@ PORT = 8000
 MINUTES = 60
 SCALEDOWN = 10 * MINUTES
 
-app = modal.App("autoextract-llm")
+app = modal.App("insider-reading-llm")
 
 image = (
     modal.Image.from_registry("nvidia/cuda:12.9.0-devel-ubuntu22.04", add_python="3.12")
@@ -64,8 +64,8 @@ image = (
 )
 
 # Weights and compiled kernels survive restarts, so only the first boot is slow.
-hf_cache = modal.Volume.from_name("autoextract-hf-cache", create_if_missing=True)
-vllm_cache = modal.Volume.from_name("autoextract-vllm-cache", create_if_missing=True)
+hf_cache = modal.Volume.from_name("insider-reading-hf-cache", create_if_missing=True)
+vllm_cache = modal.Volume.from_name("insider-reading-vllm-cache", create_if_missing=True)
 
 
 @app.function(
@@ -74,7 +74,7 @@ vllm_cache = modal.Volume.from_name("autoextract-vllm-cache", create_if_missing=
     scaledown_window=SCALEDOWN,
     timeout=20 * MINUTES,
     volumes={"/root/.cache/huggingface": hf_cache, "/root/.cache/vllm": vllm_cache},
-    secrets=[modal.Secret.from_name("autoextract-llm")],
+    secrets=[modal.Secret.from_name("insider-reading-llm")],
 )
 @modal.concurrent(max_inputs=MAX_CONCURRENT)
 @modal.web_server(port=PORT, startup_timeout=15 * MINUTES)

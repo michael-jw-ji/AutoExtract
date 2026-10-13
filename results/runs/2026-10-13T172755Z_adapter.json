@@ -1,0 +1,69 @@
+{
+  "run": {
+    "stage": "adapter",
+    "started_utc": "2026-10-13T17:32:15+00:00",
+    "commit": "11f1a47",
+    "branch": "feature/sec-form4",
+    "argv": [
+      "--stage",
+      "adapter",
+      "--name",
+      "lora-v1",
+      "--adapter",
+      "form4-lora-v1",
+      "--note",
+      "rank-16 LoRA on Qwen2.5-7B, 266 examples (186 verified repairs of live failures + 80 replay), 2 epochs; prompt v2, render v3, enrich v4 unchanged"
+    ],
+    "small_model": "Qwen/Qwen2.5-7B-Instruct",
+    "small_endpoint": "https://michael-jw-ji--autoextract-small-serve.modal.run/v1",
+    "large_model": "Qwen/Qwen2.5-32B-Instruct",
+    "large_endpoint": "https://michael-jw-ji--autoextract-llm-serve.modal.run/v1",
+    "concurrency": 8,
+    "config": {
+      "enrich": true,
+      "json_mode": true,
+      "compact_prompt": false
+    },
+    "holdout_hash": "9789311604dce853",
+    "db": "form4.db"
+  },
+  "result": {
+    "score": {
+      "model_version_id": 10,
+      "eval_set_hash": "9789311604dce853",
+      "valid_rate": 0.9947,
+      "field_f1": 0.9932,
+      "n_docs": 189,
+      "per_field": {
+        "issuer_cik": 1.0,
+        "issuer_name": 1.0,
+        "issuer_ticker": 0.9947,
+        "period_of_report": 1.0,
+        "reporting_owners.*.name": 1.0,
+        "reporting_owners.*.is_director": 1.0,
+        "reporting_owners.*.is_officer": 1.0,
+        "reporting_owners.*.is_ten_percent_owner": 1.0,
+        "reporting_owners.*.officer_title": 1.0,
+        "transactions.*.security_title": 0.9747,
+        "transactions.*.is_derivative": 0.9892,
+        "transactions.*.date": 0.989,
+        "transactions.*.code": 0.9892,
+        "transactions.*.shares": 0.9871,
+        "transactions.*.price_per_share": 0.9841,
+        "transactions.*.acquired_disposed": 0.9892,
+        "transactions.*.shares_owned_after": 0.9892,
+        "transactions.*.direct_or_indirect": 0.9801
+      }
+    },
+    "gate": {
+      "decision": "promoted",
+      "candidate": "lora-v1",
+      "incumbent": "enrich-v4",
+      "margin_pp": 7.282,
+      "required_pp": 0.0,
+      "reason": "field_f1 +7.28pp, 95% CI [+5.24, +9.99] excludes zero; no field down more than 2.0pp; valid_rate +3.17pp",
+      "candidate_f1": 0.9932,
+      "incumbent_f1": 0.9204
+    }
+  }
+}

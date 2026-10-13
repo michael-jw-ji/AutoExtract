@@ -1,6 +1,6 @@
-# AutoExtract: SEC Form 4 extraction with a CI-enforced eval gate
+# Insider Reading: SEC Form 4 extraction with a CI-enforced eval gate
 
-[![eval](https://github.com/michael-jw-ji/AutoExtract/actions/workflows/eval.yml/badge.svg)](https://github.com/michael-jw-ji/AutoExtract/actions/workflows/eval.yml)
+[![eval](https://github.com/michael-jw-ji/insider-reading/actions/workflows/eval.yml/badge.svg)](https://github.com/michael-jw-ji/insider-reading/actions/workflows/eval.yml)
 
 Extracts insider transactions from real SEC Form 4 filings with a 7B open
 model, scores every change against a frozen holdout whose gold comes from each
@@ -10,7 +10,8 @@ better.
 | On 189 frozen holdout filings (553 transactions) | Field F1 | Schema-valid |
 |---|---|---|
 | Qwen2.5-7B, first prompt (baseline) | 0.8401 | 54.5% |
-| **Qwen2.5-7B, after 5 promoted changes (8 tried)** | **0.9204** | **96.3%** |
+| Qwen2.5-7B, after 5 promoted pipeline changes (8 tried) | 0.9204 | 96.3% |
+| **Qwen2.5-7B + LoRA trained on its own verified failures** | **0.9932** | **99.5%** |
 | Qwen2.5-32B, same pipeline (reference, not served) | 0.9965 | 100% |
 
 - **What moved it:** fixes in the *right layer*, not the model: owner
@@ -22,10 +23,13 @@ better.
 - **A failure a bigger model does not fix:** the 32B turns footnote-only prices
   into `0` three times as often as the 7B, and answers code `V` when a code
   equals its A/D letter. It follows the prompt's rules more literally.
-- **What is still wrong:** the 7B leaves out 37 of 553 real rows. The
-  baseline missed 4 but invented 208. F1 hides that trade; FAILURES.md does not.
-- **Cost:** $0.0012 per filing on a Modal L40S, latency p50 8.3 s / p99 159 s
-  (OpenTelemetry traces).
+- **The loop, closed:** the pipeline served 339 live filings, its 186
+  failures were repaired from their XML gold (verified by construction), and a
+  LoRA trained on those plus replay lifted F1 0.9204 → 0.9932, matching the
+  32B. On holdout filings whose company and people never appear in training:
+  0.9255 → 0.9923. Rows missed 37 → 6, rows invented 52 → 0.
+- **Cost:** $0.0007 per filing on a Modal L40S, latency p50 7.6 s / p99 63 s
+  (OpenTelemetry traces). Training took 283 s on an H100.
 - **Judge:** an LLM judge for officer titles, validated against human labels:
   TPR 0.989, TNR 0.984.
 
@@ -35,7 +39,7 @@ No keys, no downloads, no model: the tests, plus the CI eval replaying 30
 recorded model answers through the current code.
 
 ```
-git clone https://github.com/michael-jw-ji/AutoExtract && cd AutoExtract
+git clone https://github.com/michael-jw-ji/insider-reading && cd insider-reading
 make setup
 make ci
 ```
@@ -81,7 +85,7 @@ free and deterministic, and any score change comes from the code. It fails if
 any scored field drops more than 0.5 points, and refuses to score at all if
 the prompt or rendered input changed (that needs a live eval).
 
-**Demo:** [PR #2](https://github.com/michael-jw-ji/AutoExtract/pull/2) is a
+**Demo:** [PR #2](https://github.com/michael-jw-ji/insider-reading/pull/2) is a
 deliberate regression that looks like a harmless cleanup (round share counts
 to whole numbers). All 75 unit tests pass; the eval catches it, because real
 filings report fractional holdings:
@@ -107,15 +111,15 @@ Developer -> Edit Config), with your own paths, then restart Claude Desktop:
 ```json
 {
   "mcpServers": {
-    "autoextract-form4": {
-      "command": "/path/to/AutoExtract/.venv/bin/python",
-      "args": ["/path/to/AutoExtract/mcp_server.py"]
+    "insider-reading": {
+      "command": "/path/to/insider-reading/.venv/bin/python",
+      "args": ["/path/to/insider-reading/mcp_server.py"]
     }
   }
 }
 ```
 
-On Windows the command is `C:/path/to/AutoExtract/.venv/Scripts/python.exe`.
+On Windows the command is `C:/path/to/insider-reading/.venv/Scripts/python.exe`.
 The server reads `.env` from the repo (the model endpoint's `LLM_BASE_URL` /
 `LLM_API_KEY`, and `SEC_USER_AGENT` for URLs). Then ask, for example:
 *"Extract this Form 4 and tell me if it matches the filing:
@@ -149,8 +153,7 @@ make help                 # everything else
 | `scripts/` | fetch, load, label, failure reader, cycle driver, CI eval, 32B comparison, reports |
 | `infra/` | Modal deployments for the 7B (L40S) and 32B (H100) |
 | `mcp_server.py` | the MCP tools |
-| `buffer/`, `repair/`, `train/` | the self-improvement loop (failure clustering, verified repairs, LoRA), inherited from the hackathon version |
 | `results/runs/`, `data/eval_cache/` | every run's log, numbers, trace and recorded answers |
 
-Started as a Hack the North 2026 self-improving invoice extractor; the design
+Started as AutoExtract, a Hack the North 2026 self-improving invoice extractor; the design
 rules (verified repairs only, frozen holdout, gate) are in [CLAUDE.md](CLAUDE.md).

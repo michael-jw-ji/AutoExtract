@@ -1,6 +1,6 @@
-# How AutoExtract works
+# How Insider Reading works
 
-AutoExtract turns messy documents into strict, validated JSON, measures
+Insider Reading turns messy documents into strict, validated JSON, measures
 exactly where it is wrong, and is built to retrain itself on its own verified
 corrections, shipping a new model only if it beats the old one on a frozen
 test set.
@@ -41,7 +41,7 @@ filing's official XML as an exact answer key.
 | 2. Failure analysis | read failures, write `FAILURES.md`, fix each in the right layer, before/after per field | **done**: F1 0.9204, valid 96.3%; a 32B check |
 | 3. CI, tracing, judge | GitHub Actions eval gate, OpenTelemetry cost/latency, LLM judge checked against labels | **done** (see section 9) |
 | 4. MCP server, polish | `extract_form4` as an MCP tool, README with results | planned |
-| Loop: repair, train, gate | repairs verified against gold, LoRA, promotion gate | inherited from the invoice version; **not yet run on Form 4** |
+| Loop: repair, train, gate | repairs verified against gold, LoRA, promotion gate | **done**: LoRA on 186 verified repairs + 80 replay, F1 0.9204 → 0.9932 (RESULTS.md, Fix 8) |
 
 ---
 
@@ -215,18 +215,15 @@ is a weighted average of trades between $535.88 and $536.57.
 
 ## 6. The self-improvement loop
 
-Inherited from the invoice version and domain-agnostic. **It has not been run
-on Form 4 yet**; that is Milestone 2 onward.
+Run once on Form 4, and it produced the incumbent (`lora-v1`, RESULTS.md Fix 8).
 
 | Stage | What happens | Guard |
 |---|---|---|
-| Serve | extract live documents, append every result to the DB | failures go to a buffer, nothing is dropped |
-| Cluster | group failures by their deterministic signature | no embeddings; a signature is human-readable |
-| Repair | mechanical fixes first, then Qwen2.5-32B with the schema, rules and reference notes | the repairer sees the filing, the failed attempt and the exact errors |
-| Verify | a repair counts only if it is schema-valid **and** matches gold exactly | a self-consistent but wrong repair would teach the model to be confidently wrong, so unverified repairs are never trained on |
-| Dataset | 70% verified repairs, 30% replay of previously-correct examples | no single failure signature above 25% of the repair half; holdout leak = hard failure |
-| Train | LoRA fine-tune | local GPU or Baseten (see limitations) |
-| Gate | score the candidate on the frozen holdout | promote only at **+2.0pp field F1** with no valid-rate regression; rejections are recorded |
+| Serve | the incumbent pipeline extracts every live filing (`scripts/build_lora_dataset.py`) | the frozen holdout is never served; answers are cached in `data/live_cache/` |
+| Repair | a filing whose answer differs from gold is a failure; its repair is the filing's own XML gold | every repair is verified by construction, so the model is never trained on a wrong answer |
+| Dataset | 70% repairs, 30% replay of filings the model already gets right | replay drawn by a fixed hash; holdout leak = hard failure (`assert_no_leak`) |
+| Train | rank-16 LoRA on the same bf16 7B that serves (`infra/modal_train.py`) | the before/after compare one model |
+| Gate | `run_cycle.py --stage adapter` on the frozen holdout | promote only if the paired-bootstrap 95% interval of the F1 gain is above zero, no field drops more than 2.0 points, and valid rate does not drop; rejections are recorded |
 
 ---
 
@@ -315,7 +312,7 @@ which prompt v2 caused: see FAILURES.md, "Where each cause stands".
 
 - **CI eval:** every PR replays 30 recorded answers through its code, with no
   model calls, and fails on any field drop over 0.5 points.
-  [PR #2](https://github.com/michael-jw-ji/AutoExtract/pull/2) shows it catching
+  [PR #2](https://github.com/michael-jw-ji/insider-reading/pull/2) shows it catching
   a regression that all unit tests pass.
 - **Tracing:** OpenTelemetry spans per model call. The 7B costs **$0.0012 per
   filing**, with latency **p50 8.3 s and p99 158.7 s**.
@@ -331,16 +328,15 @@ which prompt v2 caused: see FAILURES.md, "Where each cause stands".
 
 | Part | What | Why |
 |---|---|---|
-| Small model | Qwen2.5-7B-Instruct, bf16, vLLM on a Modal L40S (`infra/modal_small.py`), LoRA enabled | the same weights hosted training fine-tunes, so before/after compare one model; about $1.95/hour while up. Local Ollama is kept for free experiments only |
-| Large model | Qwen2.5-32B-Instruct, bf16, vLLM on a Modal H100 (`infra/modal_llm.py`) | repairs need a clearly stronger model; scales to zero, about $3.95/hour while up |
+| Small model | Qwen2.5-7B-Instruct, bf16, vLLM on a Modal L40S (`infra/modal_small.py`), LoRA enabled | the same weights hosted training fine-tunes, so before/after compare one model; about $1.95/hour while up |
+| Large model | Qwen2.5-32B-Instruct, bf16, vLLM on a Modal H100 (`infra/modal_llm.py`) | the "bigger model" reference and the LLM judge; scales to zero, about $3.95/hour while up |
 | Client | OpenAI SDK against any OpenAI-compatible URL; small and large routed separately | swap providers with `.env` only |
 | Validation | pydantic v2, custom rule errors with field locations | deterministic, readable failure signatures |
 | Storage | SQLite (`form4.db`), append-only by stage | the audit trail survives a crash |
 | Data | SEC EDGAR daily indexes, filing XML and rendered HTML (`httpx`) | public, exact gold |
 | Labelling | FastAPI + one-page HTML tool, local only | review beside the page |
-| API / dashboard | FastAPI, Next.js | from the invoice version; not yet updated for Form 4 |
-| Training | TRL/PEFT LoRA locally, or Baseten training | see limitations |
-| Tests | pytest, 46 tests, no network or model needed | |
+| Training | rank-16 LoRA on Modal (`infra/modal_train.py`), served by name from the 7B's vLLM | trains the same weights that serve |
+| Tests | pytest, 85 tests, no network or model needed | |
 
 ---
 
@@ -352,13 +348,16 @@ domains/form4_io.py     XML → gold, HTML → text, difficulty tags
 scripts/fetch_form4.py  download filings from EDGAR
 scripts/load_form4.py   validate gold, render text, load into form4.db, apply labels
 scripts/label_form4.py  review tool (http://127.0.0.1:8765)
+scripts/failures_form4.py  failure reader (http://127.0.0.1:8766)
 scripts/freeze_eval.py  freeze the holdout
-scripts/probe.py        quick failure-rate check
-scripts/run_cycle.py    the loop: baseline, serve, repair, train, evaluate
-serve/                  model client and extraction
+scripts/run_cycle.py    score a version on the holdout and gate it
+scripts/build_lora_dataset.py  LoRA data from verified live failures
+scripts/ci_eval.py      the CI eval over recorded answers
+serve/                  model client, extraction, tracing
 verify/                 validation, signatures, field-level comparison
-buffer/ repair/ train/ evalgate/   the self-improvement loop
-infra/                  Modal endpoint, Ollama model file
+evalgate/               scorer, bootstrap gate, failure explainer, LLM judge
+infra/                  Modal: 7B server, 32B server, LoRA training
+mcp_server.py           MCP tools
 data/form4/labels/      human labels (tracked)
 data/form4/review/      AI pre-review notes (tracked)
 RESULTS.md              frozen holdout and every measured number
@@ -383,22 +382,15 @@ python scripts/freeze_eval.py
 python scripts/run_cycle.py --stage baseline --domain form4
 ```
 
-The large model is only needed for repairs:
+The large model is only needed for the 32B comparison and the judge:
 `modal deploy infra/modal_llm.py`, then set `LARGE_LLM_*` in `.env`.
 
 ---
 
 ## 13. Known limitations
 
-- **Training is not settled for the 7B.** A 7B LoRA does not fit in 8 GB, and
-  Baseten training returns 403 on this workspace. The options are training a
-  smaller model locally (which makes the before/after a different model from
-  the one serving) or hosted training.
-- **The API and dashboard** still carry invoice-era assumptions (for example,
-  which fields count as "business rules").
-- **`train/dataset.py`'s negative-control dataset** is invoice-specific and
-  needs a Form 4 equivalent.
-- **Missed rows.** The 7B leaves out 37 of 553 real transactions (the
-  baseline missed 4, while inventing 208). F1 hides this trade.
+- **Missed rows (before the LoRA).** The prompt-only 7B left out 37 of 553
+  real transactions (the baseline missed 4, while inventing 208); the LoRA
+  misses 6 and invents none.
 - **One corpus window.** All filings were filed between late September and
   early October 2026; seasonal filing patterns are not covered.

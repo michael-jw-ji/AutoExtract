@@ -623,3 +623,52 @@ Cost is the run's wall-clock GPU time at Modal's L40S rate ($0.000542/s)
 divided by the filings: the GPU is billed while up, however many requests
 share it. CPU, memory and the idle scale-down window are not included. The
 p99 is the few 20-30-row filings whose answers run to ~2,500 tokens.
+
+## Fix 8: LoRA fine-tune, the loop closed (promoted)
+
+The original loop, run for real: serve live traffic, take the failures, train
+on verified repairs, gate the result.
+
+1. **Serve.** The incumbent pipeline answered all 339 LIVE filings (never the
+   holdout); 186 were not perfect. `scripts/build_lora_dataset.py`; record
+   `results/runs/2026-10-13T170930Z_lora_dataset.*`, answers in
+   `data/live_cache/`.
+2. **Repair, verified.** A failure's repair is the filing's own XML gold, so
+   every repair is verified by construction. 186 repairs (70%) + 80 replay
+   filings the model already got right (30%, against forgetting) = 266
+   examples; holdout excluded mechanically (`assert_no_leak`).
+3. **Train.** Rank-16 LoRA on the same bf16 Qwen2.5-7B the server runs, loss
+   on the answer tokens only, 2 epochs, Modal H100, 283 s (`infra/modal_train.py`);
+   validation loss 0.094 -> 0.0002. Record `results/runs/2026-10-13T171858Z_train.*`.
+4. **Gate.** Served by the same vLLM server by name (`form4-lora-v1`), with
+   the incumbent's prompt, render and post-processing: the weights are the
+   only change. Record `results/runs/2026-10-13T172755Z_adapter.*`.
+
+| | Enrich v4 (incumbent) | LoRA v1 | 32B, same pipeline (reference) |
+|---|---|---|---|
+| Field F1 | 0.9204 | **0.9932** | 0.9965 |
+| Valid rate | 96.3% | **99.5%** | 100% |
+| Rows matched / missing / extra (553 gold) | 516 / 37 / 52 | **547 / 6 / 0** | 553 / 0 / 0 |
+| Latency p50 / p99 | 8.3 s / 158.7 s | **7.6 s / 62.7 s** | |
+| GPU cost per filing | $0.0012 | **$0.0007** | |
+| Gate | | **promoted**: +7.28 pts, 95% interval [+5.24, +9.99]; every field up | |
+
+Every scored field rose (is_derivative +13.7, price +12.2, security_title
++9.6, shares +8.5, ...); none fell. It is cheaper and faster too: its answers
+are shorter and it no longer runs away on long filings.
+
+**Did it memorise the filers?** Live and holdout are different filings, but
+a company can file more than once. On the 150 holdout filings whose issuer
+AND reporting owners never appear in the training set, F1 goes 0.9255 ->
+**0.9923** (+6.68 pts, 95% interval [+4.35, +9.73]). The 39 filings from
+issuers seen in training score a little higher (0.9980): some benefit from
+familiarity, but the gain is learned form-reading, not recall.
+
+**What it means.** The fine-tuned 7B now matches the 32B on this task, at a
+fraction of the GPU. The failures that prompts, rendering and code could not
+fix (row selection, Table II columns) are the ones training fixed, using
+nothing but filings the model got wrong and the free gold that comes with
+them.
+
+The CI fixture was re-recorded from the LoRA (`ci_eval.py --build`); the
+deliberate regression of PR #2 still fails it (shares -3.5, owned-after -3.3).

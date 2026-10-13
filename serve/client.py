@@ -80,7 +80,7 @@ def chat(
         span.set_attribute("gen_ai.request.max_tokens", max_tokens)
         span.set_attribute("server.address",
                            settings.large_llm_base_url if large else settings.llm_base_url)
-        span.set_attribute("autoextract.server", "large" if large else "small")
+        span.set_attribute("insider_reading.server", "large" if large else "small")
         for attempt in range(3):
             resp = client(large).chat.completions.create(
                 model=model, messages=messages,
@@ -96,7 +96,7 @@ def chat(
         span.set_attribute("gen_ai.response.finish_reasons", [resp.choices[0].finish_reason or ""])
         span.set_attribute("gen_ai.usage.input_tokens", in_tokens)
         span.set_attribute("gen_ai.usage.output_tokens", out_tokens)
-        span.set_attribute("autoextract.attempts", attempt + 1)
+        span.set_attribute("insider_reading.attempts", attempt + 1)
     # A truncated answer is invalid JSON and would be scored as a model
     # failure. Say so loudly instead of letting it pass as one.
     if resp.choices[0].finish_reason == "length":

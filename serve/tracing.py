@@ -25,9 +25,9 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import ReadableSpan, TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor, SpanExporter, SpanExportResult
 
-_provider = TracerProvider(resource=Resource.create({"service.name": "autoextract"}))
+_provider = TracerProvider(resource=Resource.create({"service.name": "insider-reading"}))
 trace.set_tracer_provider(_provider)
-tracer = trace.get_tracer("autoextract")
+tracer = trace.get_tracer("insider_reading")
 
 
 class JsonlExporter(SpanExporter):

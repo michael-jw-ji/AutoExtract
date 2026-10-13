@@ -59,7 +59,7 @@ def build() -> None:
     from core.db import init_db
     from evalgate.scorer import holdout_docs, model_input, skip_fields  # noqa: F401
     from core.db import tx, rows
-    from serve.extract import extract_text
+    from serve.extract import extract_text, served_model
 
     init_db()
     docs = {d["id"]: d for d in holdout_docs()}
@@ -70,7 +70,8 @@ def build() -> None:
     chosen: list[int] = []
     for tag, k in PICK:
         chosen += [i for i in order if tag in tags[i] and i not in chosen][:k]
-    print(f"recording {len(chosen)} filings from {settings.small_model}...")
+    model = served_model()   # the promoted pipeline's model, LoRA included
+    print(f"recording {len(chosen)} filings from {model}...")
 
     out = []
     for n, i in enumerate(chosen, 1):
@@ -78,7 +79,7 @@ def build() -> None:
         text = model_input(d)
         html = (settings.data_dir / "form4" / "raw" / f"{d['ext_id']}.html").read_text(
             encoding="utf-8", errors="replace")
-        model_raw, ms, used = extract_text(text, settings.small_model, enrich=False)
+        model_raw, ms, used = extract_text(text, model, enrich=False)
         rec = {"doc_id": i, "accession": d["ext_id"], "tags": tags[i],
                "cik_line": d["text"].split("\n", 1)[0], "html": html,
                "input_sha": _sha(text), "gold_json": d["gold_json"],
@@ -88,7 +89,7 @@ def build() -> None:
         print(f"  [{n}/{len(chosen)}] {d['ext_id']} {ms / 1000:.1f}s", flush=True)
 
     meta = {"prompt_sha": _sha(system_prompt()), "render_version": get_domain().render_version,
-            "enrich_version": get_domain().enrich_version, "model": settings.small_model}
+            "enrich_version": get_domain().enrich_version, "model": model}
     FIXTURE.parent.mkdir(parents=True, exist_ok=True)
     FIXTURE.write_text("\n".join([json.dumps({"meta": meta})] + [json.dumps(r) for r in out])
                        + "\n", encoding="utf-8")

@@ -1,0 +1,19 @@
+# run {"stage": "lora_dataset", "started_utc": "2026-10-13T17:09:30+00:00", "commit": "51ad8ad", "branch": "feature/sec-form4", "argv": [], "small_model": "Qwen/Qwen2.5-7B-Instruct", "small_endpoint": "https://michael-jw-ji--autoextract-small-serve.modal.run/v1", "large_model": "Qwen/Qwen2.5-32B-Instruct", "large_endpoint": "https://michael-jw-ji--autoextract-llm-serve.modal.run/v1", "concurrency": 8, "config": {"enrich": true, "json_mode": true, "compact_prompt": false}, "holdout_hash": "9789311604dce853", "db": "form4.db"}
+serving 339 live filings with the incumbent pipeline (Qwen/Qwen2.5-7B-Instruct, enrich4+render3+json, pb4955a08)
+  0 cached, 339 to run -> Qwen_Qwen2.5-7B-Instruct__enrich4+render3+json__pb4955a08.jsonl
+  [25/339]
+  [50/339]
+  [75/339]
+  [100/339]
+  [125/339]
+  [150/339]
+  [175/339]
+  [200/339]
+  [225/339]
+  [250/339]
+  [275/339]
+  [300/339]
+  [325/339]
+  live filings: 186 wrong, 153 right
+  dataset: 186 verified repairs + 80 replay = 266 -> data\datasets\form4_lora_v1.jsonl
+# end status=ok
