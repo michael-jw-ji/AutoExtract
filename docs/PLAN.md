@@ -61,8 +61,8 @@ This is the part that produces your interview story.
 
 ## Milestone 3: CI gate, tracing, judge (week 2 to 3)
 
-- [ ] `.github/workflows/eval.yml`: on every PR, run `pytest` plus a **small cached eval** (20 to 30 holdout docs with recorded model responses so CI is free and deterministic). Fail the build if any scored field drops more than a set threshold vs `main`.
-- [ ] Add one deliberate regression in a PR, show CI catching it, and link that PR in the README.
+- [x] `.github/workflows/eval.yml`: on every PR, run `pytest` plus a **small cached eval** (20 to 30 holdout docs with recorded model responses so CI is free and deterministic). Fail the build if any scored field drops more than a set threshold vs `main`.
+- [x] Add one deliberate regression in a PR, show CI catching it, and link that PR in the README. _(PR #2: rounding share counts passes all 75 unit tests; the eval fails it on shares -3.6 and shares_owned_after -3.3. The threshold is vs `data/ci/baseline.json`, which is updated on the branch with each promoted change.)_
 - [ ] Tracing: wrap the model client in `serve/client.py` with OpenTelemetry spans using the GenAI attributes (`gen_ai.request.model`, `gen_ai.usage.input_tokens`, `gen_ai.usage.output_tokens`), or use LangSmith (Pennant uses it). Report cost and p50/p99 latency per document.
 - [ ] LLM judge for the one field code cannot check exactly (for example owner relationship from free text): binary PASS/FAIL, validated against your 30 hand labels, report true positive and true negative rates.
 - [ ] Add cross-platform `Makefile` or `scripts/*.sh` next to the `.ps1` files.
