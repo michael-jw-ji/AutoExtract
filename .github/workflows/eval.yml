@@ -20,6 +20,6 @@ jobs:
       - name: Install
         run: pip install -e ".[dev]"
       - name: Unit tests
-        run: pytest -q -W error
+        run: make test
       - name: Cached eval (recorded answers, no model calls)
-        run: python scripts/ci_eval.py
+        run: make eval

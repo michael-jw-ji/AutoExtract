@@ -494,10 +494,9 @@ class Form4Domain:
 
     def system_prompt(self) -> str:
         codes = ", ".join(sorted(CODE_MEANINGS))
-        # v4 (2026-10-13): v2 said the code "is NOT the A/D letter", and the
-        # 32B, following it literally, answered V when the code really was
-        # A or D (RESULTS.md, "Does a bigger model fix it?"). One wording
-        # change against v2.
+        # v4 (commit 0161151: "the code CAN equal its A/D letter") was
+        # REJECTED by the gate (+1.50pp, 95% CI [-0.14, +4.07]) and is
+        # reverted here, like v3. RESULTS.md, "Prompt v4".
         # v3 (commit 3b38eef: "shares_owned_after can be
         # 0, report every row") was REJECTED by the gate, so it is reverted
         # here: a code-fix candidate must change one thing against v2.
@@ -545,12 +544,8 @@ Reading a Table II row (invented example):
 Rules:
   code             the letter right after the transaction date, one of:
                    {codes}
-                   Read it from its own column, not from the A/D column: in
-                   the Table I example the code is S and the A/D letter is D.
-                   The two CAN be the same letter (a grant is code A and
-                   acquired A; a disposition to the issuer is code D and
-                   disposed D); then report that letter. The "V" column next
-                   to the code is a separate box, not the code.
+                   It is NOT the A/D letter: in the Table I example the code
+                   is S and the A/D letter is D.
   acquired_disposed  the A or D next to the amount
   shares, shares_owned_after  plain numbers: drop commas and footnote markers
                    like (1), and KEEP every decimal (18,040.5 -> 18040.5)

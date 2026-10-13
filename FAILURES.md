@@ -169,7 +169,11 @@ column 8.
 
 ## Candidates for "a bigger model doesn't fix this"
 
-To be tested against Qwen2.5-32B in Milestone 2:
+Written before the test; the outcome is in [RESULTS.md](RESULTS.md), "Does a
+bigger model fix it?". Qwen2.5-32B on the same pipeline fixed all three
+below. What it did NOT fix were two failures this list did not predict:
+marker-only prices turned into 0, and codes equal to their A/D letter turned
+into `V`. Both come from following a prompt rule literally.
 
 1. **Answering from memory.** SailPoint (0001820482-26-000033): the page says
    `SailPoint, Inc.`; the model writes `SailPoint Technologies Holdings,
@@ -189,3 +193,35 @@ prompt revision; then owner checkboxes (code) and the `/K` gap (code); then
 table labels and marker separation (text rendering). Each fix is measured on
 the frozen holdout with a before/after per field in
 [RESULTS.md](RESULTS.md).
+
+## Where each cause stands (after the fixes)
+
+Each fix was a candidate on the frozen holdout, promoted or rejected by the
+gate; numbers and run records are in [RESULTS.md](RESULTS.md).
+
+| Cause | Fixed in | Result |
+|---|---|---|
+| 1. Invented rows for empty tables | prompt v2, then code (drop placeholder rows) | gone |
+| 2. Code copied from the A/D column | prompt v2 (a v4 rewording, rejected, removed the 32B-style `V` answers) | code recall 0.74 -> 0.92 |
+| 3. Owner checkboxes misread | code: flags read off the page | 1.00 on every flag |
+| 4. Holdings lines as transactions | render v3: rows labelled transaction / holding | 59 such extra rows -> 4 |
+| 5. Table II rows read as Table I | render v3 labels | wrong-table rows 53 -> 45 |
+| 6. Prices missed / footnote-only prices | prompt v2; code: marker-only price cell = null | price recall 0.83 -> 0.86 |
+| 7. Footnote markers glued to values | render v3 splits them; code strips them from titles | |
+
+**What is still wrong: rows the model leaves out.** Per transaction field, the
+baseline actually found MORE of the gold values than the current version (date
+recall 0.99 vs 0.93), because it reported almost every row: 549 of 553 matched,
+4 missing, but 208 invented. Prompt v2's "leave holdings out, never invent a
+row" cut the invented rows and also made the 7B drop real ones:
+
+| Rows (553 in gold) | Baseline | Prompt v2 | Prompt v3 (rejected) | Render v3 | 32B |
+|---|---|---|---|---|---|
+| Matched | 549 | 514 | 535 | 516 | 553 |
+| Missing | **4** | 39 | 18 | 37 | 0 |
+| Extra | 208 | 141 | 143 | **52** | 0 |
+
+F1 rewards the trade (0.84 -> 0.92), but a reader who needs every
+transaction would not. Prompt v3's wording ("report every row") halved the
+missing rows but was rejected under the old fixed-margin rule; with render v3
+now doing the row selection, that wording is the obvious next candidate.

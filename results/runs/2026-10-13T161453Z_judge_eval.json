@@ -1,0 +1,2286 @@
+{
+  "run": {
+    "stage": "judge_eval",
+    "started_utc": "2026-10-13T16:15:56+00:00",
+    "commit": "0161151+uncommitted",
+    "branch": "feature/sec-form4",
+    "argv": [],
+    "small_model": "Qwen/Qwen2.5-7B-Instruct",
+    "small_endpoint": "https://michael-jw-ji--autoextract-small-serve.modal.run/v1",
+    "large_model": "Qwen/Qwen2.5-32B-Instruct",
+    "large_endpoint": "https://michael-jw-ji--autoextract-llm-serve.modal.run/v1",
+    "concurrency": 8,
+    "config": {
+      "enrich": true,
+      "json_mode": true,
+      "compact_prompt": false
+    },
+    "holdout_hash": "9789311604dce853",
+    "db": "form4.db"
+  },
+  "result": {
+    "summary": {
+      "overall": {
+        "judge": {
+          "n": 217,
+          "pos": 92,
+          "neg": 125,
+          "tpr": 0.989,
+          "tnr": 0.984
+        },
+        "code": {
+          "n": 217,
+          "pos": 92,
+          "neg": 125,
+          "tpr": 0.793,
+          "tnr": 0.944
+        }
+      },
+      "real": {
+        "judge": {
+          "n": 86,
+          "pos": 73,
+          "neg": 13,
+          "tpr": 0.986,
+          "tnr": 0.923
+        },
+        "code": {
+          "n": 86,
+          "pos": 73,
+          "neg": 13,
+          "tpr": 1.0,
+          "tnr": 1.0
+        }
+      },
+      "remarks": {
+        "judge": {
+          "n": 22,
+          "pos": 7,
+          "neg": 15,
+          "tpr": 1.0,
+          "tnr": 0.933
+        },
+        "code": {
+          "n": 22,
+          "pos": 7,
+          "neg": 15,
+          "tpr": 0.0,
+          "tnr": 0.533
+        }
+      },
+      "paraphrase": {
+        "judge": {
+          "n": 12,
+          "pos": 12,
+          "neg": 0,
+          "tpr": 1.0,
+          "tnr": null
+        },
+        "code": {
+          "n": 12,
+          "pos": 12,
+          "neg": 0,
+          "tpr": 0.0,
+          "tnr": null
+        }
+      },
+      "distractor": {
+        "judge": {
+          "n": 97,
+          "pos": 0,
+          "neg": 97,
+          "tpr": null,
+          "tnr": 1.0
+        },
+        "code": {
+          "n": 97,
+          "pos": 0,
+          "neg": 97,
+          "tpr": null,
+          "tnr": 1.0
+        }
+      }
+    },
+    "items": [
+      {
+        "doc_id": 2,
+        "name": "Chen Xiaoping",
+        "kind": "real",
+        "candidate": "Chief Executive Officer",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the filing.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 2,
+        "name": "Chen Xiaoping",
+        "kind": "paraphrase",
+        "candidate": "CEO",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate title 'CEO' correctly matches the stated title 'Chief Executive Officer'.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 2,
+        "name": "Chen Xiaoping",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides null for a person who has an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 9,
+        "name": "Graff Jeremy R.",
+        "kind": "remarks",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a null value for an officer who has a title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 9,
+        "name": "Graff Jeremy R.",
+        "kind": "remarks",
+        "candidate": "See Remarks",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'See Remarks' is not the actual officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 9,
+        "name": "Graff Jeremy R.",
+        "kind": "remarks",
+        "candidate": "President and Chief Development Officer",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the Remarks.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 10,
+        "name": "MARTINEZ MARIA D.",
+        "kind": "remarks",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a null value for an officer who has a title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 10,
+        "name": "MARTINEZ MARIA D.",
+        "kind": "remarks",
+        "candidate": "See Remarks",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'See Remarks' is not the actual officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 10,
+        "name": "MARTINEZ MARIA D.",
+        "kind": "remarks",
+        "candidate": "SVP, Chief Human Resources Officer",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the Remarks.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 16,
+        "name": "Nursey Michael E.",
+        "kind": "remarks",
+        "candidate": "See remarks",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'See remarks' is not the actual officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 16,
+        "name": "Nursey Michael E.",
+        "kind": "remarks",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a null value for the officer title when the Remarks specify 'SEVP, Chief Domestic Banking Officer'.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 16,
+        "name": "Nursey Michael E.",
+        "kind": "remarks",
+        "candidate": "SEVP, Chief Domestic Banking Officer",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the Remarks.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 40,
+        "name": "Farrell Michael J.",
+        "kind": "real",
+        "candidate": "Chairman and CEO",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the filing.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 40,
+        "name": "Farrell Michael J.",
+        "kind": "paraphrase",
+        "candidate": "Chairman & CEO",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate title matches the filing's stated title, allowing for punctuation differences.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 40,
+        "name": "Farrell Michael J.",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides null instead of the actual officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 41,
+        "name": "Jamaloodeen Ahmed",
+        "kind": "real",
+        "candidate": "Chairman and President",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the filing.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 41,
+        "name": "Jamaloodeen Ahmed",
+        "kind": "paraphrase",
+        "candidate": "Chairman & President",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate title matches the title stated in the filing, allowing for punctuation differences.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 41,
+        "name": "Jamaloodeen Ahmed",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides null for a person who has an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 53,
+        "name": "ROTHBLATT MARTINE A",
+        "kind": "real",
+        "candidate": "Chairperson & CEO",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the filing.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 53,
+        "name": "ROTHBLATT MARTINE A",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a null value for an officer who holds the title Chairperson & CEO.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 59,
+        "name": "Thomas Warren",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that the person has no officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 87,
+        "name": "ROTHBLATT MARTINE A",
+        "kind": "real",
+        "candidate": "Chairperson & CEO",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the filing.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 87,
+        "name": "ROTHBLATT MARTINE A",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a null value for an officer who holds the title Chairperson & CEO.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 107,
+        "name": "Faddis Jonathan",
+        "kind": "real",
+        "candidate": "SVP, Gen. Counsel, Secretary",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly matches the stated officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 107,
+        "name": "Faddis Jonathan",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides null for a person who has an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 112,
+        "name": "Galloway Jesse Charles",
+        "kind": "remarks",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a null value for an officer who has a title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 112,
+        "name": "Galloway Jesse Charles",
+        "kind": "remarks",
+        "candidate": "Executive Vice President and General Counsel",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the Remarks.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 112,
+        "name": "Galloway Jesse Charles",
+        "kind": "remarks",
+        "candidate": "See Remarks",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate should not be 'See Remarks' when Remarks provide the actual title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 117,
+        "name": "DUNN JEFFREY W",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that the person does not have an officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 122,
+        "name": "ALBERT CONRAD P",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The person is not an officer of the issuer.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 123,
+        "name": "Bender Joel",
+        "kind": "real",
+        "candidate": "President",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as 'President'.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 123,
+        "name": "Bender Joel",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides null for an officer who has a title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 124,
+        "name": "Peng Jun",
+        "kind": "real",
+        "candidate": "Chief Executive Officer",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the filing.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 124,
+        "name": "Peng Jun",
+        "kind": "paraphrase",
+        "candidate": "CEO",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate title 'CEO' matches the stated title 'Chief Executive Officer'.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 124,
+        "name": "Peng Jun",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides null for a person who has an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 131,
+        "name": "Shaw Timothy",
+        "kind": "real",
+        "candidate": "Chief Operating Officer",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the filing.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 131,
+        "name": "Shaw Timothy",
+        "kind": "paraphrase",
+        "candidate": "COO",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate title 'COO' correctly abbreviates the stated title 'Chief Operating Officer'.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 131,
+        "name": "Shaw Timothy",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a null value for an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 133,
+        "name": "Halabu David Elias",
+        "kind": "real",
+        "candidate": "Chief Executive Officer",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the filing.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 133,
+        "name": "Halabu David Elias",
+        "kind": "paraphrase",
+        "candidate": "CEO",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate title 'CEO' matches the stated title 'Chief Executive Officer'.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 133,
+        "name": "Halabu David Elias",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a null value for the officer title when the person holds the title of Chief Executive Officer.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 140,
+        "name": "Tremblay Jean",
+        "kind": "real",
+        "candidate": "SVP and Sr. RLO",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate title matches the title stated in the filing.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 140,
+        "name": "Tremblay Jean",
+        "kind": "paraphrase",
+        "candidate": "SVP & Sr. RLO",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate title matches the filing's stated title, allowing for minor punctuation differences.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 140,
+        "name": "Tremblay Jean",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a null value for an officer with a stated title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 160,
+        "name": "V3 Holding Ltd",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the reporting person as not having an officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 160,
+        "name": "Bitfury Top HoldCo B.V.",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The reporting person is not an officer of the issuer.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 160,
+        "name": "Bitfury Holding B.V.",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The reporting person is not an officer of the issuer.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 160,
+        "name": "Vavilovs Valerijs",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the absence of an officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 160,
+        "name": "Bitfury Group Ltd",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that there is no officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 168,
+        "name": "BAKER BROS. ADVISORS LP",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The reporting person is not an officer of the issuer.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 168,
+        "name": "667, L.P.",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The reporting person 667, L.P. does not have an officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 168,
+        "name": "Baker Bros. Advisors (GP) LLC",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The reporting person is not an officer of the issuer.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 168,
+        "name": "Baker Brothers Life Sciences LP",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The reporting person is not an officer of the issuer.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 168,
+        "name": "BAKER FELIX",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that Felix Baker does not hold an officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 168,
+        "name": "BAKER JULIAN",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that Julian BAKER has no officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 174,
+        "name": "BX Buzz ML-1 GP LLC",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that there is no officer title for the reporting person.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 174,
+        "name": "BX Buzz ML-2 GP LLC",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that there is no officer title for the reporting person.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 174,
+        "name": "BX Buzz ML-3 GP LLC",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that there is no officer title for the reporting person.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 174,
+        "name": "BX Buzz ML-4 GP LLC",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that there is no officer title for the reporting person.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 174,
+        "name": "BX Buzz ML-5 GP LLC",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that there is no officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 174,
+        "name": "BX Buzz ML-6 GP LLC",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that there is no officer title for the reporting person.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 174,
+        "name": "BX Buzz ML-7 GP LLC",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that there is no officer title for the reporting person.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 174,
+        "name": "Blackstone Inc.",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that there is no officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 174,
+        "name": "Blackstone Group Management L.L.C.",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that the reporting person does not have an officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 174,
+        "name": "SCHWARZMAN STEPHEN A",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that Stephen A Schwarzman has no officer title listed.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 179,
+        "name": "McCulloch Kevin",
+        "kind": "remarks",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a null value for an officer who has a title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 179,
+        "name": "McCulloch Kevin",
+        "kind": "remarks",
+        "candidate": "See Remarks",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'See Remarks' is not the actual officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 179,
+        "name": "McCulloch Kevin",
+        "kind": "remarks",
+        "candidate": "President and Chief Operating Officer",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the Remarks.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 197,
+        "name": "Pelant John Edward",
+        "kind": "remarks",
+        "candidate": "See remarks",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate should not be 'See remarks' but the actual title provided in the Remarks section.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 197,
+        "name": "Pelant John Edward",
+        "kind": "remarks",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a null value for an officer who has a specified title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 197,
+        "name": "Pelant John Edward",
+        "kind": "remarks",
+        "candidate": "Executive Vice President, Traveler Experience and US Defense and Government",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate title matches the title given in the Remarks.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 203,
+        "name": "SUBIN NEIL S",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that Neil S. Subin does not hold an officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 203,
+        "name": "SUBIN NEIL S",
+        "kind": "real",
+        "candidate": "President and Manager",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'President and Manager' is not mentioned in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 203,
+        "name": "MILFAM LLC",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that MILFAM LLC has no officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 203,
+        "name": "MILFAM GP, LLC",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that MILFAM GP, LLC has no officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 203,
+        "name": "Dark Mirage, LP",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that Dark Mirage, LP has no officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 205,
+        "name": "Hernandez Gerard Albert Palana",
+        "kind": "real",
+        "candidate": "Chief Accounting Officer",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate title matches the title stated in the filing.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 205,
+        "name": "Hernandez Gerard Albert Palana",
+        "kind": "paraphrase",
+        "candidate": "CAO",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate title 'CAO' correctly abbreviates the stated title 'Chief Accounting Officer'.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 205,
+        "name": "Hernandez Gerard Albert Palana",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a null value for the officer title when the person holds the title 'Chief Accounting Officer'.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 207,
+        "name": "McMeekin Russel Harold",
+        "kind": "real",
+        "candidate": "Global Corporate President",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate title matches the title given in the filing.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 207,
+        "name": "McMeekin Russel Harold",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a null value for an officer with a stated title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 211,
+        "name": "Page Tyler",
+        "kind": "real",
+        "candidate": "Chief Executive Officer",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the filing.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 211,
+        "name": "Page Tyler",
+        "kind": "paraphrase",
+        "candidate": "CEO",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate title 'CEO' matches the stated title 'Chief Executive Officer'.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 211,
+        "name": "Page Tyler",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a null value for an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 215,
+        "name": "Mumford Gregory J.D.",
+        "kind": "real",
+        "candidate": "Chief Financial Officer",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the filing.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 215,
+        "name": "Mumford Gregory J.D.",
+        "kind": "paraphrase",
+        "candidate": "CFO",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate title 'CFO' correctly matches the stated title 'Chief Financial Officer'.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 215,
+        "name": "Mumford Gregory J.D.",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a null value for an officer who has a title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 219,
+        "name": "Iwaschuk William",
+        "kind": "real",
+        "candidate": "Co-President and CLO",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the filing.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 219,
+        "name": "Iwaschuk William",
+        "kind": "paraphrase",
+        "candidate": "Co-President & CLO",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate title matches the filing's stated title with acceptable abbreviation and punctuation.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 219,
+        "name": "Iwaschuk William",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a null value for an officer who has a title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 221,
+        "name": "SMITH FREDERICK G",
+        "kind": "real",
+        "candidate": "Vice President",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as 'Vice President'.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 221,
+        "name": "SMITH FREDERICK G",
+        "kind": "paraphrase",
+        "candidate": "VP",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate title 'VP' correctly abbreviates the stated title 'Vice President'.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 221,
+        "name": "SMITH FREDERICK G",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides null for a person who has an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 223,
+        "name": "YZILabs Management Ltd.",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that there is no officer title for the reporting person.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 223,
+        "name": "YZILabs Management Ltd.",
+        "kind": "real",
+        "candidate": "10% Owner",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly identifies '10% Owner' as an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 223,
+        "name": "Zhao Changpeng",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that the reporting person has no officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 223,
+        "name": "Zhao Changpeng",
+        "kind": "real",
+        "candidate": "10% Owner",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly identifies '10% Owner' as an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 235,
+        "name": "Fisher David Allan",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that the person is not an officer of the issuer.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 249,
+        "name": "ROTHBLATT MARTINE A",
+        "kind": "real",
+        "candidate": "Chairperson & CEO",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the filing.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 249,
+        "name": "ROTHBLATT MARTINE A",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a null value for an officer who holds the title Chairperson & CEO.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 256,
+        "name": "Ungerecht Joshua",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that the person does not have an officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 278,
+        "name": "Silver Lake Partners IV, L.P.",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The reporting person is not an officer of the issuer.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 278,
+        "name": "Silver Lake Technology Associates IV, L.P.",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The reporting person is not an officer of the issuer.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 278,
+        "name": "SLTA IV (GP), L.L.C.",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The reporting person does not have an officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 278,
+        "name": "Silver Lake Group, L.L.C.",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The reporting person is not an officer of the issuer.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 278,
+        "name": "Durban Egon",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The reporting person is not an officer of the issuer.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 278,
+        "name": "Durban Egon",
+        "kind": "real",
+        "candidate": "CEO",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'CEO' does not match the filing which indicates no officer title for Durban Egon.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 288,
+        "name": "Perez Daniel Antonio",
+        "kind": "real",
+        "candidate": "CEO & Co-Founder",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the filing.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 288,
+        "name": "Perez Daniel Antonio",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides null for a person who has an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 301,
+        "name": "MAETZOLD DEREK J",
+        "kind": "real",
+        "candidate": "Pres. & Chief Exec. Officer",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the filing.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 301,
+        "name": "MAETZOLD DEREK J",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides null for a person who has an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 312,
+        "name": "FREDERICK WILLIAM W",
+        "kind": "real",
+        "candidate": "EVP/CFO",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as EVP/CFO.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 312,
+        "name": "FREDERICK WILLIAM W",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides null for a person who has an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 327,
+        "name": "DiBella John Anthony II",
+        "kind": "real",
+        "candidate": "Chief Revenue Officer",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the filing.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 327,
+        "name": "DiBella John Anthony II",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a null value for an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 333,
+        "name": "Fang Andy",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that the person does not have an officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 350,
+        "name": "Wall John Christopher",
+        "kind": "real",
+        "candidate": "President, QNX",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the filing.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 350,
+        "name": "Wall John Christopher",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides null for a person who has an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 390,
+        "name": "Huffman Steve Ladd",
+        "kind": "real",
+        "candidate": "CEO & President",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the filing.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 390,
+        "name": "Huffman Steve Ladd",
+        "kind": "distractor",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides null for a person who has an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 412,
+        "name": "GREENBERG SCOTT N",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that the person is not an officer of the issuer.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 412,
+        "name": "GREENBERG SCOTT N",
+        "kind": "real",
+        "candidate": "Revocable Trust",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'Revocable Trust' is not a job title and does not match the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 424,
+        "name": "GORDON CARL L",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer_title as null since the person is not an officer of the issuer.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 434,
+        "name": "Robertson Stephen",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that the person does not have an officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 445,
+        "name": "SR ONE CAPITAL MANAGEMENT, LLC",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the reporting person as not having an officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 445,
+        "name": "SR ONE CAPITAL MANAGEMENT, LLC",
+        "kind": "real",
+        "candidate": "10% Owner",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a role instead of an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 445,
+        "name": "SR ONE CAPITAL MANAGEMENT, LLC",
+        "kind": "real",
+        "candidate": "Managing Member",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'Managing Member' is not listed or implied in the form as an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 466,
+        "name": "Ackerman John",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that the person does not have an officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 466,
+        "name": "Ackerman John",
+        "kind": "real",
+        "candidate": "Member of 10% Owner Group",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title is not a job title at all.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 470,
+        "name": "Sousa Mauad Bruno",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that the person is not an officer of the issuer.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 471,
+        "name": "Endeavor Blockchain, LLC",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that Endeavor Blockchain, LLC has no officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 471,
+        "name": "Endeavor Blockchain, LLC",
+        "kind": "real",
+        "candidate": "Other",
+        "truth": "FAIL",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the reporting person as 'Other' since it is marked as 'Other' in the form.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 471,
+        "name": "Kilgore Joshua Allen",
+        "kind": "remarks",
+        "candidate": null,
+        "truth": "FAIL",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that the reporting person does not have an officer title listed in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 471,
+        "name": "Kilgore Joshua Allen",
+        "kind": "remarks",
+        "candidate": "Other",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'Other' does not match the officer title stated in the Remarks.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 471,
+        "name": "Kilgore Joshua Allen",
+        "kind": "remarks",
+        "candidate": "Executive Chairman",
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the officer title as stated in the Remarks.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 471,
+        "name": "Kilgore Joshua Allen",
+        "kind": "remarks",
+        "candidate": "SEE REMARKS",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'SEE REMARKS' is a pointer and not the actual officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 471,
+        "name": "Smith Cody",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a null value for an individual who holds an officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 471,
+        "name": "Smith Cody",
+        "kind": "real",
+        "candidate": "Other",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'Other' does not match the actual officer title 'Chief Operating Officer'.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 471,
+        "name": "PM Squared LLC",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The reporting person is not an officer of the issuer.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 471,
+        "name": "PM Squared LLC",
+        "kind": "real",
+        "candidate": "Other",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate 'Other' is not a job title and does not accurately reflect the reporting person's officer status.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 471,
+        "name": "Six Thirty AI, LLC",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies that Six Thirty AI, LLC has no officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 471,
+        "name": "Six Thirty AI, LLC",
+        "kind": "real",
+        "candidate": "Other",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'Other' is not a job title and does not match the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 496,
+        "name": "Barach Daniele Wolf",
+        "kind": "real",
+        "candidate": null,
+        "truth": "PASS",
+        "judge": "PASS",
+        "reason": "The candidate correctly identifies the absence of an officer title.",
+        "code": "PASS"
+      },
+      {
+        "doc_id": 496,
+        "name": "Barach Daniele Wolf",
+        "kind": "real",
+        "candidate": "10% Owner",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate provided '10% Owner' which is not a valid officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 2,
+        "name": "Chen Xiaoping",
+        "kind": "distractor",
+        "candidate": "CEO & Co-Founder",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title adds 'Co-Founder' which is not part of the officer title stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 40,
+        "name": "Farrell Michael J.",
+        "kind": "distractor",
+        "candidate": "CEO & President",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title differs from the title stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 41,
+        "name": "Jamaloodeen Ahmed",
+        "kind": "distractor",
+        "candidate": "Chairman and CEO",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'Chairman and CEO' does not match the reported title 'Chairman and President'.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 53,
+        "name": "ROTHBLATT MARTINE A",
+        "kind": "distractor",
+        "candidate": "Chairman and President",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match the title stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 59,
+        "name": "Thomas Warren",
+        "kind": "distractor",
+        "candidate": "Chairperson & CEO",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'Chairperson & CEO' does not match any stated officer title in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 87,
+        "name": "ROTHBLATT MARTINE A",
+        "kind": "distractor",
+        "candidate": "Chief Executive Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match the title stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 107,
+        "name": "Faddis Jonathan",
+        "kind": "distractor",
+        "candidate": "Chief Executive Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match the title stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 117,
+        "name": "DUNN JEFFREY W",
+        "kind": "distractor",
+        "candidate": "Chief Financial Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match any stated title in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 122,
+        "name": "ALBERT CONRAD P",
+        "kind": "distractor",
+        "candidate": "Chief Operating Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match any stated officer title in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 123,
+        "name": "Bender Joel",
+        "kind": "distractor",
+        "candidate": "Chief Revenue Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match the title stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 124,
+        "name": "Peng Jun",
+        "kind": "distractor",
+        "candidate": "EVP/CFO",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match the title stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 131,
+        "name": "Shaw Timothy",
+        "kind": "distractor",
+        "candidate": "Global Corporate President",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match the title stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 133,
+        "name": "Halabu David Elias",
+        "kind": "distractor",
+        "candidate": "Pres. & Chief Exec. Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title includes an additional role not stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 140,
+        "name": "Tremblay Jean",
+        "kind": "distractor",
+        "candidate": "Pres. & Chief Exec. Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match the title given in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 160,
+        "name": "Bitfury Group Ltd",
+        "kind": "distractor",
+        "candidate": "President",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides 'President' when the person is not an officer of the issuer.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 160,
+        "name": "Bitfury Holding B.V.",
+        "kind": "distractor",
+        "candidate": "President, QNX",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'President, QNX' does not match the filing which indicates the entity is a 10% Owner without an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 160,
+        "name": "Bitfury Top HoldCo B.V.",
+        "kind": "distractor",
+        "candidate": "SVP and Sr. RLO",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title is not a valid officer title for a 10% owner without an officer role.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 160,
+        "name": "V3 Holding Ltd",
+        "kind": "distractor",
+        "candidate": "SVP, Gen. Counsel, Secretary",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title is not null for a person who does not have an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 160,
+        "name": "Vavilovs Valerijs",
+        "kind": "distractor",
+        "candidate": "Vice President",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'Vice President' does not match the filing which indicates no officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 168,
+        "name": "667, L.P.",
+        "kind": "distractor",
+        "candidate": "CEO & Co-Founder",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'CEO & Co-Founder' does not match any officer title stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 168,
+        "name": "BAKER BROS. ADVISORS LP",
+        "kind": "distractor",
+        "candidate": "CEO & President",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'CEO & President' does not match any stated officer title for the reporting person.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 168,
+        "name": "BAKER FELIX",
+        "kind": "distractor",
+        "candidate": "Chairman and CEO",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'Chairman and CEO' is not mentioned in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 168,
+        "name": "BAKER JULIAN",
+        "kind": "distractor",
+        "candidate": "Chairman and President",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'Chairman and President' is not mentioned in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 168,
+        "name": "Baker Bros. Advisors (GP) LLC",
+        "kind": "distractor",
+        "candidate": "Chairperson & CEO",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'Chairperson & CEO' does not match any stated officer title in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 168,
+        "name": "Baker Brothers Life Sciences LP",
+        "kind": "distractor",
+        "candidate": "Chief Accounting Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match any stated officer title in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 174,
+        "name": "BX Buzz ML-1 GP LLC",
+        "kind": "distractor",
+        "candidate": "Chief Executive Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a job title for a non-officer.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 174,
+        "name": "BX Buzz ML-2 GP LLC",
+        "kind": "distractor",
+        "candidate": "Chief Financial Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly lists 'Chief Financial Officer' for a person who is not an officer but a 10% owner.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 174,
+        "name": "BX Buzz ML-3 GP LLC",
+        "kind": "distractor",
+        "candidate": "Chief Operating Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a job title for a non-officer.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 174,
+        "name": "BX Buzz ML-4 GP LLC",
+        "kind": "distractor",
+        "candidate": "Chief Revenue Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'Chief Revenue Officer' does not match any stated officer title in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 174,
+        "name": "BX Buzz ML-5 GP LLC",
+        "kind": "distractor",
+        "candidate": "Co-President and CLO",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'Co-President and CLO' does not match any stated officer title in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 174,
+        "name": "BX Buzz ML-6 GP LLC",
+        "kind": "distractor",
+        "candidate": "EVP/CFO",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'EVP/CFO' does not match the filing which indicates the person is a 10% Owner without an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 174,
+        "name": "BX Buzz ML-7 GP LLC",
+        "kind": "distractor",
+        "candidate": "Global Corporate President",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match any stated officer title in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 174,
+        "name": "Blackstone Group Management L.L.C.",
+        "kind": "distractor",
+        "candidate": "Pres. & Chief Exec. Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a job title for a person who is not an officer of the issuer.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 174,
+        "name": "Blackstone Inc.",
+        "kind": "distractor",
+        "candidate": "President",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly lists 'President' when the person is not an officer of the issuer.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 174,
+        "name": "SCHWARZMAN STEPHEN A",
+        "kind": "distractor",
+        "candidate": "President, QNX",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match any stated title in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 203,
+        "name": "Dark Mirage, LP",
+        "kind": "distractor",
+        "candidate": "SVP and Sr. RLO",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match any stated officer title in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 203,
+        "name": "MILFAM GP, LLC",
+        "kind": "distractor",
+        "candidate": "SVP, Gen. Counsel, Secretary",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title is not mentioned in the filing and MILFAM GP, LLC is listed as a 10% Owner without any officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 203,
+        "name": "MILFAM LLC",
+        "kind": "distractor",
+        "candidate": "Vice President",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'Vice President' does not match the filing which indicates the reporting person is a 10% Owner without an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 203,
+        "name": "SUBIN NEIL S",
+        "kind": "distractor",
+        "candidate": "CEO & Co-Founder",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'CEO & Co-Founder' is not mentioned in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 205,
+        "name": "Hernandez Gerard Albert Palana",
+        "kind": "distractor",
+        "candidate": "Chairman and President",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match the title stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 207,
+        "name": "McMeekin Russel Harold",
+        "kind": "distractor",
+        "candidate": "Chairperson & CEO",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match the title given in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 211,
+        "name": "Page Tyler",
+        "kind": "distractor",
+        "candidate": "Chief Accounting Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match the title stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 215,
+        "name": "Mumford Gregory J.D.",
+        "kind": "distractor",
+        "candidate": "Chief Executive Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match the title stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 219,
+        "name": "Iwaschuk William",
+        "kind": "distractor",
+        "candidate": "Chief Financial Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match the title stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 221,
+        "name": "SMITH FREDERICK G",
+        "kind": "distractor",
+        "candidate": "Chief Operating Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match the title stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 223,
+        "name": "YZILabs Management Ltd.",
+        "kind": "distractor",
+        "candidate": "Chief Financial Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'Chief Financial Officer' is not mentioned in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 223,
+        "name": "Zhao Changpeng",
+        "kind": "distractor",
+        "candidate": "Chief Operating Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'Chief Operating Officer' is not mentioned in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 235,
+        "name": "Fisher David Allan",
+        "kind": "distractor",
+        "candidate": "Chief Revenue Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match any stated title in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 249,
+        "name": "ROTHBLATT MARTINE A",
+        "kind": "distractor",
+        "candidate": "Pres. & Chief Exec. Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match the title stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 256,
+        "name": "Ungerecht Joshua",
+        "kind": "distractor",
+        "candidate": "EVP/CFO",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'EVP/CFO' does not match any stated officer title in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 278,
+        "name": "Durban Egon",
+        "kind": "distractor",
+        "candidate": "Global Corporate President",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match any stated title in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 278,
+        "name": "SLTA IV (GP), L.L.C.",
+        "kind": "distractor",
+        "candidate": "Pres. & Chief Exec. Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match any officer title stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 278,
+        "name": "Silver Lake Group, L.L.C.",
+        "kind": "distractor",
+        "candidate": "President",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'President' does not match the filing which indicates no officer title for this reporting person.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 278,
+        "name": "Silver Lake Partners IV, L.P.",
+        "kind": "distractor",
+        "candidate": "President, QNX",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match any stated officer title in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 278,
+        "name": "Silver Lake Technology Associates IV, L.P.",
+        "kind": "distractor",
+        "candidate": "SVP and Sr. RLO",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match any stated officer title in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 288,
+        "name": "Perez Daniel Antonio",
+        "kind": "distractor",
+        "candidate": "Chairman and CEO",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match the title stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 301,
+        "name": "MAETZOLD DEREK J",
+        "kind": "distractor",
+        "candidate": "Chairman and CEO",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match the title given in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 312,
+        "name": "FREDERICK WILLIAM W",
+        "kind": "distractor",
+        "candidate": "Chairman and President",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match the title given in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 327,
+        "name": "DiBella John Anthony II",
+        "kind": "distractor",
+        "candidate": "Chairperson & CEO",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match the title stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 333,
+        "name": "Fang Andy",
+        "kind": "distractor",
+        "candidate": "Chairman and CEO",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'Chairman and CEO' does not match any stated officer title in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 350,
+        "name": "Wall John Christopher",
+        "kind": "distractor",
+        "candidate": "Chief Executive Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match the title stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 390,
+        "name": "Huffman Steve Ladd",
+        "kind": "distractor",
+        "candidate": "Chief Operating Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match the title stated in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 412,
+        "name": "GREENBERG SCOTT N",
+        "kind": "distractor",
+        "candidate": "Chief Accounting Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match any stated officer title in the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 424,
+        "name": "GORDON CARL L",
+        "kind": "distractor",
+        "candidate": "Chief Executive Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a title for a person who is not listed as an officer.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 434,
+        "name": "Robertson Stephen",
+        "kind": "distractor",
+        "candidate": "Chief Financial Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly lists 'Chief Financial Officer' when the filing indicates the person is a Director without an officer title.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 445,
+        "name": "SR ONE CAPITAL MANAGEMENT, LLC",
+        "kind": "distractor",
+        "candidate": "Chief Operating Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly provides a job title for a person who is not an officer of the issuer.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 466,
+        "name": "Ackerman John",
+        "kind": "distractor",
+        "candidate": "Chief Revenue Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate incorrectly lists a title for a person who is not an officer according to the filing.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 470,
+        "name": "Sousa Mauad Bruno",
+        "kind": "distractor",
+        "candidate": "Co-President and CLO",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'Co-President and CLO' does not match the filing which indicates the person is a Director, not an officer.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 471,
+        "name": "Endeavor Blockchain, LLC",
+        "kind": "distractor",
+        "candidate": "EVP/CFO",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'EVP/CFO' does not match any stated officer title for the reporting person.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 471,
+        "name": "PM Squared LLC",
+        "kind": "distractor",
+        "candidate": "Global Corporate President",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'Global Corporate President' does not match any stated officer title for PM Squared LLC.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 471,
+        "name": "Six Thirty AI, LLC",
+        "kind": "distractor",
+        "candidate": "Pres. & Chief Exec. Officer",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match any officer title stated for Six Thirty AI, LLC.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 471,
+        "name": "Smith Cody",
+        "kind": "distractor",
+        "candidate": "President",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title 'President' does not match the reported title 'Chief Operating Officer'.",
+        "code": "FAIL"
+      },
+      {
+        "doc_id": 496,
+        "name": "Barach Daniele Wolf",
+        "kind": "distractor",
+        "candidate": "President, QNX",
+        "truth": "FAIL",
+        "judge": "FAIL",
+        "reason": "The candidate title does not match any stated officer title in the filing.",
+        "code": "FAIL"
+      }
+    ],
+    "remarks_titles": {
+      "9|Graff Jeremy R.": "President and Chief Development Officer",
+      "10|MARTINEZ MARIA D.": "SVP, Chief Human Resources Officer",
+      "16|Nursey Michael E.": "SEVP, Chief Domestic Banking Officer",
+      "112|Galloway Jesse Charles": "Executive Vice President and General Counsel",
+      "179|McCulloch Kevin": "President and Chief Operating Officer",
+      "197|Pelant John Edward": "Executive Vice President, Traveler Experience and US Defense and Government",
+      "471|Kilgore Joshua Allen": "Executive Chairman"
+    }
+  }
+}
