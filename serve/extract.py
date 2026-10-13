@@ -5,9 +5,9 @@ from __future__ import annotations
 import json
 
 from core.config import settings
-from core.db import connect, incumbent, insert, tx
+from core.db import incumbent, tx
 from serve.client import chat, serving_model
-from verify.validate import Outcome, validate
+
 
 def system_prompt() -> str:
     """The serving/training system prompt for the ACTIVE domain.
@@ -17,7 +17,7 @@ def system_prompt() -> str:
     schema in every example the sequences run past 3.7k tokens, and shrinking
     the prompt is what brings them inside a 2048 window.
 
-    This is read by BOTH serve/extract and train/dataset, so training and
+    This is read by BOTH serve/extract and scripts/build_lora_dataset, so training and
     serving can never silently disagree about the prompt -- if they did, the
     LoRA would be tuned for text the server never sends and would not transfer.
     """
@@ -86,35 +86,3 @@ def apply_enrichment(raw: str, text: str | None = None) -> str:
         return raw
     enriched, _report = _domain().enrich(payload, text)
     return json.dumps(enriched, default=str)
-
-
-def extract_and_record(doc_id: int, doc_text: str, model: str | None = None) -> Outcome:
-    """Extract, validate, and append the result (plus any failure) to the DB."""
-    raw, latency_ms, _ = extract_text(doc_text, model)
-    outcome = validate(raw)
-
-    with tx() as conn:
-        inc = incumbent(conn)
-        extraction_id = insert(
-            conn,
-            "extractions",
-            doc_id=doc_id,
-            model_version_id=inc["id"] if inc else None,
-            raw_output=raw,
-            parsed_json=json.dumps(outcome.parsed) if outcome.parsed else None,
-            valid=int(outcome.valid),
-            signature=outcome.signature,
-            error_count=outcome.error_count,
-            latency_ms=latency_ms,
-        )
-        if not outcome.valid:
-            insert(
-                conn,
-                "failures",
-                extraction_id=extraction_id,
-                doc_id=doc_id,
-                signature=outcome.signature,
-                error_count=outcome.error_count,
-                errors_json=json.dumps(outcome.errors, default=str),
-            )
-    return outcome

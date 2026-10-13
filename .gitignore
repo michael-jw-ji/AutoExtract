@@ -15,16 +15,12 @@ data/probe.json
 # Form 4: raw EDGAR downloads are reproducible; hand labels in data/form4/labels/ are not.
 data/form4/raw/
 data/form4/xml/
-train/jobs/
-train/configs/
 .tools/
 # LoRA adapters are ~72MB each and are reproducible from a dataset + config.
 models/
 logs/
 *.egg-info/
 .playwright-mcp/
-dashboard/dev.log
-dashboard/tsconfig.tsbuildinfo
 .playwright-mcp/
 node_modules/
 .next/

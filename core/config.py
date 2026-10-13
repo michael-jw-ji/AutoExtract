@@ -37,15 +37,6 @@ class Settings:
     llm_timeout: float = float(os.getenv("LLM_TIMEOUT", "600"))
     small_model: str = os.getenv("SMALL_MODEL", "qwen2.5:7b")
     large_model: str = os.getenv("LARGE_MODEL", "qwen2.5:14b")
-
-    # The HF base model that training actually fine-tunes. This is NOT
-    # necessarily SMALL_MODEL: Baseten's Model APIs serve a fixed catalogue,
-    # while Training Jobs can fine-tune any HF model and deploy it separately.
-    train_base_model: str = os.getenv("TRAIN_BASE_MODEL", "Qwen/Qwen3-4B")
-
-    # Local training track (8GB laptop GPU). bf16 + LoRA with no quantization,
-    # which avoids bitsandbytes entirely -- the painful Windows dependency.
-    local_base_model: str = os.getenv("LOCAL_BASE_MODEL", "Qwen/Qwen2.5-1.5B-Instruct")
     #: Swap the full JSON Schema prompt for a terse field list. Must be set
     #: identically when building a dataset and when scoring, or the LoRA is
     #: tuned against a prompt the scorer never sends.
@@ -84,8 +75,6 @@ class Settings:
     gate_policy: str = os.getenv("GATE_POLICY", "bootstrap").strip().lower()
     gate_field_drop: float = _f("GATE_FIELD_DROP", 2.0)
     gate_resamples: int = int(os.getenv("GATE_RESAMPLES", "2000"))
-    repair_fraction: float = _f("REPAIR_FRACTION", 0.7)
-    max_cluster_share: float = _f("MAX_CLUSTER_SHARE", 0.25)
 
     #: DB_PATH lets an experiment run against a forked database instead of
     #: destroying one that already holds a complete result. Relative paths
@@ -96,7 +85,6 @@ class Settings:
         else Path(os.getenv("DB_PATH", "form4.db"))
     )
     data_dir: Path = ROOT / "data"
-    dataset_dir: Path = ROOT / "data" / "datasets"
 
     @classmethod
     def require_key(cls) -> str:

@@ -30,59 +30,8 @@ CREATE TABLE IF NOT EXISTS model_versions (
     promoted_at      TEXT
 );
 
-CREATE TABLE IF NOT EXISTS extractions (
-    id               INTEGER PRIMARY KEY AUTOINCREMENT,
-    doc_id           INTEGER NOT NULL REFERENCES documents(id),
-    model_version_id INTEGER REFERENCES model_versions(id),
-    raw_output       TEXT NOT NULL,
-    parsed_json      TEXT,
-    valid            INTEGER NOT NULL,
-    signature        TEXT,
-    error_count      INTEGER NOT NULL DEFAULT 0,
-    latency_ms       INTEGER,
-    created_at       TEXT NOT NULL DEFAULT (datetime('now'))
-);
-CREATE INDEX IF NOT EXISTS idx_extractions_valid ON extractions(valid);
-CREATE INDEX IF NOT EXISTS idx_extractions_sig ON extractions(signature);
 
-CREATE TABLE IF NOT EXISTS failures (
-    id            INTEGER PRIMARY KEY AUTOINCREMENT,
-    extraction_id INTEGER NOT NULL REFERENCES extractions(id),
-    doc_id        INTEGER NOT NULL REFERENCES documents(id),
-    signature     TEXT NOT NULL,
-    error_count   INTEGER NOT NULL,
-    errors_json   TEXT NOT NULL,
-    status        TEXT NOT NULL DEFAULT 'new'
-                  CHECK (status IN ('new','repaired','unrepairable','consumed')),
-    created_at    TEXT NOT NULL DEFAULT (datetime('now'))
-);
-CREATE INDEX IF NOT EXISTS idx_failures_status ON failures(status);
-CREATE INDEX IF NOT EXISTS idx_failures_sig ON failures(signature);
 
-CREATE TABLE IF NOT EXISTS repairs (
-    id            INTEGER PRIMARY KEY AUTOINCREMENT,
-    failure_id    INTEGER NOT NULL REFERENCES failures(id),
-    doc_id        INTEGER NOT NULL REFERENCES documents(id),
-    method        TEXT NOT NULL CHECK (method IN ('mechanical','distill')),
-    repaired_json TEXT NOT NULL,
-    verified      INTEGER NOT NULL,
-    created_at    TEXT NOT NULL DEFAULT (datetime('now'))
-);
-CREATE INDEX IF NOT EXISTS idx_repairs_verified ON repairs(verified);
-
-CREATE TABLE IF NOT EXISTS training_runs (
-    id               INTEGER PRIMARY KEY AUTOINCREMENT,
-    model_version_id INTEGER REFERENCES model_versions(id),
-    baseten_job_id   TEXT,
-    dataset_path     TEXT,
-    dataset_size     INTEGER,
-    repair_count     INTEGER,
-    replay_count     INTEGER,
-    status           TEXT NOT NULL DEFAULT 'pending'
-                     CHECK (status IN ('pending','running','succeeded','failed')),
-    started_at       TEXT NOT NULL DEFAULT (datetime('now')),
-    finished_at      TEXT
-);
 
 CREATE TABLE IF NOT EXISTS evals (
     id               INTEGER PRIMARY KEY AUTOINCREMENT,

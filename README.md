@@ -153,7 +153,6 @@ make help                 # everything else
 | `scripts/` | fetch, load, label, failure reader, cycle driver, CI eval, 32B comparison, reports |
 | `infra/` | Modal deployments for the 7B (L40S) and 32B (H100) |
 | `mcp_server.py` | the MCP tools |
-| `buffer/`, `repair/`, `train/` | the self-improvement loop (failure clustering, verified repairs, LoRA), inherited from the hackathon version |
 | `results/runs/`, `data/eval_cache/` | every run's log, numbers, trace and recorded answers |
 
 Started as AutoExtract, a Hack the North 2026 self-improving invoice extractor; the design

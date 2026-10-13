@@ -555,36 +555,6 @@ Rules:
   direct_or_indirect  D or I
 Do NOT output a `value` field. No extra fields."""
 
-    def reference_prompt(self) -> str:
-        codes = "\n".join(f"  {c}  {m}" for c, m in CODE_MEANINGS.items())
-        return (
-            f"TRANSACTION CODES:\n{codes}\n\n"
-            "DIRECTION: P, A, and M-in-Table-I are always 'A' (acquired); S, D, F, "
-            "and M-in-Table-II are always 'D' (disposed).\n\n"
-            "CONVENTIONS:\n"
-            "  - Table I = non-derivative (common stock...). Table II = derivative "
-            "(options, RSUs, warrants...). An option exercise appears as an M row "
-            "in BOTH tables.\n"
-            "  - A price shown as a footnote reference (e.g. '(1)') is NOT the price; "
-            "the price is the number in the column, or blank (null) if none is shown. "
-            "A weighted-average footnote explains the price, it does not replace it.\n"
-            "  - A filing with several reporting owners lists every one of them.\n"
-            "  - shares_owned_after for consecutive same-day direct rows of one "
-            "security chains: previous owned_after +/- this row's shares."
-        )
-
-    def repair_rules(self) -> str:
-        return (
-            "- Dates ISO-8601 (YYYY-MM-DD). issuer_cik is 10 digits with leading zeros.\n"
-            "- code is one letter from the transaction-code list above.\n"
-            "- shares > 0, price_per_share >= 0 or null when the price column is blank.\n"
-            "- acquired_disposed must agree with the code (see DIRECTION above).\n"
-            "- Rows from Table II have is_derivative true.\n"
-            "- Do not output `value`; it is computed.\n"
-            "- Read every value from the SOURCE DOCUMENT. Do not invent numbers to "
-            "satisfy a consistency rule."
-        )
-
     #: Which html_to_text version the model reads (domains/form4_io.py).
     #: Version 1 is the text frozen in the DB; later versions are rendered at
     #: serve time from the raw HTML, because rendering is part of the system

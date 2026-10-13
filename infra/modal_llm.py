@@ -17,7 +17,7 @@ Then put these in .env (the key is the one you chose above):
     LARGE_LLM_BASE_URL=https://<workspace>--insider-reading-llm-serve.modal.run/v1
     LARGE_LLM_API_KEY=<same string>
     LARGE_MODEL=Qwen/Qwen2.5-32B-Instruct               # = MODEL_NAME below
-and check it with:  python scripts/check_models.py
+and check it with:  curl -H "Authorization: Bearer $KEY" <url>/v1/models
 
 Cost control: the container scales to ZERO after SCALEDOWN of no requests and
 bills only while a GPU is up. The first request after idle pays a cold start
@@ -42,9 +42,9 @@ MODEL_NAME = "Qwen/Qwen2.5-32B-Instruct"
 #: see modal.com/pricing). Cheaper fallbacks: "A100-80GB", or the 4-bit
 #: "Qwen/Qwen2.5-32B-Instruct-AWQ" on "L40S" (small quality cost).
 GPU = "H100"
-#: Sized from the worst real repair: ~9.4k prompt tokens (schema + reference +
-#: the longest filing + a 12k-char attempt) plus max_tokens=8192 from
-#: repair/distill.py. vLLM REJECTS any request where prompt + max_tokens
+#: Sized from the worst real repair request (since removed): ~9.4k prompt
+#: tokens (schema + reference + the longest filing + a 12k-char attempt) plus
+#: max_tokens=8192. vLLM REJECTS any request where prompt + max_tokens
 #: exceeds this, so the two numbers must move together.
 MAX_MODEL_LEN = 20480
 #: KV cache left after 65 GB of weights holds roughly 35-40k tokens, so only a

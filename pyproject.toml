@@ -4,8 +4,9 @@ version = "0.1.0"
 description = "Insider Reading: SEC Form 4 extraction with a CI-enforced eval gate"
 requires-python = ">=3.11"
 dependencies = [
+    # The local review tools (scripts/label_form4.py, scripts/failures_form4.py).
     "fastapi>=0.115",
-    "uvicorn[standard]>=0.30",
+    "uvicorn>=0.30",
     "pydantic>=2.9",
     "openai>=1.50",
     "python-dotenv>=1.0",
@@ -15,25 +16,15 @@ dependencies = [
     "opentelemetry-sdk>=1.30",
     # MCP server (mcp_server.py); 2.x API (MCPServer).
     "mcp>=2.3",
-    # uvicorn --reload calls watchfiles.watch(ignore_permission_denied=...).
-    # A partial install leaves the Rust extension out of sync with the Python
-    # wrapper, so the kwarg exists in source but the loaded module rejects it
-    # -- the reloader then crashes at startup AFTER printing "Uvicorn running".
-    # If that happens: pip install --force-reinstall watchfiles
-    "watchfiles>=1.0",
 ]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
-# Deploying the large model (infra/modal_llm.py). Not needed to run the pipeline.
+# Deploying the models and training on Modal (infra/). Not needed for `make ci`.
 infra = ["modal"]
-# Local LoRA training (scripts/train_local.py). Install torch FIRST, from the
-# CUDA index that matches your driver, or pip pulls a CPU-only build:
-#   pip install torch --index-url https://download.pytorch.org/whl/cu128
-train = ["transformers", "peft", "trl", "accelerate", "datasets"]
 
 [tool.setuptools]
-packages = ["core", "verify", "serve", "buffer", "repair", "train", "evalgate", "api", "domains"]
+packages = ["core", "verify", "serve", "evalgate", "domains"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

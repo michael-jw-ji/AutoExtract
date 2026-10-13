@@ -86,8 +86,7 @@ def signature_of(errors: list[dict]) -> str:
     pydantic reports a model-validator failure at the model's own location
     (`line_items.*`) while verify/rules.py reports the same violation at the
     offending field (`line_items.*.category`). Left alone, one logical failure
-    becomes two cluster members, which splits the clusters AND distorts the
-    per-signature cap in train/dataset.py.
+    becomes two signatures and splits one failure mode in two.
 
     So when two errors share a type and one location strictly extends the
     other, keep only the shorter. Same type + prefix relationship is a narrow
