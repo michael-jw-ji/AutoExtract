@@ -25,8 +25,12 @@ def system_prompt() -> str:
     return get_domain().system_prompt()
 
 
-def extract_text(doc_text: str, model: str | None = None) -> tuple[str, int, str]:
+def extract_text(doc_text: str, model: str | None = None,
+                 enrich: bool | None = None) -> tuple[str, int, str]:
     """Raw extraction call. Returns (raw_output, latency_ms, model_used).
+
+    `enrich` overrides ENRICH for this call; the scorer passes False to keep
+    the model's own output and enriches it itself, recording both.
 
     If ENRICH=1, the model's answer is passed through serve/enrich.py before
     being returned: formats normalised, arithmetic recomputed, and every rule
@@ -42,7 +46,7 @@ def extract_text(doc_text: str, model: str | None = None) -> tuple[str, int, str
     # truncated answer would score as a json_decode "model" failure.
     raw, latency_ms = chat(used, system_prompt(), doc_text, max_tokens=8192)
 
-    if settings.enrich:
+    if settings.enrich if enrich is None else enrich:
         raw = apply_enrichment(raw, doc_text)
     return raw, latency_ms, used
 

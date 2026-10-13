@@ -55,7 +55,7 @@ This is the part that produces your interview story.
 - [x] Run baseline, then open the failure clusters and read at least 50 failures by hand. _(Done as: all 162 failing filings analysed row by row with measured rules; 26 decided by a person, including every flagged judgement call; 136 accepted from the AI pre-review without individual review. See FAILURES.md, "How this was produced".)_
 - [x] Write `FAILURES.md`: 5 to 8 failure themes, each with count, example filing, root cause, and where the fix belongs (parser, prompt, enrich code, or eval set). Likely ones: price pulled from a footnote, derivative vs non-derivative table confusion, wrong transaction date on amendments, multiple owners.
 - [x] Fix each in the right place. Record per-field accuracy before and after every change in `RESULTS.md`. _(Done: prompt v2 promoted, v3 rejected; code fixes 1 promoted; render v2 rejected; render v3 promoted at F1 0.9182 / valid 96.3%, from a 0.8395 / 54.5% baseline. All in RESULTS.md.)_
-- [ ] Find at least one failure a bigger model does **not** fix, and document it. Pennant explicitly asks for this.
+- [x] Find at least one failure a bigger model does **not** fix, and document it. Pennant explicitly asks for this. _(Qwen2.5-32B on the full holdout: F1 0.9931 vs 0.9182, but it makes marker-only prices 0 in 49 cells vs 16, and replaces codes that equal their A/D letter with V: both from applying prompt rules literally. RESULTS.md.)_
 
 **Done when:** `RESULTS.md` has a before/after table per field and `FAILURES.md` exists.
 

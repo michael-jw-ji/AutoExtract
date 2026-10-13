@@ -24,7 +24,7 @@ from pathlib import Path
 from core.config import settings
 from core.db import insert, one, rows, tx
 from core.freeze import current_hash, holdout_ids
-from serve.extract import extract_text
+from serve.extract import apply_enrichment, extract_text
 from verify.compare import counts, drop_fields, f1, field_hits
 from verify.validate import validate
 
@@ -159,7 +159,9 @@ def _collect(docs: list[dict], model_ref: str, workers: int, progress: bool) -> 
 
     def run(doc: dict) -> None:
         try:
-            raw, latency_ms, _ = extract_text(model_input(doc), model_ref)
+            text = model_input(doc)
+            model_raw, latency_ms, _ = extract_text(text, model_ref, enrich=False)
+            raw = apply_enrichment(model_raw, text) if settings.enrich else model_raw
         except Exception as exc:  # noqa: BLE001 -- reported below, never scored
             with lock:
                 failed.append((doc["id"], f"{type(exc).__name__}: {exc}"[:200]))
@@ -167,7 +169,10 @@ def _collect(docs: list[dict], model_ref: str, workers: int, progress: bool) -> 
         with lock:
             answers[doc["id"]] = raw
             with path.open("a", encoding="utf-8") as fh:
-                fh.write(json.dumps({"doc_id": doc["id"], "raw": raw,
+                # model_raw is the answer BEFORE post-processing: what a CI
+                # replay must start from, or a broken enrich() would be masked
+                # by answers it had already fixed.
+                fh.write(json.dumps({"doc_id": doc["id"], "raw": raw, "model_raw": model_raw,
                                      "latency_ms": latency_ms}) + "\n")
             if progress:
                 done = len(answers)
@@ -190,6 +195,43 @@ def _collect(docs: list[dict], model_ref: str, workers: int, progress: bool) -> 
     return answers
 
 
+def score_answers(docs: list[dict], answers: dict[int, str]) -> dict:
+    """valid_rate, field_f1 and per-field accuracy of `answers` (doc id -> the
+    post-processed answer) against each doc's gold. Shared by the scorer and
+    the CI replay (scripts/ci_eval.py), so the two can never score differently.
+    """
+    n_valid = 0
+    tp_total = pred_total = gold_total = 0
+    per_field_hits: dict[str, list[int]] = defaultdict(lambda: [0, 0])
+    for doc in docs:
+        outcome = validate(answers[doc["id"]])
+        if outcome.valid:
+            n_valid += 1
+
+        # Best-effort payload, not just validated output -- see Outcome.scorable.
+        pred = outcome.scorable
+        gold = json.loads(doc["gold_json"]) if doc["gold_json"] else {}
+        # Fields a human marked ambiguous have no single right answer, so
+        # they are taken out of BOTH sides rather than scored either way.
+        skip = skip_fields(doc.get("ambiguous_json"), gold)
+        if skip:
+            pred, gold = drop_fields(pred, skip), drop_fields(gold, skip)
+        if gold:
+            tp, n_pred, n_gold = counts(pred, gold)
+            tp_total += tp
+            pred_total += n_pred
+            gold_total += n_gold
+            for path, (hit, total) in field_hits(pred, gold).items():
+                per_field_hits[path][0] += hit
+                per_field_hits[path][1] += total
+    return {
+        "valid_rate": round(n_valid / len(docs), 4),
+        "field_f1": round(f1(tp_total, pred_total, gold_total), 4),
+        "n_docs": len(docs),
+        "per_field": {k: round(v[0] / v[1], 4) for k, v in per_field_hits.items() if v[1]},
+    }
+
+
 def score_model(
     model_version_id: int | None,
     model_ref: str | None = None,
@@ -208,10 +250,6 @@ def score_model(
     if not docs:
         raise RuntimeError("Holdout is empty. Run scripts/fetch_form4.py then scripts/freeze_eval.py.")
 
-    n_valid = 0
-    tp_total = pred_total = gold_total = 0
-    per_field_hits: dict[str, list[int]] = defaultdict(lambda: [0, 0])
-
     model_ref = model_ref or settings.small_model
     # Default concurrency matches the server: local Ollama runs ONE request at
     # a time, and queueing ten against it made requests wait past the client
@@ -227,40 +265,8 @@ def score_model(
             print(f"  {len(answers)} recorded answers <- {source.name}", flush=True)
     else:
         answers = _collect(docs, model_ref, workers or settings.llm_concurrency, progress)
-    results = [(doc, validate(answers[doc["id"]])) for doc in docs]
-
-    for doc, outcome in results:
-        if outcome.valid:
-            n_valid += 1
-
-        # Best-effort payload, not just validated output -- see Outcome.scorable.
-        pred = outcome.scorable
-        gold = json.loads(doc["gold_json"]) if doc["gold_json"] else {}
-        # Fields a human marked ambiguous have no single right answer, so
-        # they are taken out of BOTH sides rather than scored either way.
-        skip = skip_fields(doc.get("ambiguous_json"), gold)
-        if skip:
-            pred, gold = drop_fields(pred, skip), drop_fields(gold, skip)
-        if gold:
-            tp, n_pred, n_gold = counts(pred, gold)
-            tp_total += tp
-            pred_total += n_pred
-            gold_total += n_gold
-
-            for path, (hit, total) in field_hits(pred, gold).items():
-                per_field_hits[path][0] += hit
-                per_field_hits[path][1] += total
-
-    result = {
-        "model_version_id": model_version_id,
-        "eval_set_hash": current_hash(),
-        "valid_rate": round(n_valid / len(docs), 4),
-        "field_f1": round(f1(tp_total, pred_total, gold_total), 4),
-        "n_docs": len(docs),
-        "per_field": {
-            k: round(v[0] / v[1], 4) for k, v in per_field_hits.items() if v[1]
-        },
-    }
+    result = {"model_version_id": model_version_id, "eval_set_hash": current_hash(),
+              **score_answers(docs, answers)}
 
     if persist and model_version_id is not None:
         with tx() as conn:

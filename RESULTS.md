@@ -425,3 +425,70 @@ The lesson across Fixes 1-5: telling the model which rows to skip (prompt
 v2, v3) traded fields; **showing** it, in the input, with a label computed
 from the form's structure, removed 55 of 59 holdings rows at once. The
 prompt said the same thing all along; the page now says it on every line.
+
+## Does a bigger model fix it? (Milestone 2)
+
+The whole holdout through **Qwen2.5-32B** (Modal H100) under the incumbent's
+exact pipeline (prompt v2, render v3, post-processing v2): only the model
+differs. A reference measurement, not a gate candidate: this project serves
+the 7B. `scripts/compare_large.py`; record
+`results/runs/2026-10-13T152955Z_compare_large.*`.
+
+| | 7B (render-v3, incumbent) | 32B, same pipeline |
+|---|---|---|
+| Field F1 | 0.9182 | **0.9931** |
+| Valid rate | 96.3% | **100%** |
+| Rows missing / extra / wrong table | 37 / 52 / 45 | **0 / 0 / 0** |
+| 32B minus 7B | | +7.49 pts, 95% interval [+5.38, +10.35] |
+
+Per filing: the 32B fixes 86 that the 7B gets wrong, both are right on 73,
+both wrong on 22, and the 32B breaks 8. Every row-selection failure, the
+theme that two prompt revisions could not fix for the 7B, is gone.
+
+### Two failures the bigger model does NOT fix: it makes them worse
+
+Both come from following a prompt rule more literally than it was meant.
+
+**1. A price shown only as a footnote marker becomes 0.** In 107 gold rows
+the price cell holds only a marker such as `(2)` and the XML records no
+price. Prompt v2 says: "$0 means 0, not null. null only when the price cell
+is empty or holds only a footnote marker".
+
+| Gold price null (marker only) | 7B | 32B |
+|---|---|---|
+| Answered null (right) | 83 | 58 |
+| Answered 0 | 16 | **49** |
+| Answered another number | 7 | 0 |
+| Filings affected | 8 | **20** |
+
+Example, OpenWorld 0000891839-26-000467: `Stock Option (Right to Buy) | $2.18
+| 09/30/2026 | A | 216,355 (A) | ... | Common Stock | 216,355 | (2) | ...`,
+footnote 2: "Received in exchange for stock options ... in connection with
+the closing of the merger". There is no price; the 32B writes 0. It fills
+the blank with the most plausible value, which a reader of the XML would
+never do.
+
+**2. A code that equals its A/D letter is replaced by `V`.** Prompt v2 says
+the code "is NOT the A/D letter" (written to stop the baseline copying the
+A/D column into the code, FAILURES.md cause 2). But codes A and D are often
+the same letter as the direction: Warner Bros. Discovery 0001287510-26-000011
+prints `Series A Common Stock | 10/06/2026 | D (1) | 27,673 | D | ...`, and
+the 32B answers code `V`, the next letter in the column header `Code | V`.
+
+| Rows answered `V` (never right in this holdout) | 7B | 32B |
+|---|---|---|
+| where the code equals the A/D letter (138 rows) | 3 | **7** |
+| elsewhere | 1 | **4** |
+
+**Why this matters.** Scaling the model removed every failure of *reading*
+(which rows, which table) but amplified failures of *instruction*: a rule
+written to correct a weak model's habit is applied exactly as written by a
+stronger one, including where it does not hold. The fixes belong in the
+prompt and the code, not in the model: say what to do when a code genuinely
+equals its direction letter; and decide in code (from the page) that a
+marker-only price cell means null, rather than asking the model to.
+
+The remaining 32B errors: 6 `period_of_report` dates (the 32B alone; it
+picks a later date than box 3) and 6 security titles that keep a footnote
+marker, `American depositary shares (1)`, which render v3's marker split made
+easier to copy (the 7B does it too; fixed next, in code).

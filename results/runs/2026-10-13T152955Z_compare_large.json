@@ -1,0 +1,5225 @@
+{
+  "run": {
+    "stage": "compare_large",
+    "started_utc": "2026-10-13T15:42:00+00:00",
+    "commit": "cf2af86+uncommitted",
+    "branch": "feature/sec-form4",
+    "argv": [],
+    "small_model": "Qwen/Qwen2.5-7B-Instruct",
+    "small_endpoint": "https://michael-jw-ji--autoextract-small-serve.modal.run/v1",
+    "large_model": "Qwen/Qwen2.5-32B-Instruct",
+    "large_endpoint": "https://michael-jw-ji--autoextract-llm-serve.modal.run/v1",
+    "concurrency": 8,
+    "config": {
+      "enrich": true,
+      "json_mode": true,
+      "compact_prompt": false
+    },
+    "holdout_hash": "9789311604dce853",
+    "db": "form4.db"
+  },
+  "result": {
+    "incumbent": {
+      "name": "render-v3",
+      "answers": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich2+render3+json__pb4955a08.jsonl",
+      "f1": 0.9182,
+      "valid_rate": 0.963,
+      "per_field": {
+        "issuer_cik": 1.0,
+        "issuer_name": 0.9841,
+        "issuer_ticker": 0.9947,
+        "period_of_report": 0.9947,
+        "reporting_owners.*.name": 1.0,
+        "reporting_owners.*.is_director": 1.0,
+        "reporting_owners.*.is_officer": 1.0,
+        "reporting_owners.*.is_ten_percent_owner": 1.0,
+        "reporting_owners.*.officer_title": 1.0,
+        "transactions.*.security_title": 0.8644,
+        "transactions.*.is_derivative": 0.8517,
+        "transactions.*.date": 0.932,
+        "transactions.*.code": 0.9186,
+        "transactions.*.shares": 0.9026,
+        "transactions.*.price_per_share": 0.8617,
+        "transactions.*.acquired_disposed": 0.915,
+        "transactions.*.shares_owned_after": 0.9259,
+        "transactions.*.direct_or_indirect": 0.9313
+      }
+    },
+    "large": {
+      "model": "Qwen/Qwen2.5-32B-Instruct",
+      "answers": "Qwen_Qwen2.5-32B-Instruct__9789311604dce853__enrich2+render3+json__pb4955a08.jsonl",
+      "model_version_id": null,
+      "eval_set_hash": "9789311604dce853",
+      "valid_rate": 1.0,
+      "field_f1": 0.9931,
+      "n_docs": 189,
+      "per_field": {
+        "issuer_cik": 1.0,
+        "issuer_name": 1.0,
+        "issuer_ticker": 1.0,
+        "period_of_report": 0.9683,
+        "reporting_owners.*.name": 1.0,
+        "reporting_owners.*.is_director": 1.0,
+        "reporting_owners.*.is_officer": 1.0,
+        "reporting_owners.*.is_ten_percent_owner": 1.0,
+        "reporting_owners.*.officer_title": 1.0,
+        "transactions.*.security_title": 0.9892,
+        "transactions.*.is_derivative": 1.0,
+        "transactions.*.date": 1.0,
+        "transactions.*.code": 0.9801,
+        "transactions.*.shares": 1.0,
+        "transactions.*.price_per_share": 0.9955,
+        "transactions.*.acquired_disposed": 1.0,
+        "transactions.*.shares_owned_after": 1.0,
+        "transactions.*.direct_or_indirect": 1.0
+      }
+    },
+    "bootstrap_large_minus_small": {
+      "delta": 7.493156508928567,
+      "lo": 5.380137107522476,
+      "hi": 10.350003124340168
+    },
+    "outcomes": {
+      "32B fixes": 86,
+      "both wrong": 22,
+      "both right": 73,
+      "32B breaks": 8
+    },
+    "per_doc": [
+      {
+        "doc_id": 1,
+        "accession": "0001760581-26-000067",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            16,
+            26,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 2,
+        "accession": "0001493152-26-046428",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            32,
+            33,
+            33
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            32,
+            33,
+            33
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 3,
+        "accession": "0001193125-26-419032",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            9,
+            9,
+            9
+          ],
+          "rows": {}
+        },
+        "large": {
+          "counts": [
+            9,
+            9,
+            9
+          ],
+          "rows": {}
+        }
+      },
+      {
+        "doc_id": 4,
+        "accession": "0001193125-26-419094",
+        "outcome": "32B breaks",
+        "small": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            26,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 6,
+        "accession": "0001213900-26-108463",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 7,
+        "accession": "0001185185-26-004675",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            18,
+            27,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 9,
+        "accession": "0001213900-26-108573",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            60,
+            60,
+            60
+          ],
+          "rows": {
+            "matched": 6,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            60,
+            60,
+            60
+          ],
+          "rows": {
+            "matched": 6,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 10,
+        "accession": "0001193125-26-419141",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            25,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 11,
+        "accession": "0001213900-26-108464",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 12,
+        "accession": "0001213900-26-108487",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            22,
+            24,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 2
+          }
+        },
+        "large": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 13,
+        "accession": "0001225208-26-008347",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            15,
+            16,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 14,
+        "accession": "0001823009-26-000023",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 15,
+        "accession": "0001938113-26-000005",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            24,
+            33,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 3
+          }
+        },
+        "large": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 16,
+        "accession": "0002098589-26-000013",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            35,
+            35,
+            35
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            35,
+            35,
+            35
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 17,
+        "accession": "0001104659-26-115066",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            34,
+            43,
+            34
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            33,
+            34,
+            34
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 18,
+        "accession": "0001215315-26-000044",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            16,
+            26,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 1,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 19,
+        "accession": "0001544184-26-000003",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            15,
+            16,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 20,
+        "accession": "0001493152-26-046445",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            27,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 22,
+        "accession": "0001193125-26-419050",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            25,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 23,
+        "accession": "0001193125-26-419277",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 24,
+        "accession": "0001628280-26-065566",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 25,
+        "accession": "0001768267-26-000025",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            18,
+            27,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 26,
+        "accession": "0001876042-26-000290",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 27,
+        "accession": "0002123975-26-000035",
+        "outcome": "32B breaks",
+        "small": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            26,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 28,
+        "accession": "0001520262-26-000131",
+        "outcome": "32B breaks",
+        "small": {
+          "counts": [
+            34,
+            34,
+            34
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            34,
+            35,
+            34
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 29,
+        "accession": "0001493152-26-046606",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            15,
+            16,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 32,
+        "accession": "0001460471-26-000008",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            27,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 33,
+        "accession": "0001628280-26-065546",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            18,
+            27,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 34,
+        "accession": "0000897069-26-001832",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 35,
+        "accession": "0001510281-26-000333",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 36,
+        "accession": "0002111902-26-000005",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 37,
+        "accession": "0001452301-26-000014",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            22,
+            24,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 2
+          }
+        },
+        "large": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 39,
+        "accession": "0001437749-26-032421",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            35,
+            35,
+            35
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            35,
+            35,
+            35
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 40,
+        "accession": "0000943819-26-000085",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 41,
+        "accession": "0001140361-26-039027",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            63,
+            63,
+            63
+          ],
+          "rows": {
+            "matched": 9,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            63,
+            63,
+            63
+          ],
+          "rows": {
+            "matched": 9,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 42,
+        "accession": "0001213900-26-108167",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 43,
+        "accession": "0001805284-26-000118",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            18,
+            27,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 45,
+        "accession": "0000707605-26-000091",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            9,
+            9,
+            9
+          ],
+          "rows": {}
+        },
+        "large": {
+          "counts": [
+            9,
+            9,
+            9
+          ],
+          "rows": {}
+        }
+      },
+      {
+        "doc_id": 46,
+        "accession": "0001193125-26-418171",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 47,
+        "accession": "0000789570-26-000094",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 48,
+        "accession": "0000707605-26-000070",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            8,
+            8,
+            8
+          ],
+          "rows": {}
+        },
+        "large": {
+          "counts": [
+            8,
+            8,
+            8
+          ],
+          "rows": {}
+        }
+      },
+      {
+        "doc_id": 49,
+        "accession": "0001193125-26-418184",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            50,
+            56,
+            62
+          ],
+          "rows": {
+            "matched": 6,
+            "wrong_table": 6
+          }
+        },
+        "large": {
+          "counts": [
+            61,
+            62,
+            62
+          ],
+          "rows": {
+            "matched": 6,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 50,
+        "accession": "0000789570-26-000095",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 51,
+        "accession": "0001820482-26-000033",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            43,
+            45,
+            45
+          ],
+          "rows": {
+            "matched": 4,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            45,
+            45,
+            45
+          ],
+          "rows": {
+            "matched": 4,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 52,
+        "accession": "0000895345-26-000454",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 53,
+        "accession": "0001106578-26-000159",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            140,
+            144,
+            153
+          ],
+          "rows": {
+            "matched": 15,
+            "wrong_table": 0,
+            "missing": 1
+          }
+        },
+        "large": {
+          "counts": [
+            153,
+            153,
+            153
+          ],
+          "rows": {
+            "matched": 16,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 54,
+        "accession": "0001193125-26-417969",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 55,
+        "accession": "0001046179-26-000692",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            16,
+            27,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 57,
+        "accession": "0001225208-26-008333",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            23,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 2
+          }
+        },
+        "large": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 58,
+        "accession": "0001688603-26-000007",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            23,
+            25,
+            24
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 1
+          }
+        },
+        "large": {
+          "counts": [
+            24,
+            26,
+            24
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 59,
+        "accession": "0001193125-26-417581",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            14,
+            16,
+            16
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 1
+          }
+        },
+        "large": {
+          "counts": [
+            15,
+            17,
+            16
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 61,
+        "accession": "0000899140-26-001100",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 62,
+        "accession": "0001510281-26-000327",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 63,
+        "accession": "0001823008-26-000016",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            18,
+            27,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 64,
+        "accession": "0001225208-26-008313",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 66,
+        "accession": "0001062993-26-005212",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            278,
+            278,
+            278
+          ],
+          "rows": {
+            "matched": 30,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            278,
+            278,
+            278
+          ],
+          "rows": {
+            "matched": 30,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 67,
+        "accession": "0001565687-26-000113",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 68,
+        "accession": "0001585521-26-000137",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 69,
+        "accession": "0000789570-26-000088",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            45,
+            45,
+            45
+          ],
+          "rows": {
+            "matched": 4,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            45,
+            45,
+            45
+          ],
+          "rows": {
+            "matched": 4,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 73,
+        "accession": "0001104659-26-114346",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 74,
+        "accession": "0001333848-26-000005",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 75,
+        "accession": "0001676558-26-000018",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            16,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 77,
+        "accession": "0001469367-26-000066",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            18,
+            27,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 78,
+        "accession": "0001610717-26-000431",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 80,
+        "accession": "0001000753-26-000094",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 81,
+        "accession": "0001213900-26-107184",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            34,
+            34,
+            34
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            34,
+            34,
+            34
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 83,
+        "accession": "0001859690-26-000173",
+        "outcome": "32B breaks",
+        "small": {
+          "counts": [
+            35,
+            35,
+            35
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            35,
+            36,
+            35
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 84,
+        "accession": "0001628280-26-065246",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            35,
+            35,
+            35
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            35,
+            35,
+            35
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 85,
+        "accession": "0001944048-26-000156",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 86,
+        "accession": "0001493152-26-045898",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            21,
+            30,
+            21
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            21,
+            21,
+            21
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 87,
+        "accession": "0001106578-26-000157",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            103,
+            108,
+            126
+          ],
+          "rows": {
+            "matched": 11,
+            "wrong_table": 0,
+            "missing": 2
+          }
+        },
+        "large": {
+          "counts": [
+            126,
+            126,
+            126
+          ],
+          "rows": {
+            "matched": 13,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 88,
+        "accession": "0000932781-26-000053",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            16,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 90,
+        "accession": "0001193125-26-415631",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            18,
+            27,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 91,
+        "accession": "0001944048-26-000157",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 92,
+        "accession": "0001287510-26-000011",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            34,
+            35,
+            34
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            31,
+            35,
+            34
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 95,
+        "accession": "0001783059-26-000018",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            18,
+            27,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 96,
+        "accession": "0001710815-26-000014",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 97,
+        "accession": "0001674888-26-000010",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 98,
+        "accession": "0001213900-26-107052",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            34,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 100,
+        "accession": "0001823308-26-000015",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            53,
+            53,
+            53
+          ],
+          "rows": {
+            "matched": 5,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            53,
+            53,
+            53
+          ],
+          "rows": {
+            "matched": 5,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 101,
+        "accession": "0002074176-26-000059",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            18,
+            27,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 102,
+        "accession": "0001628280-26-065093",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 104,
+        "accession": "0001493152-26-045814",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            72,
+            72,
+            72
+          ],
+          "rows": {
+            "matched": 7,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            72,
+            72,
+            72
+          ],
+          "rows": {
+            "matched": 7,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 105,
+        "accession": "0000950142-26-002685",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            53,
+            53,
+            53
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            53,
+            53,
+            53
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 106,
+        "accession": "0002034136-26-000009",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 107,
+        "accession": "0001628280-26-065002",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            45,
+            45,
+            45
+          ],
+          "rows": {
+            "matched": 4,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            45,
+            45,
+            45
+          ],
+          "rows": {
+            "matched": 4,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 108,
+        "accession": "0001270956-26-000002",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 110,
+        "accession": "0001193125-26-414725",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            45,
+            45,
+            45
+          ],
+          "rows": {
+            "matched": 4,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            45,
+            45,
+            45
+          ],
+          "rows": {
+            "matched": 4,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 111,
+        "accession": "0001628280-26-064751",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 112,
+        "accession": "0001104659-26-113690",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 113,
+        "accession": "0001238418-26-000005",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 114,
+        "accession": "0001927715-26-000011",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 115,
+        "accession": "0001225208-26-008145",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            15,
+            16,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 116,
+        "accession": "0001193125-26-414334",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            18,
+            27,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 117,
+        "accession": "0001035986-26-000007",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            35,
+            35,
+            35
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            35,
+            35,
+            35
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 118,
+        "accession": "0001070235-26-000127",
+        "outcome": "32B breaks",
+        "small": {
+          "counts": [
+            34,
+            34,
+            34
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            34,
+            35,
+            34
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 119,
+        "accession": "0001628280-26-064459",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 120,
+        "accession": "0001437749-26-031851",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 122,
+        "accession": "0001009059-26-000008",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            39,
+            41,
+            41
+          ],
+          "rows": {
+            "matched": 4,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            41,
+            43,
+            41
+          ],
+          "rows": {
+            "matched": 4,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 123,
+        "accession": "0001628280-26-064682",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            71,
+            74,
+            74
+          ],
+          "rows": {
+            "matched": 8,
+            "wrong_table": 3
+          }
+        },
+        "large": {
+          "counts": [
+            74,
+            74,
+            74
+          ],
+          "rows": {
+            "matched": 8,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 124,
+        "accession": "0001104659-26-113258",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            16,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            18,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 125,
+        "accession": "0001437016-26-000008",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 126,
+        "accession": "0001070235-26-000119",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            18,
+            27,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 127,
+        "accession": "0001539147-26-000011",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            16,
+            26,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 1,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 128,
+        "accession": "0001493152-26-045591",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 129,
+        "accession": "0001193125-26-411829",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 130,
+        "accession": "0000905729-26-000162",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 131,
+        "accession": "0001522767-26-000197",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 132,
+        "accession": "0001374074-26-000012",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 133,
+        "accession": "0001185185-26-004561",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            34,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            35,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 134,
+        "accession": "0000921895-26-002717",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            41,
+            41,
+            41
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            41,
+            41,
+            41
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 135,
+        "accession": "0001193125-26-412244",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 136,
+        "accession": "0001169490-26-000008",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 137,
+        "accession": "0001193125-26-412506",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            15,
+            16,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 138,
+        "accession": "0001628280-26-064711",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            15,
+            16,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 139,
+        "accession": "0000079879-26-000300",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            15,
+            17,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 1
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 140,
+        "accession": "0001437749-26-031682",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            49,
+            49,
+            49
+          ],
+          "rows": {
+            "matched": 5,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            49,
+            49,
+            49
+          ],
+          "rows": {
+            "matched": 5,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 142,
+        "accession": "0001437749-26-031787",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            16,
+            25,
+            16
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            16,
+            16,
+            16
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 143,
+        "accession": "0001478538-26-000016",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            14,
+            16,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 144,
+        "accession": "0000921895-26-002696",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            33,
+            33,
+            33
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            33,
+            33,
+            33
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 145,
+        "accession": "0002030738-26-000004",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            18,
+            27,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 147,
+        "accession": "0001292814-26-004800",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            27,
+            33,
+            33
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 3
+          }
+        },
+        "large": {
+          "counts": [
+            33,
+            36,
+            33
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 149,
+        "accession": "0001437749-26-031757",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            16,
+            25,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 150,
+        "accession": "0001628280-26-064234",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 153,
+        "accession": "0001466026-26-000090",
+        "outcome": "32B breaks",
+        "small": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            24,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 154,
+        "accession": "0001821008-26-000008",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 155,
+        "accession": "0000931148-26-000081",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            16,
+            25,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 156,
+        "accession": "0001828108-26-000085",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 157,
+        "accession": "0001193125-26-410808",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 158,
+        "accession": "0001791994-26-000005",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 159,
+        "accession": "0001437749-26-031626",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 160,
+        "accession": "0001123292-26-001333",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            40,
+            40,
+            40
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            40,
+            40,
+            40
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 161,
+        "accession": "0001544353-26-000001",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 162,
+        "accession": "0001071739-26-000181",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 163,
+        "accession": "0001213900-26-105168",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            18,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 164,
+        "accession": "0000811589-26-000160",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            27,
+            27,
+            27
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 166,
+        "accession": "0001926488-26-000012",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            18,
+            27,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 168,
+        "accession": "0001193125-26-409127",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            226,
+            226,
+            226
+          ],
+          "rows": {
+            "matched": 22,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            226,
+            226,
+            226
+          ],
+          "rows": {
+            "matched": 22,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 169,
+        "accession": "0002090993-26-000008",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 170,
+        "accession": "0000914190-26-000142",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            34,
+            35,
+            35
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            35,
+            35,
+            35
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 171,
+        "accession": "0001244272-26-000008",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 172,
+        "accession": "0001193125-26-409304",
+        "outcome": "32B breaks",
+        "small": {
+          "counts": [
+            29,
+            29,
+            29
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            28,
+            29,
+            29
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 173,
+        "accession": "0001737206-26-000007",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            16,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 174,
+        "accession": "0001193125-26-409256",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            107,
+            107,
+            107
+          ],
+          "rows": {
+            "matched": 7,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            107,
+            107,
+            107
+          ],
+          "rows": {
+            "matched": 7,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 175,
+        "accession": "0001628280-26-063931",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            18,
+            27,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 176,
+        "accession": "0002026033-26-000009",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            16,
+            25,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            16,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 177,
+        "accession": "0001628280-26-063985",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 178,
+        "accession": "0001104659-26-111608",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            35,
+            35,
+            35
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            35,
+            35,
+            35
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 179,
+        "accession": "0001867096-26-000078",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 180,
+        "accession": "0001437749-26-031506",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 182,
+        "accession": "0001628280-26-063864",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 183,
+        "accession": "0001693173-26-000005",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            8,
+            9,
+            9
+          ],
+          "rows": {}
+        },
+        "large": {
+          "counts": [
+            9,
+            9,
+            9
+          ],
+          "rows": {}
+        }
+      },
+      {
+        "doc_id": 184,
+        "accession": "0001628280-26-063882",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            18,
+            27,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            18,
+            18,
+            18
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 186,
+        "accession": "0001225208-26-007985",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            15,
+            16,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 187,
+        "accession": "0000812011-26-000064",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 189,
+        "accession": "0000812011-26-000059",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 191,
+        "accession": "0001437749-26-031502",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            54,
+            54,
+            54
+          ],
+          "rows": {
+            "matched": 5,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            54,
+            54,
+            54
+          ],
+          "rows": {
+            "matched": 5,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 192,
+        "accession": "0000752642-26-000121",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            9,
+            9,
+            9
+          ],
+          "rows": {}
+        },
+        "large": {
+          "counts": [
+            9,
+            9,
+            9
+          ],
+          "rows": {}
+        }
+      },
+      {
+        "doc_id": 193,
+        "accession": "0001126328-26-000216",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 194,
+        "accession": "0001126328-26-000221",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            17,
+            26,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 196,
+        "accession": "0001628280-26-063818",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            16,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            17,
+            17,
+            17
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 197,
+        "accession": "0001193125-26-407692",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            33,
+            33,
+            33
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            33,
+            33,
+            33
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 203,
+        "accession": "0001213900-26-108531",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            92,
+            93,
+            92
+          ],
+          "rows": {
+            "matched": 8,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            91,
+            92,
+            92
+          ],
+          "rows": {
+            "matched": 8,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 205,
+        "accession": "0000891839-26-000468",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            25,
+            27,
+            25
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            25,
+            27,
+            25
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 207,
+        "accession": "0000891839-26-000467",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            25,
+            27,
+            25
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            25,
+            27,
+            25
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 211,
+        "accession": "0001887623-26-000021",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            60,
+            60,
+            87
+          ],
+          "rows": {
+            "matched": 6,
+            "wrong_table": 0,
+            "missing": 3
+          }
+        },
+        "large": {
+          "counts": [
+            87,
+            87,
+            87
+          ],
+          "rows": {
+            "matched": 9,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 215,
+        "accession": "0002090886-26-000010",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            34,
+            35,
+            35
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            35,
+            35,
+            35
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 219,
+        "accession": "0001887627-26-000012",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            87,
+            87,
+            87
+          ],
+          "rows": {
+            "matched": 9,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            87,
+            87,
+            87
+          ],
+          "rows": {
+            "matched": 9,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 221,
+        "accession": "0001254012-26-000005",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            45,
+            45,
+            63
+          ],
+          "rows": {
+            "matched": 4,
+            "wrong_table": 0,
+            "missing": 2
+          }
+        },
+        "large": {
+          "counts": [
+            63,
+            63,
+            63
+          ],
+          "rows": {
+            "matched": 6,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 223,
+        "accession": "0000921895-26-002756",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            42,
+            44,
+            44
+          ],
+          "rows": {
+            "matched": 4,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            40,
+            44,
+            44
+          ],
+          "rows": {
+            "matched": 4,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 235,
+        "accession": "0001193125-26-418653",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            22,
+            24,
+            24
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 2
+          }
+        },
+        "large": {
+          "counts": [
+            22,
+            26,
+            24
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 249,
+        "accession": "0001106578-26-000160",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            25,
+            27,
+            171
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0,
+            "missing": 16
+          }
+        },
+        "large": {
+          "counts": [
+            171,
+            171,
+            171
+          ],
+          "rows": {
+            "matched": 18,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 256,
+        "accession": "0001193125-26-417582",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            21,
+            24,
+            24
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 2
+          }
+        },
+        "large": {
+          "counts": [
+            23,
+            26,
+            24
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 278,
+        "accession": "0001193125-26-417976",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            131,
+            133,
+            149
+          ],
+          "rows": {
+            "matched": 12,
+            "wrong_table": 0,
+            "missing": 2
+          }
+        },
+        "large": {
+          "counts": [
+            149,
+            149,
+            149
+          ],
+          "rows": {
+            "matched": 14,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 288,
+        "accession": "0002063236-26-000015",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            35,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            36,
+            36,
+            36
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 301,
+        "accession": "0001628280-26-065327",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            45,
+            45,
+            54
+          ],
+          "rows": {
+            "matched": 4,
+            "wrong_table": 0,
+            "missing": 1
+          }
+        },
+        "large": {
+          "counts": [
+            54,
+            54,
+            54
+          ],
+          "rows": {
+            "matched": 5,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 312,
+        "accession": "0001023459-26-000085",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            53,
+            63,
+            58
+          ],
+          "rows": {
+            "matched": 6,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            57,
+            63,
+            58
+          ],
+          "rows": {
+            "matched": 6,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 327,
+        "accession": "0001023459-26-000091",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            74,
+            90,
+            82
+          ],
+          "rows": {
+            "matched": 9,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            81,
+            90,
+            82
+          ],
+          "rows": {
+            "matched": 9,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 333,
+        "accession": "0001832390-26-000025",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            33,
+            35,
+            35
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 1
+          }
+        },
+        "large": {
+          "counts": [
+            35,
+            35,
+            35
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 350,
+        "accession": "0001070235-26-000126",
+        "outcome": "32B breaks",
+        "small": {
+          "counts": [
+            34,
+            34,
+            34
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            34,
+            35,
+            34
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 390,
+        "accession": "0001827011-26-000041",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            63,
+            63,
+            81
+          ],
+          "rows": {
+            "matched": 6,
+            "wrong_table": 0,
+            "missing": 2
+          }
+        },
+        "large": {
+          "counts": [
+            81,
+            81,
+            81
+          ],
+          "rows": {
+            "matched": 8,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 412,
+        "accession": "0000891839-26-000422",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            26,
+            26,
+            26
+          ],
+          "rows": {
+            "matched": 2,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 424,
+        "accession": "0000947871-26-000911",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            99,
+            99,
+            171
+          ],
+          "rows": {
+            "matched": 11,
+            "wrong_table": 0,
+            "missing": 8
+          }
+        },
+        "large": {
+          "counts": [
+            171,
+            171,
+            171
+          ],
+          "rows": {
+            "matched": 19,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 434,
+        "accession": "0001104659-26-111947",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            40,
+            40,
+            40
+          ],
+          "rows": {
+            "matched": 4,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            40,
+            40,
+            40
+          ],
+          "rows": {
+            "matched": 4,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 445,
+        "accession": "0001193125-26-408064",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            131,
+            138,
+            137
+          ],
+          "rows": {
+            "matched": 15,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            137,
+            137,
+            137
+          ],
+          "rows": {
+            "matched": 15,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 466,
+        "accession": "0001193125-26-405544",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            34,
+            41,
+            40
+          ],
+          "rows": {
+            "matched": 4,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            40,
+            42,
+            40
+          ],
+          "rows": {
+            "matched": 4,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 470,
+        "accession": "0002117905-26-000044",
+        "outcome": "32B fixes",
+        "small": {
+          "counts": [
+            34,
+            35,
+            35
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 1
+          }
+        },
+        "large": {
+          "counts": [
+            35,
+            35,
+            35
+          ],
+          "rows": {
+            "matched": 3,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 471,
+        "accession": "0000912282-26-001310",
+        "outcome": "both right",
+        "small": {
+          "counts": [
+            23,
+            23,
+            23
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        },
+        "large": {
+          "counts": [
+            23,
+            23,
+            23
+          ],
+          "rows": {
+            "matched": 1,
+            "wrong_table": 0
+          }
+        }
+      },
+      {
+        "doc_id": 496,
+        "accession": "0001104659-26-111027",
+        "outcome": "both wrong",
+        "small": {
+          "counts": [
+            43,
+            56,
+            48
+          ],
+          "rows": {
+            "matched": 5,
+            "wrong_table": 5,
+            "extra": 1
+          }
+        },
+        "large": {
+          "counts": [
+            48,
+            53,
+            48
+          ],
+          "rows": {
+            "matched": 5,
+            "wrong_table": 0
+          }
+        }
+      }
+    ]
+  }
+}

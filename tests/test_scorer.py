@@ -22,7 +22,7 @@ def fake(tmp_path, monkeypatch):
     calls: list[int] = []
     state = {"fail": set()}
 
-    def extract(text, model_ref=None):
+    def extract(text, model_ref=None, enrich=None):
         doc_id = int(text.split()[1])
         calls.append(doc_id)
         if doc_id in state["fail"]:

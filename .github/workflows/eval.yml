@@ -1,0 +1,25 @@
+# Tests plus a free, deterministic eval on every PR (docs/PLAN.md, Milestone 3).
+# No model is called: scripts/ci_eval.py replays recorded answers through the
+# PR's code and fails if any scored field drops vs data/ci/baseline.json.
+name: eval
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test-and-eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        run: pip install -e ".[dev]"
+      - name: Unit tests
+        run: pytest -q -W error
+      - name: Cached eval (recorded answers, no model calls)
+        run: python scripts/ci_eval.py
