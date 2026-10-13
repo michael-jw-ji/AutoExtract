@@ -110,43 +110,52 @@ tr.current td { background: var(--red-tint); }
 
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
 
-/* ── Workflow: flow diagrams and timeline ────────────── */
-.flow { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 0; margin-bottom: 22px; }
-.flow-step { position: relative; border: 1px solid var(--border); margin-right: 18px; padding: 12px 14px; background: var(--white); min-width: 0; }
-.flow-step:last-child { margin-right: 0; }
-.flow-step:not(:last-child)::after { content: '→'; position: absolute; right: -16px; top: 50%; transform: translateY(-50%); font-family: var(--mono); color: var(--red); font-size: 0.9rem; }
-.flow-step.end { border-color: var(--black); background: var(--red-tint); }
-.flow-step .num { font-family: var(--mono); font-size: 0.66rem; font-weight: 700; color: var(--red); }
-.flow-step .name { font-family: var(--mono); font-size: 0.74rem; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; margin: 2px 0 6px; }
-.flow-step p { margin: 0; font-size: 0.82rem; line-height: 1.45; color: var(--ink); }
-.flow-step code { display: block; margin-top: 8px; color: var(--muted); font-size: 0.66rem; overflow-wrap: anywhere; }
+/* ── Workflow graph (SVG) ────────────────────────────── */
+.graph { border: 1px solid var(--border); padding: 12px; overflow-x: auto; }
+.graph svg { display: block; width: 100%; min-width: 860px; height: auto; }
+.node { cursor: pointer; outline: none; }
+.node rect { fill: var(--white); stroke: var(--border); stroke-width: 1; }
+.node:hover rect { stroke: var(--black); }
+.node:focus-visible rect { stroke: var(--red); stroke-width: 2; }
+.node.key rect { stroke-dasharray: 4 3; stroke: var(--muted); }
+.node.ship rect { fill: var(--red-tint); }
+.node.reject rect { stroke-dasharray: 4 3; }
+.node.sel rect { stroke: var(--black); stroke-width: 1.5; fill: var(--red-tint); }
+.node .lbl { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.6px; fill: var(--black); }
+.node .sub { font-family: var(--mono); font-size: 10px; fill: var(--muted); }
+.edge { fill: none; stroke: #b5b5b5; stroke-width: 1.25; }
+.edge.loop { stroke: var(--red); }
+.edge.key { stroke-dasharray: 4 3; stroke: var(--muted); }
+.edge.off { stroke-dasharray: 2 3; }
+.head { fill: #b5b5b5; }
+.head.loop { fill: var(--red); }
+.head.key { fill: var(--muted); }
+.edge-label, .row-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.8px; fill: var(--muted); }
+.row-label.loop { fill: var(--red-dark); }
 
-.branches { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: -8px 0 22px; }
-.branch { border: 1px dashed var(--rule); padding: 10px 14px; font-size: 0.84rem; line-height: 1.45; }
-.branch .label { margin-bottom: 4px; }
+.ico { fill: none; stroke: var(--black); stroke-width: 1.5; stroke-linecap: square; stroke-linejoin: miter; }
+.ico .acc { stroke: var(--red); }
+.ico .accf { fill: var(--red); stroke: none; }
+.ico .ico-t { fill: var(--red); stroke: none; font-family: var(--mono); font-weight: 700; font-size: 11px; }
+.ico .ico-t.sm { fill: var(--black); font-size: 7px; }
 
-.timeline { list-style: none; padding: 0; margin: 0 0 16px; border-left: 1px solid var(--rule); }
-.timeline li { position: relative; display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 14px; padding: 0 0 18px 18px; }
-.timeline li::before { content: ''; position: absolute; left: -4px; top: 5px; width: 7px; height: 7px; background: var(--red); }
-.timeline li.origin::before { background: var(--black); }
-.timeline .date { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); padding-top: 2px; }
-.timeline .what { font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; }
-.timeline p { margin: 0 0 6px; font-size: 0.88rem; line-height: 1.5; color: var(--ink); }
+.graph-legend i.line { width: 18px; height: 0; border-top: 1.5px solid #b5b5b5; background: none; vertical-align: 3px; }
+.graph-legend i.line.loop { border-top-color: var(--red); }
+.graph-legend i.line.key { border-top: 1.5px dashed var(--muted); }
+
+.detail { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 14px; align-items: start; border: 1px solid var(--border); border-left: 3px solid var(--red); padding: 14px 16px; margin: 16px 0; }
+.detail-icon { width: 40px; height: 40px; }
+.detail .num { color: var(--red); font-weight: 700; }
+.detail p { margin: 6px 0 8px; font-size: 0.92rem; line-height: 1.55; color: var(--ink); }
+.detail code { color: var(--muted); font-size: 0.72rem; }
 
 /* ── Footer ──────────────────────────────────────────── */
 .footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 0.68rem; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
 
-@media (max-width: 900px) {
-  .flow { grid-template-columns: 1fr; gap: 18px; }
-  .flow-step { margin-right: 0; }
-  .flow-step:not(:last-child)::after { content: '↓'; right: auto; left: 50%; top: auto; bottom: -18px; transform: translateX(-50%); }
-  .branches { grid-template-columns: 1fr; }
-}
 @media (max-width: 800px) {
   .metrics, .steps { grid-template-columns: 1fr 1fr; }
   .grid-3 { grid-template-columns: 1fr; }
   .headline { font-size: 1.5rem; }
-  .timeline li { grid-template-columns: 1fr; gap: 2px; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .step, a { transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease; }
