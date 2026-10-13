@@ -41,7 +41,7 @@ def main() -> None:
     if not docs:
         raise SystemExit(
             "No live documents. Run:\n"
-            "  python scripts/gen_docs.py --live 40 --offline"
+            "  python scripts/fetch_form4.py"
         )
 
     model = args.model or settings.small_model
@@ -112,12 +112,11 @@ def main() -> None:
         print("number the 25-45% band applies to.")
     elif rate < lo:
         print(f"TOO EASY ({rate:.1%} < {lo:.0%}). The buffer will not fill.")
-        print("Tighten verify/schema.py: add required fields, tighten the")
-        print("invoice_number regex, or drop to a smaller SMALL_MODEL.")
-        print("Also raise document messiness in scripts/gen_docs.py.")
+        print("Tighten the domain schema (domains/form4.py): add required fields, tighten the")
+        print("format patterns, or drop to a smaller SMALL_MODEL.")
     elif rate > hi:
         print(f"TOO HARD ({rate:.1%} > {hi:.0%}). A LoRA will not close this.")
-        print("Loosen verify/schema.py: relax extra='forbid', widen TOLERANCE,")
+        print("Loosen the domain schema: relax extra='forbid', widen TOLERANCE,")
         print("or move to a larger SMALL_MODEL.")
     else:
         print(f"IN BAND ({rate:.1%}). Proceed -- build the rest of the loop.")

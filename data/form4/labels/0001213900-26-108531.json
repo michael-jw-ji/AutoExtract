@@ -1,0 +1,142 @@
+{
+  "accession": "0001213900-26-108531",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001702780",
+    "issuer_name": "Optimum Communications, Inc.",
+    "issuer_ticker": "OPTU",
+    "period_of_report": "2026-07-29",
+    "reporting_owners": [
+      {
+        "name": "SUBIN NEIL S",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "MILFAM LLC",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "MILFAM GP, LLC",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "Dark Mirage, LP",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-07-29",
+        "code": "P",
+        "shares": "129808",
+        "price_per_share": "0.7567",
+        "acquired_disposed": "A",
+        "shares_owned_after": "16646763",
+        "direct_or_indirect": "I",
+        "value": "98225.71"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-07-30",
+        "code": "P",
+        "shares": "732279",
+        "price_per_share": "0.743",
+        "acquired_disposed": "A",
+        "shares_owned_after": "17379042",
+        "direct_or_indirect": "I",
+        "value": "544083.30"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-07-31",
+        "code": "P",
+        "shares": "120958",
+        "price_per_share": "0.7415",
+        "acquired_disposed": "A",
+        "shares_owned_after": "17500000",
+        "direct_or_indirect": "I",
+        "value": "89690.36"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-08-19",
+        "code": "P",
+        "shares": "1291471",
+        "price_per_share": "0.8391",
+        "acquired_disposed": "A",
+        "shares_owned_after": "18791471",
+        "direct_or_indirect": "I",
+        "value": "1083673.32"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-08-20",
+        "code": "P",
+        "shares": "50536",
+        "price_per_share": "0.8473",
+        "acquired_disposed": "A",
+        "shares_owned_after": "18842007",
+        "direct_or_indirect": "I",
+        "value": "42819.15"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-08-21",
+        "code": "P",
+        "shares": "535191",
+        "price_per_share": "0.8457",
+        "acquired_disposed": "A",
+        "shares_owned_after": "19377198",
+        "direct_or_indirect": "I",
+        "value": "452611.03"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-08-24",
+        "code": "P",
+        "shares": "171711",
+        "price_per_share": "0.835",
+        "acquired_disposed": "A",
+        "shares_owned_after": "19548909",
+        "direct_or_indirect": "I",
+        "value": "143378.68"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-08-25",
+        "code": "P",
+        "shares": "400",
+        "price_per_share": "0.85",
+        "acquired_disposed": "A",
+        "shares_owned_after": "19549309",
+        "direct_or_indirect": "I",
+        "value": "340.00"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

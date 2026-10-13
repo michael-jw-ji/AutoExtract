@@ -1,0 +1,67 @@
+{
+  "run": {
+    "stage": "candidate",
+    "started_utc": "2026-10-12T17:41:54+00:00",
+    "commit": "0ff0637",
+    "branch": "feature/sec-form4",
+    "argv": [
+      "--stage",
+      "candidate",
+      "--name",
+      "render-v2",
+      "--note",
+      "render v2 at serve time: [Table I]/[Table II] labels on data rows; footnote markers split from values. Prompt v2 and enrich v2 unchanged"
+    ],
+    "small_model": "Qwen/Qwen2.5-7B-Instruct",
+    "small_endpoint": "https://michael-jw-ji--autoextract-small-serve.modal.run/v1",
+    "large_model": "Qwen/Qwen2.5-32B-Instruct",
+    "large_endpoint": "https://michael-jw-ji--autoextract-llm-serve.modal.run/v1",
+    "concurrency": 8,
+    "config": {
+      "enrich": true,
+      "json_mode": true,
+      "compact_prompt": false
+    },
+    "holdout_hash": "9789311604dce853",
+    "db": "form4.db"
+  },
+  "result": {
+    "score": {
+      "model_version_id": 5,
+      "eval_set_hash": "9789311604dce853",
+      "valid_rate": 0.836,
+      "field_f1": 0.8721,
+      "n_docs": 189,
+      "per_field": {
+        "issuer_cik": 1.0,
+        "issuer_name": 0.9841,
+        "issuer_ticker": 0.9947,
+        "period_of_report": 0.9894,
+        "reporting_owners.*.name": 1.0,
+        "reporting_owners.*.is_director": 1.0,
+        "reporting_owners.*.is_officer": 1.0,
+        "reporting_owners.*.is_ten_percent_owner": 1.0,
+        "reporting_owners.*.officer_title": 1.0,
+        "transactions.*.security_title": 0.8517,
+        "transactions.*.is_derivative": 0.8373,
+        "transactions.*.date": 0.932,
+        "transactions.*.code": 0.8897,
+        "transactions.*.shares": 0.8915,
+        "transactions.*.price_per_share": 0.8367,
+        "transactions.*.acquired_disposed": 0.8951,
+        "transactions.*.shares_owned_after": 0.9005,
+        "transactions.*.direct_or_indirect": 0.9132
+      }
+    },
+    "gate": {
+      "decision": "rejected",
+      "candidate": "render-v2",
+      "incumbent": "code-fixes-1",
+      "margin_pp": 0.052,
+      "required_pp": 0.0,
+      "reason": "field_f1 +0.05pp, 95% CI [-0.70, +0.81]: the interval includes zero, so the gain may be noise",
+      "candidate_f1": 0.8721,
+      "incumbent_f1": 0.8716
+    }
+  }
+}

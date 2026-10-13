@@ -14,10 +14,12 @@ able to re-run everything around it without paying for it again.
 from __future__ import annotations
 
 import argparse
+import os
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from buffer import cluster, store
+from core import runlog
 from core.config import settings
 from core.db import incumbent, init_db, insert, one, rows, tx
 from evalgate import gate, scorer
@@ -32,6 +34,13 @@ def stage_baseline() -> dict:
         existing = one(
             conn, "SELECT * FROM model_versions WHERE name = ?", ("base",)
         )
+        if existing and existing["base_model"] != settings.small_model:
+            # A baseline belongs to one model. Re-scoring a different model
+            # under the same row would label its numbers with the wrong name.
+            raise SystemExit(
+                f"model_version 'base' is registered to {existing['base_model']!r} but "
+                f"SMALL_MODEL is {settings.small_model!r}. Point SMALL_MODEL back, or "
+                f"register the new model as its own version.")
         if existing:
             version_id = existing["id"]
         else:
@@ -51,11 +60,13 @@ def stage_baseline() -> dict:
 
     verdict = gate.decide(version_id)
     print(f"  -> {verdict['decision']}: {verdict['reason']}")
+    runlog.save_result({"score": result, "gate": verdict})
     return verdict
 
 
-def stage_serve(n: int, workers: int = 10) -> dict:
+def stage_serve(n: int, workers: int | None = None) -> dict:
     """Run live documents through the incumbent, buffering every failure."""
+    workers = workers or settings.llm_concurrency
     with tx() as conn:
         docs = rows(
             conn,
@@ -65,7 +76,7 @@ def stage_serve(n: int, workers: int = 10) -> dict:
             (n,),
         )
     if not docs:
-        print("no unprocessed live documents -- generate more with scripts/gen_docs.py")
+        print("no unprocessed live documents -- fetch more with scripts/fetch_form4.py")
         return {"processed": 0}
 
     failures = 0
@@ -91,7 +102,8 @@ def stage_serve(n: int, workers: int = 10) -> dict:
     return {"processed": len(docs), "failures": failures, "failure_rate": rate}
 
 
-def stage_repair(limit: int, allow_distill: bool, workers: int = 10) -> dict:
+def stage_repair(limit: int, allow_distill: bool, workers: int | None = None) -> dict:
+    workers = workers or settings.large_llm_concurrency
     print(f"repairing up to {limit} buffered failures (distill={allow_distill})...")
     stats = repair_run.run(limit=limit, allow_distill=allow_distill, workers=workers)
     print(
@@ -155,7 +167,86 @@ def stage_evaluate(version_id: int) -> dict:
     print(f"  margin     {verdict['margin_pp']:+.2f}pp (required +{verdict['required_pp']:.2f}pp)")
     print(f"  reason     {verdict['reason']}")
     print("=" * 62)
+    runlog.save_result({"score": result, "gate": verdict})
     return verdict
+
+
+def stage_candidate(name: str, note: str, replay_from: int | None = None) -> dict:
+    """Register a PIPELINE change (prompt, rendering, code) as a candidate on
+    the same base model, score it, and let the gate decide.
+
+    A prompt revision changes the served system as much as a fine-tune does,
+    so it faces the same gate as a fine-tune.
+
+    `replay_from` (a model_version id) is for changes AFTER the model only:
+    the candidate's answers are that version's recorded answers re-run
+    through the current post-processing, so no model is called. Refused if
+    the model or prompt differs, because then the model would have been sent
+    a different request.
+    """
+    from evalgate.scorer import prompt_hash
+    source = None
+    if replay_from is not None:
+        with tx() as conn:
+            src = one(conn, "SELECT * FROM model_versions WHERE id = ?", (replay_from,))
+        ev = scorer.latest_eval(replay_from) if src else None
+        if ev is None:
+            raise SystemExit(f"model version {replay_from} has no eval to replay")
+        model = src["adapter_ref"] or src["base_model"]
+        if src["adapter_ref"] or model != settings.small_model:
+            raise SystemExit(f"cannot replay {src['name']}: model {model} is not {settings.small_model}")
+        # The model's INPUT must be identical too: everything in the config
+        # label except the enrich step, which runs after the model.
+        def before_model(label: str) -> list[str]:
+            return [p for p in label.split("+") if not p.startswith("enrich")]
+        if before_model(ev["config"]) != before_model(scorer.config_label()):
+            raise SystemExit(f"cannot replay {src['name']}: its config {ev['config']} reads a "
+                             f"different input than {scorer.config_label()}")
+        if ev["prompt"] != prompt_hash():
+            raise SystemExit(f"cannot replay {src['name']}: its prompt p{ev['prompt']} is not the "
+                             f"current p{prompt_hash()}; that would change two things at once")
+        source = scorer.answers_for(ev, model)
+    with tx() as conn:
+        if one(conn, "SELECT id FROM model_versions WHERE name = ?", (name,)):
+            raise SystemExit(f"model version {name!r} already exists; pick a new --name")
+        notes = {"kind": "pipeline change", "note": note, "prompt": prompt_hash()}
+        if source:
+            notes["replayed_from"] = source.name
+        version_id = insert(
+            conn, "model_versions", name=name, base_model=settings.small_model,
+            adapter_ref=None, status="candidate", notes=json.dumps(notes),
+        )
+    print(f"registered candidate {name!r} (model_version {version_id}): {note}")
+    if source:
+        dest = scorer.replay(source, settings.small_model)
+        print(f"  replayed {source.name}\n        -> {dest.name} (no model calls)")
+    return stage_evaluate(version_id)
+
+
+def stage_rescore(version_id: int) -> dict:
+    """Re-score a model from its RECORDED answers under the current scorer.
+
+    For scoring-policy changes (e.g. how names are compared): no model calls,
+    no gate decision, just a new evals row so old and new numbers sit side by
+    side. Refuses if any answer is missing rather than calling the model.
+    """
+    with tx() as conn:
+        version = one(conn, "SELECT * FROM model_versions WHERE id = ?", (version_id,))
+    if not version:
+        raise SystemExit(f"no model version {version_id}")
+    model = version["adapter_ref"] or version["base_model"]
+    before = scorer.latest_eval(version_id)
+    # The answers THIS version's eval was computed from, not whatever the
+    # current prompt/config would name: those may belong to another version.
+    if not before or not before.get("prompt") or not scorer.answers_for(before, model).exists():
+        raise SystemExit(f"no recorded answers for {version['name']}; run the evaluate stage")
+    print(f"re-scoring {version['name']} ({model}) from recorded answers...")
+    result = scorer.score_model(version_id, model, progress=True, recorded=before)
+    if before:
+        print(f"  before: valid_rate {before['valid_rate']:.1%}   field_f1 {before['field_f1']:.4f}")
+    print(f"  now:    valid_rate {result['valid_rate']:.1%}   field_f1 {result['field_f1']:.4f}")
+    runlog.save_result({"score": result, "previous_eval": before})
+    return result
 
 
 def main() -> None:
@@ -163,7 +254,7 @@ def main() -> None:
     ap.add_argument(
         "--stage",
         required=True,
-        choices=["baseline", "serve", "repair", "train", "finalize", "evaluate",
+        choices=["baseline", "serve", "repair", "train", "finalize", "evaluate", "rescore", "candidate",
                  "clusters", "all"],
     )
     ap.add_argument("--n", type=int, default=80, help="documents to serve")
@@ -175,11 +266,29 @@ def main() -> None:
     ap.add_argument("--run", type=int, help="training_run id")
     ap.add_argument("--job", type=str, help="baseten job id")
     ap.add_argument("--no-distill", action="store_true", help="mechanical repairs only")
-    ap.add_argument("--workers", type=int, default=10, help="parallel API calls")
+    ap.add_argument("--workers", type=int, default=None,
+                    help="parallel API calls (default: LLM_CONCURRENCY for the small "
+                         "model, LARGE_LLM_CONCURRENCY for repairs)")
+    ap.add_argument("--name", default=None, help="name for a candidate version")
+    ap.add_argument("--note", default=None, help="what the candidate changes")
+    ap.add_argument("--replay-from", type=int, default=None,
+                    help="candidate stage: re-run post-processing over this version's "
+                         "recorded answers instead of calling the model")
+    ap.add_argument("--domain", default=None,
+                    help="domain to run (default: $DOMAIN, else form4)")
     args = ap.parse_args()
+    if args.domain:
+        # Every module resolves the domain lazily from $DOMAIN on first use,
+        # so setting it here, before any stage runs, is enough.
+        os.environ["DOMAIN"] = args.domain
 
     init_db()
+    # Every run's terminal output and numbers go to results/runs/ (tracked).
+    with runlog.run(args.stage):
+        _dispatch(args)
 
+
+def _dispatch(args) -> None:
     if args.stage == "baseline":
         stage_baseline()
     elif args.stage == "serve":
@@ -194,6 +303,14 @@ def main() -> None:
         if not args.version:
             raise SystemExit("--version is required for the evaluate stage")
         stage_evaluate(args.version)
+    elif args.stage == "candidate":
+        if not args.name:
+            raise SystemExit("--name is required for the candidate stage")
+        stage_candidate(args.name, args.note or "", args.replay_from)
+    elif args.stage == "rescore":
+        if not args.version:
+            raise SystemExit("--version is required for the rescore stage")
+        stage_rescore(args.version)
     elif args.stage == "clusters":
         for c in cluster.clusters(limit=15):
             print(f"{c['count']:>4}x  {' + '.join(c['labels'])}")

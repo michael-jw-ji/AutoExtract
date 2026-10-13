@@ -1,0 +1,15 @@
+{
+  "accession": "0001628280-26-063931",
+  "theme": "row invented from a footnote",
+  "fix_layer": "prompt",
+  "root_cause": "A row is built from a number that appears only in a footnote (e.g. 'Includes 471 unvested RSUs').",
+  "other_themes": [],
+  "auto_themes": [
+    "extra row"
+  ],
+  "valid": false,
+  "f1": 0.6923,
+  "answers": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__p4b5b159a.jsonl",
+  "assisted_by": "claude-opus-5-5 pre-review",
+  "human_reviewed": false
+}

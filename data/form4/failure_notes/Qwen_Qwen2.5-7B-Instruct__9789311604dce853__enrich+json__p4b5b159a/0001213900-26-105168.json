@@ -1,0 +1,23 @@
+{
+  "accession": "0001213900-26-105168",
+  "theme": "holdings row extracted",
+  "fix_layer": "prompt",
+  "root_cause": "A holdings line (no date, no code) is reported as a transaction.",
+  "other_themes": [
+    "owner checkboxes misread",
+    "Table II row duplicated as its underlying stock",
+    "row invented from a footnote",
+    "officer title from another box"
+  ],
+  "auto_themes": [
+    "non-numeric value",
+    "owner roles",
+    "holdings row extracted",
+    "extra row"
+  ],
+  "valid": false,
+  "f1": 0.5714,
+  "answers": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__p4b5b159a.jsonl",
+  "assisted_by": "claude-opus-5-5 pre-review",
+  "human_reviewed": false
+}

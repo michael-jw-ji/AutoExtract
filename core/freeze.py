@@ -21,7 +21,7 @@ class ContaminatedHoldoutError(RuntimeError):
     """Raised when the holdout contains template-rendered documents."""
 
 
-#: Marker emitted by scripts/gen_docs.py::render_offline. Template documents
+#: Marker for template-rendered documents (a legacy guard). Template documents
 #: are far easier than model-rendered ones (0% failure rate in the hour-0
 #: probe), so any that reach the holdout silently inflate every eval number.
 #: This happened for real: a rate-limited run fell back to templates and 49%
@@ -50,7 +50,7 @@ def freeze_holdout(allow_template: bool = False) -> dict:
             f"{contaminated} holdout document(s) are template-rendered, not "
             f"model-rendered. Templates are far easier and will inflate every "
             f"eval number measured against them.\n"
-            f"This usually means gen_docs.py hit rate limits. Delete the "
+            f"This usually means a document was rendered from a template. Delete the "
             f"affected documents and regenerate with fewer --workers, or pass "
             f"allow_template=True if you genuinely intend to score against "
             f"template documents."
@@ -60,7 +60,7 @@ def freeze_holdout(allow_template: bool = False) -> dict:
         ids = [r["id"] for r in rows(conn, "SELECT id FROM documents WHERE split='holdout'")]
         if not ids:
             raise RuntimeError(
-                "No holdout documents. Run scripts/gen_docs.py before freezing."
+                "No holdout documents. Run scripts/fetch_form4.py before freezing."
             )
         h = _hash_ids(ids)
         existing = one(conn, "SELECT * FROM eval_freeze WHERE id = 1")

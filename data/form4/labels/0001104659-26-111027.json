@@ -1,0 +1,85 @@
+{
+  "accession": "0001104659-26-111027",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001752828",
+    "issuer_name": "Celularity Inc",
+    "issuer_ticker": "CELU",
+    "period_of_report": "2026-09-23",
+    "reporting_owners": [
+      {
+        "name": "Barach Daniele Wolf",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Convertible Notes",
+        "is_derivative": true,
+        "date": "2026-09-23",
+        "code": "J",
+        "shares": "192771",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "2000000",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Convertible Notes",
+        "is_derivative": true,
+        "date": "2026-09-23",
+        "code": "J",
+        "shares": "2140000",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "2140000",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Warrants",
+        "is_derivative": true,
+        "date": "2026-09-23",
+        "code": "J",
+        "shares": "1177000",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "1177000",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Convertible Notes",
+        "is_derivative": true,
+        "date": "2026-09-23",
+        "code": "J",
+        "shares": "1457765",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "1457765",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Warrants",
+        "is_derivative": true,
+        "date": "2026-09-23",
+        "code": "J",
+        "shares": "1457765",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "1457765",
+        "direct_or_indirect": "I",
+        "value": null
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

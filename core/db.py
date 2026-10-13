@@ -64,6 +64,13 @@ MIGRATIONS = [
     # never learned. Next to a row showing 95% that looks like a broken model
     # rather than a different measurement.
     ("evals", "config", "TEXT"),
+    # JSON list of field paths a human marked ambiguous when hand-labelling
+    # (scripts/label_form4.py). NULL for auto-gold documents.
+    ("documents", "ambiguous_json", "TEXT"),
+    # Short hash of the serving system prompt a score was measured with. A
+    # prompt revision changes the served system as much as a fine-tune does,
+    # so two scores are only comparable if this is recorded.
+    ("evals", "prompt", "TEXT"),
 ]
 
 

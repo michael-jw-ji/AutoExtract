@@ -1,0 +1,21 @@
+{
+  "accession": "0000912282-26-001310",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "check",
+  "points": [
+    "The page contradicts itself on roles: the checkboxes (and gold) mark the owners as 10% holders, with Kilgore as officer 'SEE REMARKS'.",
+    "The Remarks say Kilgore is Executive Chairman and a director, and Cody Smith is COO and a director -- neither is_director in gold.",
+    "Script check: all 1 transaction row(s) match the page field by field (date, code, shares, A/D, price, owned-after, D/I, table).",
+    "4 line(s) without a date/code are holdings, correctly left out of the gold.",
+    "5 reporting owners; their box-5 checkboxes match the gold."
+  ],
+  "suggest": {
+    "status": "ambiguous",
+    "ambiguous_fields": [
+      "reporting_owners.*.is_director",
+      "reporting_owners.*.is_officer",
+      "reporting_owners.*.officer_title"
+    ],
+    "note": "Box 5 checkboxes vs Remarks disagree on director/officer roles for Kilgore and Smith."
+  }
+}

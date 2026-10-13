@@ -1,0 +1,15 @@
+{
+  "accession": "0001104659-26-115066",
+  "theme": "runaway generation",
+  "fix_layer": "model capability",
+  "root_cause": "The model kept generating until the JSON broke, on a filing it otherwise reads fine.",
+  "other_themes": [],
+  "auto_themes": [
+    "unparseable output"
+  ],
+  "valid": false,
+  "f1": 0.0,
+  "answers": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__p4b5b159a.jsonl",
+  "assisted_by": "claude-opus-5-5 pre-review",
+  "human_reviewed": true
+}

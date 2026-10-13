@@ -1,0 +1,21 @@
+{
+  "accession": "0001887623-26-000021",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "holdings row extracted",
+  "themes": [
+    {
+      "theme": "holdings row extracted",
+      "fix_layer": "prompt",
+      "root_cause": "A holdings line (no date, no code) is reported as a transaction."
+    },
+    {
+      "theme": "owner checkboxes misread",
+      "fix_layer": "enrichment (code)",
+      "root_cause": "Director/officer/10% flags disagree with explicit [X]/[ ] boxes on the page; those boxes are machine-readable, so code can derive them."
+    }
+  ],
+  "valid": false,
+  "f1": 0.9451
+}

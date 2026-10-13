@@ -1,0 +1,15 @@
+{
+  "accession": "0000943819-26-000085",
+  "theme": "code from the V column",
+  "fix_layer": "prompt",
+  "root_cause": "The code is taken from the 'V' (voluntary) column next to it instead of the code column.",
+  "other_themes": [],
+  "auto_themes": [
+    "wrong code"
+  ],
+  "valid": true,
+  "f1": 0.9722,
+  "answers": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__p4b5b159a.jsonl",
+  "assisted_by": "claude-opus-5-5 pre-review",
+  "human_reviewed": false
+}

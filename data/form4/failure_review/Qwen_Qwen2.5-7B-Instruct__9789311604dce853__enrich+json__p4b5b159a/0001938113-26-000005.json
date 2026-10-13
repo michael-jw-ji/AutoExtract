@@ -1,0 +1,21 @@
+{
+  "accession": "0001938113-26-000005",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "holdings row extracted",
+  "themes": [
+    {
+      "theme": "holdings row extracted",
+      "fix_layer": "prompt",
+      "root_cause": "A holdings line (no date, no code) is reported as a transaction."
+    },
+    {
+      "theme": "Table II row duplicated as its underlying stock",
+      "fix_layer": "text rendering",
+      "root_cause": "A derivative transaction is reported twice: as itself, and again as a row in the underlying stock (e.g. phantom units plus an extra 'Common Stock' row with the underlying amount)."
+    }
+  ],
+  "valid": false,
+  "f1": 0.75
+}

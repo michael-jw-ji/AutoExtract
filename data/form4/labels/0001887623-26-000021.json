@@ -1,0 +1,132 @@
+{
+  "accession": "0001887623-26-000021",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001819989",
+    "issuer_name": "Cipher Digital Inc.",
+    "issuer_ticker": "CIFR",
+    "period_of_report": "2026-09-30",
+    "reporting_owners": [
+      {
+        "name": "Page Tyler",
+        "is_director": true,
+        "is_officer": true,
+        "is_ten_percent_owner": false,
+        "officer_title": "Chief Executive Officer"
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "M",
+        "shares": "113225",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "9084950",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "F",
+        "shares": "57802",
+        "price_per_share": "15.83",
+        "acquired_disposed": "D",
+        "shares_owned_after": "9027148",
+        "direct_or_indirect": "D",
+        "value": "915005.66"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "M",
+        "shares": "105285",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "9132433",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "F",
+        "shares": "53748",
+        "price_per_share": "15.83",
+        "acquired_disposed": "D",
+        "shares_owned_after": "9078685",
+        "direct_or_indirect": "D",
+        "value": "850830.84"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "M",
+        "shares": "254756",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "9333441",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-30",
+        "code": "F",
+        "shares": "130053",
+        "price_per_share": "15.83",
+        "acquired_disposed": "D",
+        "shares_owned_after": "9203388",
+        "direct_or_indirect": "D",
+        "value": "2058738.99"
+      },
+      {
+        "security_title": "Restricted Stock Units",
+        "is_derivative": true,
+        "date": "2026-09-30",
+        "code": "M",
+        "shares": "113225",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "3186373",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      },
+      {
+        "security_title": "Restricted Stock Units",
+        "is_derivative": true,
+        "date": "2026-09-30",
+        "code": "M",
+        "shares": "105285",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "3081088",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      },
+      {
+        "security_title": "Performance Stock Units",
+        "is_derivative": true,
+        "date": "2026-09-30",
+        "code": "M",
+        "shares": "254756",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "1273776",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      }
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "accession": "0000079879-26-000300",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "check",
+  "why_check": [
+    "amount misread: A share amount is replaced by a different number with no marker or decimal explanation."
+  ],
+  "primary": "amount misread",
+  "themes": [
+    {
+      "theme": "amount misread",
+      "fix_layer": "model capability",
+      "root_cause": "A share amount is replaced by a different number with no marker or decimal explanation."
+    },
+    {
+      "theme": "security title misread",
+      "fix_layer": "model capability",
+      "root_cause": "A Table I row's security title names a different security than the page shows."
+    }
+  ],
+  "valid": true,
+  "f1": 0.8889
+}

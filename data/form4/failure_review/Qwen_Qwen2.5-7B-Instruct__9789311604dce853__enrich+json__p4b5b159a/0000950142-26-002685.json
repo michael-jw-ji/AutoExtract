@@ -1,0 +1,26 @@
+{
+  "accession": "0000950142-26-002685",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "code copied from the A/D column",
+  "themes": [
+    {
+      "theme": "code copied from the A/D column",
+      "fix_layer": "prompt",
+      "root_cause": "The transaction code is filled with the row's acquired/disposed letter (A or D) instead of the code column; both are single letters and A/D are valid codes, so validation cannot catch it."
+    },
+    {
+      "theme": "Table II row duplicated as its underlying stock",
+      "fix_layer": "text rendering",
+      "root_cause": "A derivative transaction is reported twice: as itself, and again as a row in the underlying stock (e.g. phantom units plus an extra 'Common Stock' row with the underlying amount)."
+    },
+    {
+      "theme": "owner name misread",
+      "fix_layer": "model capability",
+      "root_cause": "A reporting owner's name differs in content from the page."
+    }
+  ],
+  "valid": false,
+  "f1": 0.9027
+}

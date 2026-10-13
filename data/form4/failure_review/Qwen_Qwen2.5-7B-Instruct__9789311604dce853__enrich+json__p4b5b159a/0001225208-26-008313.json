@@ -1,0 +1,26 @@
+{
+  "accession": "0001225208-26-008313",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "code copied from the A/D column",
+  "themes": [
+    {
+      "theme": "code copied from the A/D column",
+      "fix_layer": "prompt",
+      "root_cause": "The transaction code is filled with the row's acquired/disposed letter (A or D) instead of the code column; both are single letters and A/D are valid codes, so validation cannot catch it."
+    },
+    {
+      "theme": "holdings row extracted",
+      "fix_layer": "prompt",
+      "root_cause": "A holdings line (no date, no code) is reported as a transaction."
+    },
+    {
+      "theme": "row invented from a footnote",
+      "fix_layer": "prompt",
+      "root_cause": "A row is built from a number that appears only in a footnote (e.g. 'Includes 471 unvested RSUs')."
+    }
+  ],
+  "valid": false,
+  "f1": 0.7727
+}

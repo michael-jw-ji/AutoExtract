@@ -1,0 +1,28 @@
+{
+  "accession": "0001628280-26-063818",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "check",
+  "why_check": [
+    "title wording: A title differs only by wording such as a defined-term suffix ('(\"Common Stock\")'); the names policy does not cover titles, so this is a scoring decision."
+  ],
+  "primary": "code copied from the A/D column",
+  "themes": [
+    {
+      "theme": "code copied from the A/D column",
+      "fix_layer": "prompt",
+      "root_cause": "The transaction code is filled with the row's acquired/disposed letter (A or D) instead of the code column; both are single letters and A/D are valid codes, so validation cannot catch it."
+    },
+    {
+      "theme": "holdings row extracted",
+      "fix_layer": "prompt",
+      "root_cause": "A holdings line (no date, no code) is reported as a transaction."
+    },
+    {
+      "theme": "title wording",
+      "fix_layer": "gold / eval set",
+      "root_cause": "A title differs only by wording such as a defined-term suffix ('(\"Common Stock\")'); the names policy does not cover titles, so this is a scoring decision."
+    }
+  ],
+  "valid": false,
+  "f1": 0.7143
+}

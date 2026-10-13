@@ -1,0 +1,21 @@
+{
+  "accession": "0000921895-26-002756",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "code copied from the A/D column",
+  "themes": [
+    {
+      "theme": "code copied from the A/D column",
+      "fix_layer": "prompt",
+      "root_cause": "The transaction code is filled with the row's acquired/disposed letter (A or D) instead of the code column; both are single letters and A/D are valid codes, so validation cannot catch it."
+    },
+    {
+      "theme": "Table II holdings row extracted",
+      "fix_layer": "prompt",
+      "root_cause": "A Table II holdings line (exercise and expiry dates, no transaction) is reported as a transaction, with the exercisable date as its 'transaction date'."
+    }
+  ],
+  "valid": true,
+  "f1": 0.7917
+}

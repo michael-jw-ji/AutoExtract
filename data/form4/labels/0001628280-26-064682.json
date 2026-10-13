@@ -1,0 +1,120 @@
+{
+  "accession": "0001628280-26-064682",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001699136",
+    "issuer_name": "Cactus, Inc.",
+    "issuer_ticker": "WHD",
+    "period_of_report": "2026-10-01",
+    "reporting_owners": [
+      {
+        "name": "Bender Joel",
+        "is_director": true,
+        "is_officer": true,
+        "is_ten_percent_owner": true,
+        "officer_title": "President"
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Class B Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-01",
+        "code": "J",
+        "shares": "100000",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "9061249",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Class B Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-01",
+        "code": "A",
+        "shares": "100000",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "9161249",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Class B Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-01",
+        "code": "D",
+        "shares": "100000",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "9061249",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-01",
+        "code": "J",
+        "shares": "100000",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "141519",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-01",
+        "code": "S",
+        "shares": "100000",
+        "price_per_share": "61.973",
+        "acquired_disposed": "D",
+        "shares_owned_after": "41519",
+        "direct_or_indirect": "D",
+        "value": "6197300.00"
+      },
+      {
+        "security_title": "Units",
+        "is_derivative": true,
+        "date": "2026-10-01",
+        "code": "J",
+        "shares": "100000",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "9061249",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Units",
+        "is_derivative": true,
+        "date": "2026-10-01",
+        "code": "A",
+        "shares": "100000",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "9161249",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Units",
+        "is_derivative": true,
+        "date": "2026-10-01",
+        "code": "J",
+        "shares": "100000",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "9061249",
+        "direct_or_indirect": "I",
+        "value": null
+      }
+    ]
+  }
+}

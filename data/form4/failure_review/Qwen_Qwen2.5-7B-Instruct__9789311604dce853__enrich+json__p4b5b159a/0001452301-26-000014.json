@@ -1,0 +1,21 @@
+{
+  "accession": "0001452301-26-000014",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "Table II row read as Table I",
+  "themes": [
+    {
+      "theme": "Table II row read as Table I",
+      "fix_layer": "text rendering",
+      "root_cause": "A derivative row is reported as non-derivative, usually with the UNDERLYING security as its title; nothing in the flattened text says which table a row came from."
+    },
+    {
+      "theme": "price missed",
+      "fix_layer": "prompt",
+      "root_cause": "Price is null although the price column shows a value, very often $0 (grants, gifts, and column 8 of Table II); the prompt only says 'the Price column' and to use null when it is blank."
+    }
+  ],
+  "valid": false,
+  "f1": 0.88
+}

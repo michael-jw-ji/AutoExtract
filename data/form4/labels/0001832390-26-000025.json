@@ -1,0 +1,61 @@
+{
+  "accession": "0001832390-26-000025",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001792789",
+    "issuer_name": "DoorDash, Inc.",
+    "issuer_ticker": "DASH",
+    "period_of_report": "2026-10-01",
+    "reporting_owners": [
+      {
+        "name": "Fang Andy",
+        "is_director": true,
+        "is_officer": false,
+        "is_ten_percent_owner": false,
+        "officer_title": null
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-01",
+        "code": "J",
+        "shares": "5000",
+        "price_per_share": "0",
+        "acquired_disposed": "A",
+        "shares_owned_after": "5000",
+        "direct_or_indirect": "I",
+        "value": "0.00"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-01",
+        "code": "S",
+        "shares": "5000",
+        "price_per_share": "183.69",
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "I",
+        "value": "918450.00"
+      },
+      {
+        "security_title": "Class B Common Stock",
+        "is_derivative": true,
+        "date": "2026-10-01",
+        "code": "J",
+        "shares": "5000",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "5644604",
+        "direct_or_indirect": "I",
+        "value": "0.00"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

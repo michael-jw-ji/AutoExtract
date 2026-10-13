@@ -1,0 +1,121 @@
+{
+  "accession": "0001827011-26-000041",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001713445",
+    "issuer_name": "Reddit, Inc.",
+    "issuer_ticker": "RDDT",
+    "period_of_report": "2026-09-29",
+    "reporting_owners": [
+      {
+        "name": "Huffman Steve Ladd",
+        "is_director": true,
+        "is_officer": true,
+        "is_ten_percent_owner": true,
+        "officer_title": "CEO & President"
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-29",
+        "code": "M",
+        "shares": "17308",
+        "price_per_share": "25.29",
+        "acquired_disposed": "A",
+        "shares_owned_after": "353740",
+        "direct_or_indirect": "I",
+        "value": "437719.32"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-29",
+        "code": "S",
+        "shares": "300",
+        "price_per_share": "142.44",
+        "acquired_disposed": "D",
+        "shares_owned_after": "353440",
+        "direct_or_indirect": "I",
+        "value": "42732.00"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-29",
+        "code": "S",
+        "shares": "2500",
+        "price_per_share": "143.78",
+        "acquired_disposed": "D",
+        "shares_owned_after": "350940",
+        "direct_or_indirect": "I",
+        "value": "359450.00"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-29",
+        "code": "S",
+        "shares": "8100",
+        "price_per_share": "144.64",
+        "acquired_disposed": "D",
+        "shares_owned_after": "342840",
+        "direct_or_indirect": "I",
+        "value": "1171584.00"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-29",
+        "code": "S",
+        "shares": "5308",
+        "price_per_share": "145.46",
+        "acquired_disposed": "D",
+        "shares_owned_after": "337532",
+        "direct_or_indirect": "I",
+        "value": "772101.68"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-29",
+        "code": "S",
+        "shares": "776",
+        "price_per_share": "146.62",
+        "acquired_disposed": "D",
+        "shares_owned_after": "336756",
+        "direct_or_indirect": "I",
+        "value": "113777.12"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-29",
+        "code": "S",
+        "shares": "324",
+        "price_per_share": "147.25",
+        "acquired_disposed": "D",
+        "shares_owned_after": "336432",
+        "direct_or_indirect": "I",
+        "value": "47709.00"
+      },
+      {
+        "security_title": "Stock Option (Right to Buy)",
+        "is_derivative": true,
+        "date": "2026-09-29",
+        "code": "M",
+        "shares": "17308",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "1010639",
+        "direct_or_indirect": "I",
+        "value": "0.00"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

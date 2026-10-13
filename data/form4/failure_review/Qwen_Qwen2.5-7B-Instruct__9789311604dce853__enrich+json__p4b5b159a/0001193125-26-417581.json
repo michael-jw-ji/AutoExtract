@@ -1,0 +1,21 @@
+{
+  "accession": "0001193125-26-417581",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "Table II row read as Table I",
+  "themes": [
+    {
+      "theme": "Table II row read as Table I",
+      "fix_layer": "text rendering",
+      "root_cause": "A derivative row is reported as non-derivative, usually with the UNDERLYING security as its title; nothing in the flattened text says which table a row came from."
+    },
+    {
+      "theme": "Table II holdings row extracted",
+      "fix_layer": "prompt",
+      "root_cause": "A Table II holdings line (exercise and expiry dates, no transaction) is reported as a transaction, with the exercisable date as its 'transaction date'."
+    }
+  ],
+  "valid": true,
+  "f1": 0.65
+}

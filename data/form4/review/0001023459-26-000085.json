@@ -1,0 +1,15 @@
+{
+  "accession": "0001023459-26-000085",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "looks_right",
+  "points": [
+    "Options cancelled in a merger: footnote 3 pays the spread in cash, footnote 4 pays nothing for underwater options. No per-option price is printed, so null is right.",
+    "Script check: all 6 transaction row(s) match the page field by field (date, code, shares, A/D, price, owned-after, D/I, table).",
+    "Null prices: D x5 (disposition to issuer) -- the price column shows no number for these."
+  ],
+  "suggest": {
+    "status": "confirmed",
+    "ambiguous_fields": [],
+    "note": ""
+  }
+}

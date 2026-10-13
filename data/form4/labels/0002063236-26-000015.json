@@ -1,0 +1,61 @@
+{
+  "accession": "0002063236-26-000015",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001673743",
+    "issuer_name": "Hinge Health, Inc.",
+    "issuer_ticker": "HNGE",
+    "period_of_report": "2026-10-06",
+    "reporting_owners": [
+      {
+        "name": "Perez Daniel Antonio",
+        "is_director": true,
+        "is_officer": true,
+        "is_ten_percent_owner": true,
+        "officer_title": "CEO & Co-Founder"
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-06",
+        "code": "C",
+        "shares": "4100",
+        "price_per_share": "0",
+        "acquired_disposed": "A",
+        "shares_owned_after": "4100",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-06",
+        "code": "S",
+        "shares": "4100",
+        "price_per_share": "100.1978",
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "D",
+        "value": "410810.98"
+      },
+      {
+        "security_title": "Class B Common Stock",
+        "is_derivative": true,
+        "date": "2026-10-06",
+        "code": "C",
+        "shares": "4100",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "9774572",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

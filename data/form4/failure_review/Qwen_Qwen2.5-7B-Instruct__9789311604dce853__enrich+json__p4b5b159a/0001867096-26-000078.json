@@ -1,0 +1,23 @@
+{
+  "accession": "0001867096-26-000078",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "check",
+  "why_check": [
+    "officer title from remarks: Gold says 'See Remarks' while the model gave the actual title from the Remarks; the model may be right."
+  ],
+  "primary": "holdings row extracted",
+  "themes": [
+    {
+      "theme": "holdings row extracted",
+      "fix_layer": "prompt",
+      "root_cause": "A holdings line (no date, no code) is reported as a transaction."
+    },
+    {
+      "theme": "officer title from remarks",
+      "fix_layer": "gold / eval set",
+      "root_cause": "Gold says 'See Remarks' while the model gave the actual title from the Remarks; the model may be right."
+    }
+  ],
+  "valid": false,
+  "f1": 0.7907
+}

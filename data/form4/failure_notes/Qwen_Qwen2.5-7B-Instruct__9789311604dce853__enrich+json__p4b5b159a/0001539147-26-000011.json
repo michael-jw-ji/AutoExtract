@@ -1,0 +1,18 @@
+{
+  "accession": "0001539147-26-000011",
+  "theme": "number from another column",
+  "fix_layer": "model capability",
+  "root_cause": "A field holds a number that belongs to a different column of the same row (a column shift).",
+  "other_themes": [
+    "amount misread"
+  ],
+  "auto_themes": [
+    "wrong amount",
+    "wrong price_per_share"
+  ],
+  "valid": true,
+  "f1": 0.8889,
+  "answers": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__p4b5b159a.jsonl",
+  "assisted_by": "claude-opus-5-5 pre-review",
+  "human_reviewed": true
+}

@@ -1,0 +1,133 @@
+{
+  "accession": "0001023459-26-000091",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001023459",
+    "issuer_name": "Simulations Plus, Inc.",
+    "issuer_ticker": "SLP",
+    "period_of_report": "2026-10-06",
+    "reporting_owners": [
+      {
+        "name": "DiBella John Anthony II",
+        "is_director": false,
+        "is_officer": true,
+        "is_ten_percent_owner": false,
+        "officer_title": "Chief Revenue Officer"
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-06",
+        "code": "D",
+        "shares": "85140",
+        "price_per_share": "18.50",
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "D",
+        "value": "1575090.00"
+      },
+      {
+        "security_title": "Stock Options (Right to Buy)",
+        "is_derivative": true,
+        "date": "2026-10-06",
+        "code": "D",
+        "shares": "27500",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Stock Options (Right to Buy)",
+        "is_derivative": true,
+        "date": "2026-10-06",
+        "code": "D",
+        "shares": "26206",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Stock Options (Right to Buy)",
+        "is_derivative": true,
+        "date": "2026-10-06",
+        "code": "D",
+        "shares": "9300",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Stock Options (Right to Buy)",
+        "is_derivative": true,
+        "date": "2026-10-06",
+        "code": "D",
+        "shares": "113300",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Stock Options (Right to Buy)",
+        "is_derivative": true,
+        "date": "2026-10-06",
+        "code": "D",
+        "shares": "15000",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Stock Options (Right to Buy)",
+        "is_derivative": true,
+        "date": "2026-10-06",
+        "code": "D",
+        "shares": "15000",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Stock Options (Right to Buy)",
+        "is_derivative": true,
+        "date": "2026-10-06",
+        "code": "D",
+        "shares": "2589",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Stock Options (Right to Buy)",
+        "is_derivative": true,
+        "date": "2026-10-06",
+        "code": "D",
+        "shares": "7500",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "D",
+        "value": null
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

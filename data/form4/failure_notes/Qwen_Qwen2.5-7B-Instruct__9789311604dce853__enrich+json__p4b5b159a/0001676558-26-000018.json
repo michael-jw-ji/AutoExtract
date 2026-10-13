@@ -1,0 +1,19 @@
+{
+  "accession": "0001676558-26-000018",
+  "theme": "footnote-marked amount skipped",
+  "fix_layer": "text rendering",
+  "root_cause": "An amount printed with a glued footnote marker (e.g. 18.324(1)) is skipped for another number in the row; marked amounts are wrong 10% of the time vs 3% unmarked.",
+  "other_themes": [
+    "decimals dropped",
+    "unexplained extra row"
+  ],
+  "auto_themes": [
+    "wrong amount",
+    "extra row"
+  ],
+  "valid": true,
+  "f1": 0.7143,
+  "answers": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__p4b5b159a.jsonl",
+  "assisted_by": "claude-opus-5-5 pre-review",
+  "human_reviewed": true
+}

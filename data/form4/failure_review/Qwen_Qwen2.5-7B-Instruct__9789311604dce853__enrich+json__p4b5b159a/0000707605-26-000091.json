@@ -1,0 +1,21 @@
+{
+  "accession": "0000707605-26-000091",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "placeholder row for an empty table",
+  "themes": [
+    {
+      "theme": "placeholder row for an empty table",
+      "fix_layer": "prompt",
+      "root_cause": "A table with no transactions still gets an invented row (e.g. 'Derivative Security', 0 shares); the prompt asks for rows from both tables and never says an empty table means none."
+    },
+    {
+      "theme": "holdings row extracted",
+      "fix_layer": "prompt",
+      "root_cause": "A holdings line (no date, no code) is reported as a transaction."
+    }
+  ],
+  "valid": false,
+  "f1": 0.5625
+}

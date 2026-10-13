@@ -1,0 +1,6 @@
+# run {"stage": "rescore", "started_utc": "2026-10-12T17:26:24+00:00", "commit": "8c965df+uncommitted", "branch": "feature/sec-form4", "argv": ["--stage", "rescore", "--version", "2"], "small_model": "Qwen/Qwen2.5-7B-Instruct", "small_endpoint": "https://michael-jw-ji--autoextract-small-serve.modal.run/v1", "large_model": "Qwen/Qwen2.5-32B-Instruct", "large_endpoint": "https://michael-jw-ji--autoextract-llm-serve.modal.run/v1", "concurrency": 8, "config": {"enrich": true, "json_mode": true, "compact_prompt": false}, "holdout_hash": "9789311604dce853", "db": "form4.db"}
+re-scoring prompt-v2 (Qwen/Qwen2.5-7B-Instruct) from recorded answers...
+  189 recorded answers <- Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__pb4955a08.jsonl
+  before: valid_rate 80.4%   field_f1 0.8606
+  now:    valid_rate 80.4%   field_f1 0.8614
+# end status=ok

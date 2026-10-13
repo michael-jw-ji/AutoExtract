@@ -1,0 +1,17 @@
+{
+  "accession": "0001760581-26-000067",
+  "theme": "Table II row read as Table I",
+  "fix_layer": "text rendering",
+  "root_cause": "A derivative row is reported as non-derivative, usually with the UNDERLYING security as its title; nothing in the flattened text says which table a row came from.",
+  "other_themes": [],
+  "auto_themes": [
+    "wrong security_title",
+    "table I vs II confusion",
+    "wrong amount"
+  ],
+  "valid": true,
+  "f1": 0.8333,
+  "answers": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__p4b5b159a.jsonl",
+  "assisted_by": "claude-opus-5-5 pre-review",
+  "human_reviewed": false
+}

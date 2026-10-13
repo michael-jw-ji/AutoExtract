@@ -1,0 +1,25 @@
+{
+  "valid_rate": 1.0,
+  "field_f1": 0.9417,
+  "n_docs": 30,
+  "per_field": {
+    "issuer_cik": 1.0,
+    "issuer_name": 0.9667,
+    "issuer_ticker": 1.0,
+    "period_of_report": 1.0,
+    "reporting_owners.*.name": 1.0,
+    "reporting_owners.*.is_director": 1.0,
+    "reporting_owners.*.is_officer": 1.0,
+    "reporting_owners.*.is_ten_percent_owner": 1.0,
+    "transactions.*.security_title": 0.86,
+    "transactions.*.is_derivative": 0.9067,
+    "transactions.*.date": 0.922,
+    "transactions.*.code": 0.9,
+    "transactions.*.shares": 0.922,
+    "transactions.*.price_per_share": 0.8835,
+    "transactions.*.acquired_disposed": 0.92,
+    "transactions.*.shares_owned_after": 0.9267,
+    "transactions.*.direct_or_indirect": 0.9267,
+    "reporting_owners.*.officer_title": 1.0
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "accession": "0000912282-26-001310",
+  "status": "ambiguous",
+  "changed": false,
+  "ambiguous_fields": [
+    "reporting_owners.*.is_director",
+    "reporting_owners.*.is_officer",
+    "reporting_owners.*.officer_title"
+  ],
+  "notes": "Box 5 checkboxes vs Remarks disagree on director/officer roles for Kilgore and Smith.",
+  "gold": {
+    "issuer_cik": "0001218683",
+    "issuer_name": "Big Digital Energy, Inc.",
+    "issuer_ticker": "BGDE",
+    "period_of_report": "2026-09-24",
+    "reporting_owners": [
+      {
+        "name": "Endeavor Blockchain, LLC",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "Kilgore Joshua Allen",
+        "is_director": false,
+        "is_officer": true,
+        "is_ten_percent_owner": true,
+        "officer_title": "SEE REMARKS"
+      },
+      {
+        "name": "Smith Cody",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "PM Squared LLC",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "Six Thirty AI, LLC",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Series D Preferred Shares",
+        "is_derivative": false,
+        "date": "2026-09-24",
+        "code": "J",
+        "shares": "650",
+        "price_per_share": "5.4840",
+        "acquired_disposed": "D",
+        "shares_owned_after": "15000",
+        "direct_or_indirect": "D",
+        "value": "3564.60"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

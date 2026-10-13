@@ -1,63 +1,13 @@
-"""Extraction: document text in, validated Invoice JSON (or a logged failure) out."""
+"""Extraction: document text in, validated JSON (or a logged failure) out."""
 
 from __future__ import annotations
 
 import json
-import os
 
 from core.config import settings
 from core.db import connect, incumbent, insert, tx
 from serve.client import chat, serving_model
-from verify.schema import INVOICE_JSON_SCHEMA
 from verify.validate import Outcome, validate
-
-SYSTEM = """You extract structured invoice data from messy documents.
-
-Return ONLY a JSON object matching this JSON Schema. No prose, no markdown \
-fences, no explanation.
-
-{schema}
-
-Hard requirements:
-- Dates must be ISO-8601 (YYYY-MM-DD).
-- currency must be one of USD, EUR, GBP, CAD.
-- payment_terms must be one of NET_15, NET_30, NET_45, NET_60, DUE_ON_RECEIPT.
-- invoice_number must match ^[A-Z]{{2,4}}-\\d{{4,8}}$.
-- Money values are decimals with exactly 2 decimal places.
-- For every line item, line_total MUST equal quantity * unit_price.
-- subtotal MUST equal the sum of all line_total values.
-- total MUST equal subtotal + tax - discount.
-Compute the arithmetic carefully. Do not copy a printed total that disagrees \
-with the line items; recompute it.
-
-Note: vendor_id, each line item's category, and payment_terms are not printed \
-on the document. Supply your best value for each."""
-
-
-COMPACT_SYSTEM = """Extract invoice data as JSON. Output ONLY the JSON object.
-
-Fields:
-  invoice_number  string, ^[A-Z]{2,4}-\\d{4,8}$
-  issue_date      ISO date YYYY-MM-DD
-  due_date        ISO date YYYY-MM-DD
-  currency        USD | EUR | GBP | CAD
-  payment_terms   NET_15 | NET_30 | NET_45 | NET_60 | DUE_ON_RECEIPT
-  vendor_id       string, ^VND-\\d{5}$
-  vendor          {name, address, tax_id|null}
-  bill_to         {name, address, tax_id|null}
-  line_items      [{description, category, quantity, unit_price, line_total}]
-                  category is ^[A-Z]{2}-[A-Z]{4}-\\d{2}$
-  subtotal, tax, discount, total   decimals with 2 places
-
-Rules:
-  line_total = quantity * unit_price, exactly.
-  subtotal = sum of line_total. total = subtotal + tax - discount.
-  Recompute totals from the line items; do not copy a printed total that
-  disagrees with them.
-  vendor_id, each line item's category, and payment_terms are NOT printed on
-  the document. Supply your best value for each.
-No extra fields."""
-
 
 def system_prompt() -> str:
     """The serving/training system prompt for the ACTIVE domain.
@@ -71,17 +21,16 @@ def system_prompt() -> str:
     serving can never silently disagree about the prompt -- if they did, the
     LoRA would be tuned for text the server never sends and would not transfer.
     """
-    dom = os.getenv("DOMAIN", "invoice").strip().lower()
-    if dom != "invoice":
-        from domains import get_domain
-        return get_domain(dom).system_prompt()
-    if settings.compact_prompt:
-        return COMPACT_SYSTEM
-    return SYSTEM.format(schema=json.dumps(INVOICE_JSON_SCHEMA, indent=2))
+    from domains import get_domain
+    return get_domain().system_prompt()
 
 
-def extract_text(doc_text: str, model: str | None = None) -> tuple[str, int, str]:
+def extract_text(doc_text: str, model: str | None = None,
+                 enrich: bool | None = None) -> tuple[str, int, str]:
     """Raw extraction call. Returns (raw_output, latency_ms, model_used).
+
+    `enrich` overrides ENRICH for this call; the scorer passes False to keep
+    the model's own output and enriches it itself, recording both.
 
     If ENRICH=1, the model's answer is passed through serve/enrich.py before
     being returned: formats normalised, arithmetic recomputed, and every rule
@@ -91,10 +40,14 @@ def extract_text(doc_text: str, model: str | None = None) -> tuple[str, int, str
     with tx() as conn:
         inc = incumbent(conn)
     used = model or serving_model(inc["adapter_ref"] if inc else None)
-    raw, latency_ms = chat(used, system_prompt(), doc_text)
+    # The largest gold answer is ~2.4k tokens pretty-printed (30-row filings),
+    # and funds can file far longer. 8192 is a ceiling, not a cost, and the
+    # longest prompt (~5.4k) plus 8192 still fits the 16K local context. A
+    # truncated answer would score as a json_decode "model" failure.
+    raw, latency_ms = chat(used, system_prompt(), doc_text, max_tokens=8192)
 
-    if settings.enrich:
-        raw = apply_enrichment(raw)
+    if settings.enrich if enrich is None else enrich:
+        raw = apply_enrichment(raw, doc_text)
     return raw, latency_ms, used
 
 
@@ -103,7 +56,7 @@ def _domain():
     return get_domain()
 
 
-def apply_enrichment(raw: str) -> str:
+def apply_enrichment(raw: str, text: str | None = None) -> str:
     """Run deterministic enrichment over a raw model response.
 
     Returns the raw text unchanged if it cannot be parsed -- enrichment has
@@ -118,7 +71,7 @@ def apply_enrichment(raw: str) -> str:
         return raw
     if not isinstance(payload, dict):
         return raw
-    enriched, _report = _domain().enrich(payload)
+    enriched, _report = _domain().enrich(payload, text)
     return json.dumps(enriched, default=str)
 
 

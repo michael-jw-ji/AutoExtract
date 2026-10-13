@@ -1,0 +1,61 @@
+{
+  "accession": "0001070235-26-000126",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001070235",
+    "issuer_name": "BLACKBERRY Ltd",
+    "issuer_ticker": "BB",
+    "period_of_report": "2026-10-02",
+    "reporting_owners": [
+      {
+        "name": "Wall John Christopher",
+        "is_director": false,
+        "is_officer": true,
+        "is_ten_percent_owner": false,
+        "officer_title": "President, QNX"
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Common Shares",
+        "is_derivative": false,
+        "date": "2026-10-02",
+        "code": "M",
+        "shares": "6146",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "17398",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Common Shares",
+        "is_derivative": false,
+        "date": "2026-10-02",
+        "code": "S",
+        "shares": "3474",
+        "price_per_share": "9.18",
+        "acquired_disposed": "D",
+        "shares_owned_after": "13924",
+        "direct_or_indirect": "D",
+        "value": "31891.32"
+      },
+      {
+        "security_title": "Restricted Share Units",
+        "is_derivative": true,
+        "date": "2026-10-02",
+        "code": "M",
+        "shares": "6146",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "36870",
+        "direct_or_indirect": "D",
+        "value": null
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

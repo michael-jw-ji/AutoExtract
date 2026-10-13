@@ -1,0 +1,73 @@
+{
+  "accession": "0001193125-26-405544",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001802255",
+    "issuer_name": "Guardian Pharmacy Services, Inc.",
+    "issuer_ticker": "GRDN",
+    "period_of_report": "2026-09-27",
+    "reporting_owners": [
+      {
+        "name": "Ackerman John",
+        "is_director": true,
+        "is_officer": false,
+        "is_ten_percent_owner": false,
+        "officer_title": null
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-27",
+        "code": "M",
+        "shares": "1413939",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "3863806",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Class A Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-27",
+        "code": "M",
+        "shares": "471057",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "1287237",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Class B Common Stock",
+        "is_derivative": true,
+        "date": "2026-09-27",
+        "code": "M",
+        "shares": "1413939",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Class B Common Stock",
+        "is_derivative": true,
+        "date": "2026-09-27",
+        "code": "M",
+        "shares": "471057",
+        "price_per_share": null,
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "I",
+        "value": null
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

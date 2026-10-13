@@ -1,0 +1,16 @@
+{
+  "accession": "0001437749-26-031506",
+  "theme": "holdings row extracted",
+  "fix_layer": "prompt",
+  "root_cause": "A holdings line (no date, no code) is reported as a transaction.",
+  "other_themes": [],
+  "auto_themes": [
+    "non-numeric value",
+    "holdings row extracted"
+  ],
+  "valid": false,
+  "f1": 0.8372,
+  "answers": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__p4b5b159a.jsonl",
+  "assisted_by": "claude-opus-5-5 pre-review",
+  "human_reviewed": false
+}

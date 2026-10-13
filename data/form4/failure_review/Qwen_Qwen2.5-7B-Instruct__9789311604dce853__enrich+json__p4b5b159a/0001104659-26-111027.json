@@ -1,0 +1,33 @@
+{
+  "accession": "0001104659-26-111027",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "check",
+  "why_check": [
+    "missing row: A transaction row on the page is missing from the answer."
+  ],
+  "primary": "Table II row read as Table I",
+  "themes": [
+    {
+      "theme": "Table II row read as Table I",
+      "fix_layer": "text rendering",
+      "root_cause": "A derivative row is reported as non-derivative, usually with the UNDERLYING security as its title; nothing in the flattened text says which table a row came from."
+    },
+    {
+      "theme": "owner checkboxes misread",
+      "fix_layer": "enrichment (code)",
+      "root_cause": "Director/officer/10% flags disagree with explicit [X]/[ ] boxes on the page; those boxes are machine-readable, so code can derive them."
+    },
+    {
+      "theme": "missing row",
+      "fix_layer": "model capability",
+      "root_cause": "A transaction row on the page is missing from the answer."
+    },
+    {
+      "theme": "security title misread",
+      "fix_layer": "model capability",
+      "root_cause": "A Table I row's security title names a different security than the page shows."
+    }
+  ],
+  "valid": true,
+  "f1": 0.75
+}

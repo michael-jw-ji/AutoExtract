@@ -235,7 +235,10 @@ def cli_env() -> dict:
     stops to ask a question in a background subprocess just hangs forever.
     """
     env = dict(os.environ)
-    env["BASETEN_API_KEY"] = settings.require_key()
+    key = os.getenv("BASETEN_API_KEY", "")
+    if not key:
+        raise RuntimeError("BASETEN_API_KEY is not set (Baseten training only).")
+    env["BASETEN_API_KEY"] = key
     env["NO_COLOR"] = "1"
     env["TERM"] = "dumb"
     return env
@@ -244,7 +247,7 @@ def cli_env() -> dict:
 def dry_run_enabled() -> bool:
     if os.getenv("DRY_RUN") is not None:
         return os.getenv("DRY_RUN") == "1"
-    return not settings.baseten_api_key
+    return not os.getenv("BASETEN_API_KEY")
 
 
 def build_job(

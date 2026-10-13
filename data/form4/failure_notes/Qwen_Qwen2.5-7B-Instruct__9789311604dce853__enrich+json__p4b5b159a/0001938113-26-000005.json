@@ -1,0 +1,18 @@
+{
+  "accession": "0001938113-26-000005",
+  "theme": "holdings row extracted",
+  "fix_layer": "prompt",
+  "root_cause": "A holdings line (no date, no code) is reported as a transaction.",
+  "other_themes": [
+    "Table II row duplicated as its underlying stock"
+  ],
+  "auto_themes": [
+    "holdings row extracted",
+    "extra row"
+  ],
+  "valid": false,
+  "f1": 0.75,
+  "answers": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__p4b5b159a.jsonl",
+  "assisted_by": "claude-opus-5-5 pre-review",
+  "human_reviewed": false
+}

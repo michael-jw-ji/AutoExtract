@@ -1,0 +1,61 @@
+{
+  "accession": "0001522767-26-000197",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001522767",
+    "issuer_name": "MARIMED INC.",
+    "issuer_ticker": "MRMD",
+    "period_of_report": "2026-10-02",
+    "reporting_owners": [
+      {
+        "name": "Shaw Timothy",
+        "is_director": false,
+        "is_officer": true,
+        "is_ten_percent_owner": false,
+        "officer_title": "Chief Operating Officer"
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Common stock",
+        "is_derivative": false,
+        "date": "2026-10-02",
+        "code": "M",
+        "shares": "9981",
+        "price_per_share": "0",
+        "acquired_disposed": "A",
+        "shares_owned_after": "9464581",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      },
+      {
+        "security_title": "Common stock",
+        "is_derivative": false,
+        "date": "2026-10-02",
+        "code": "F",
+        "shares": "3459",
+        "price_per_share": "0.0696",
+        "acquired_disposed": "D",
+        "shares_owned_after": "9461122",
+        "direct_or_indirect": "D",
+        "value": "240.75"
+      },
+      {
+        "security_title": "Restricted Stock Units (RSU)",
+        "is_derivative": true,
+        "date": "2026-10-02",
+        "code": "M",
+        "shares": "9981",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "9982",
+        "direct_or_indirect": "D",
+        "value": "0.00"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

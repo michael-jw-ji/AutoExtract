@@ -1,0 +1,15 @@
+{
+  "accession": "0001225208-26-008145",
+  "theme": "decimals dropped",
+  "fix_layer": "prompt",
+  "root_cause": "A fractional share amount is truncated to a whole number (67,446.241 -> 67446).",
+  "other_themes": [],
+  "auto_themes": [
+    "wrong amount"
+  ],
+  "valid": true,
+  "f1": 0.9412,
+  "answers": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__p4b5b159a.jsonl",
+  "assisted_by": "claude-opus-5-5 pre-review",
+  "human_reviewed": false
+}

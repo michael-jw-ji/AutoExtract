@@ -1,0 +1,324 @@
+{
+  "accession": "0001193125-26-409127",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001468748",
+    "issuer_name": "Kodiak Sciences Inc.",
+    "issuer_ticker": "KOD",
+    "period_of_report": "2026-09-28",
+    "reporting_owners": [
+      {
+        "name": "BAKER BROS. ADVISORS LP",
+        "is_director": true,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "667, L.P.",
+        "is_director": true,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "Baker Bros. Advisors (GP) LLC",
+        "is_director": true,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "Baker Brothers Life Sciences LP",
+        "is_director": true,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "BAKER FELIX",
+        "is_director": true,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "BAKER JULIAN",
+        "is_director": true,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "P",
+        "shares": "186",
+        "price_per_share": "86.7217",
+        "acquired_disposed": "A",
+        "shares_owned_after": "1629628",
+        "direct_or_indirect": "I",
+        "value": "16130.24"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "P",
+        "shares": "3114",
+        "price_per_share": "86.7217",
+        "acquired_disposed": "A",
+        "shares_owned_after": "19519021",
+        "direct_or_indirect": "I",
+        "value": "270051.37"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "P",
+        "shares": "957",
+        "price_per_share": "86.8142",
+        "acquired_disposed": "A",
+        "shares_owned_after": "1630585",
+        "direct_or_indirect": "I",
+        "value": "83081.19"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "P",
+        "shares": "16036",
+        "price_per_share": "86.8142",
+        "acquired_disposed": "A",
+        "shares_owned_after": "19535057",
+        "direct_or_indirect": "I",
+        "value": "1392152.51"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "P",
+        "shares": "3790",
+        "price_per_share": "86.9421",
+        "acquired_disposed": "A",
+        "shares_owned_after": "1634375",
+        "direct_or_indirect": "I",
+        "value": "329510.56"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "P",
+        "shares": "63539",
+        "price_per_share": "86.9421",
+        "acquired_disposed": "A",
+        "shares_owned_after": "19598596",
+        "direct_or_indirect": "I",
+        "value": "5524214.09"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "P",
+        "shares": "4485",
+        "price_per_share": "87.5065",
+        "acquired_disposed": "A",
+        "shares_owned_after": "1638860",
+        "direct_or_indirect": "I",
+        "value": "392466.65"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "P",
+        "shares": "75176",
+        "price_per_share": "87.5065",
+        "acquired_disposed": "A",
+        "shares_owned_after": "19673772",
+        "direct_or_indirect": "I",
+        "value": "6578388.64"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "P",
+        "shares": "5880",
+        "price_per_share": "88.5671",
+        "acquired_disposed": "A",
+        "shares_owned_after": "1644740",
+        "direct_or_indirect": "I",
+        "value": "520774.55"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "P",
+        "shares": "98561",
+        "price_per_share": "88.5671",
+        "acquired_disposed": "A",
+        "shares_owned_after": "19772333",
+        "direct_or_indirect": "I",
+        "value": "8729261.94"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "P",
+        "shares": "6428",
+        "price_per_share": "88.6460",
+        "acquired_disposed": "A",
+        "shares_owned_after": "1651168",
+        "direct_or_indirect": "I",
+        "value": "569816.49"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "P",
+        "shares": "107772",
+        "price_per_share": "88.6460",
+        "acquired_disposed": "A",
+        "shares_owned_after": "19880105",
+        "direct_or_indirect": "I",
+        "value": "9553556.71"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "P",
+        "shares": "4932",
+        "price_per_share": "89.6036",
+        "acquired_disposed": "A",
+        "shares_owned_after": "1656100",
+        "direct_or_indirect": "I",
+        "value": "441924.96"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "P",
+        "shares": "82673",
+        "price_per_share": "89.6036",
+        "acquired_disposed": "A",
+        "shares_owned_after": "19962778",
+        "direct_or_indirect": "I",
+        "value": "7407798.42"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "P",
+        "shares": "11729",
+        "price_per_share": "89.8555",
+        "acquired_disposed": "A",
+        "shares_owned_after": "1667829",
+        "direct_or_indirect": "I",
+        "value": "1053915.16"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "P",
+        "shares": "196608",
+        "price_per_share": "89.8555",
+        "acquired_disposed": "A",
+        "shares_owned_after": "20159386",
+        "direct_or_indirect": "I",
+        "value": "17666310.14"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-29",
+        "code": "P",
+        "shares": "619",
+        "price_per_share": "84.2421",
+        "acquired_disposed": "A",
+        "shares_owned_after": "1668448",
+        "direct_or_indirect": "I",
+        "value": "52145.86"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-29",
+        "code": "P",
+        "shares": "10381",
+        "price_per_share": "84.2421",
+        "acquired_disposed": "A",
+        "shares_owned_after": "20169767",
+        "direct_or_indirect": "I",
+        "value": "874517.24"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-29",
+        "code": "P",
+        "shares": "1195",
+        "price_per_share": "85.4030",
+        "acquired_disposed": "A",
+        "shares_owned_after": "1669643",
+        "direct_or_indirect": "I",
+        "value": "102056.58"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-29",
+        "code": "P",
+        "shares": "20031",
+        "price_per_share": "85.4030",
+        "acquired_disposed": "A",
+        "shares_owned_after": "20189798",
+        "direct_or_indirect": "I",
+        "value": "1710707.49"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-29",
+        "code": "P",
+        "shares": "84",
+        "price_per_share": "85.8855",
+        "acquired_disposed": "A",
+        "shares_owned_after": "1669727",
+        "direct_or_indirect": "I",
+        "value": "7214.38"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-29",
+        "code": "P",
+        "shares": "1416",
+        "price_per_share": "85.8855",
+        "acquired_disposed": "A",
+        "shares_owned_after": "20191214",
+        "direct_or_indirect": "I",
+        "value": "121613.87"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

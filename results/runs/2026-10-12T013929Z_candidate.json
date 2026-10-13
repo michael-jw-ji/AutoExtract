@@ -1,0 +1,69 @@
+{
+  "run": {
+    "stage": "candidate",
+    "started_utc": "2026-10-12T01:47:01+00:00",
+    "commit": "285b2ce",
+    "branch": "feature/sec-form4",
+    "argv": [
+      "--stage",
+      "candidate",
+      "--name",
+      "prompt-v2",
+      "--note",
+      "prompt v2: empty tables, code column, holdings lines, $0 prices, decimals (FAILURES.md)",
+      "--domain",
+      "form4"
+    ],
+    "small_model": "Qwen/Qwen2.5-7B-Instruct",
+    "small_endpoint": "https://michael-jw-ji--autoextract-small-serve.modal.run/v1",
+    "large_model": "Qwen/Qwen2.5-32B-Instruct",
+    "large_endpoint": "https://michael-jw-ji--autoextract-llm-serve.modal.run/v1",
+    "concurrency": 8,
+    "config": {
+      "enrich": true,
+      "json_mode": true,
+      "compact_prompt": false
+    },
+    "holdout_hash": "9789311604dce853",
+    "db": "form4.db"
+  },
+  "result": {
+    "score": {
+      "model_version_id": 2,
+      "eval_set_hash": "9789311604dce853",
+      "valid_rate": 0.8042,
+      "field_f1": 0.8606,
+      "n_docs": 189,
+      "per_field": {
+        "issuer_cik": 1.0,
+        "issuer_name": 0.9841,
+        "issuer_ticker": 0.9947,
+        "period_of_report": 1.0,
+        "reporting_owners.*.name": 0.9959,
+        "reporting_owners.*.is_director": 0.8954,
+        "reporting_owners.*.is_officer": 0.9247,
+        "reporting_owners.*.is_ten_percent_owner": 0.9959,
+        "reporting_owners.*.officer_title": 0.9355,
+        "transactions.*.security_title": 0.8698,
+        "transactions.*.is_derivative": 0.8336,
+        "transactions.*.date": 0.943,
+        "transactions.*.code": 0.8807,
+        "transactions.*.shares": 0.8952,
+        "transactions.*.price_per_share": 0.8254,
+        "transactions.*.acquired_disposed": 0.9132,
+        "transactions.*.shares_owned_after": 0.9114,
+        "transactions.*.direct_or_indirect": 0.9259
+      }
+    },
+    "gate": {
+      "decision": "promoted",
+      "candidate": "prompt-v2",
+      "incumbent": "base",
+      "margin_pp": 2.11,
+      "required_pp": 2.0,
+      "reason": "field_f1 +2.11pp >= +2.00pp, valid_rate +25.92pp",
+      "candidate_f1": 0.8606,
+      "incumbent_f1": 0.8395
+    }
+  }
+}

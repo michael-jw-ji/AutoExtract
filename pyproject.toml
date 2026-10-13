@@ -20,6 +20,12 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
+# Deploying the large model (infra/modal_llm.py). Not needed to run the pipeline.
+infra = ["modal"]
+# Local LoRA training (scripts/train_local.py). Install torch FIRST, from the
+# CUDA index that matches your driver, or pip pulls a CPU-only build:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu128
+train = ["transformers", "peft", "trl", "accelerate", "datasets"]
 
 [tool.setuptools]
 packages = ["core", "verify", "serve", "buffer", "repair", "train", "evalgate", "api", "domains"]

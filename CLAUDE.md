@@ -5,6 +5,85 @@ An API that extracts structured JSON from messy documents, validates its own
 output against a strict schema, clusters its failures, and retrains itself on
 them. Built for Hack the North 2026 (Baseten track).
 
+## Current project: SEC Form 4 (read docs/PLAN.md first)
+The hackathon is over. The active work extends this repo with a `form4`
+domain: real EDGAR Form 4 filings as input, the official XML as free exact
+gold, plus failure analysis (FAILURES.md), a CI eval gate, OpenTelemetry
+tracing, an LLM judge, and an MCP server. Milestones and checklists live in
+docs/PLAN.md; keep it ticked as work lands.
+
+- Everything below describes the loop, which is unchanged.
+- Unlike the synthetic domains, Form 4 documents are REAL, so the corpus
+  hygiene rules below apply differently: gold comes from the XML, never from a
+  generator, and there is no template fallback to guard against. Hand-labelled
+  filings go in data/form4/labels/ (tracked); raw downloads do not.
+- Select the domain with `DOMAIN=form4` or `run_cycle.py --domain form4`.
+- Small model is `Qwen/Qwen2.5-7B-Instruct`, bf16, vLLM on a Modal L40S
+  (infra/modal_small.py, LoRA enabled). It moved off local Ollama because
+  Ollama's qwen2.5:7b is a 4-bit GGUF: a baseline there vs a fine-tune of the
+  bf16 weights would change two things at once. Local Ollama
+  (`qwen2.5-7b-16k`, infra/qwen2.5-7b-16k.Modelfile; its default 4096 context
+  silently truncated long filings) is for free experiments only, never for
+  reported numbers. Extraction max_tokens is 8192; serve/client.py warns on a
+  truncated answer and follows Modal's 303 for requests over 150s.
+- Scoring (evalgate/scorer.py) runs LLM_CONCURRENCY requests at once (1 for
+  local Ollama, 8 on Modal), caches every answer in data/eval_cache/ as it
+  arrives, resumes on re-run, and REFUSES to score if any document got no
+  answer. Never score a missing answer as a wrong one.
+- Large model is Qwen2.5-32B-Instruct on Modal (infra/modal_llm.py), routed
+  by LARGE_LLM_BASE_URL. It scales to zero; `modal app stop autoextract-llm`.
+- The invoice and support_email domains, their generators, mock mode, demo
+  scripts and the hackathon docs were deleted. The shared modules no longer
+  fall back to an invoice schema; a broken domain now fails loudly.
+- Known invoice residue still to generalise: train/dataset.py
+  (RULE_FIELDS, build_control_dataset) and api/main.py (rule_fields).
+- Hand labels: scripts/label_form4.py is a review tool (XML gold shown beside
+  the page text). Labels land in data/form4/labels/ and load_form4.py applies
+  them, forcing those filings into the holdout. Ambiguous field paths are
+  stored in documents.ambiguous_json and the scorer drops them from BOTH pred
+  and gold. Labels made with the AI pre-review (data/form4/review/) record
+  `assisted_by`: call them "AI-assisted, human-confirmed", not hand-labelled.
+  Freeze the holdout only AFTER labelling: freezing locks the set.
+- Text rendering (domains/form4_io.py::html_to_text) has three fixes found
+  while labelling: checkboxes render as [X]/[ ], Table II amounts carry
+  (A)/(D), and the scorer ignores whitespace. `load_form4.py --refresh-text`
+  re-renders stored text, and refuses once the holdout is frozen.
+- Every `run_cycle.py` run tees its terminal output to results/runs/<UTC>_<stage>.log
+  and writes the numbers to a matching .json (core/runlog.py). Both are tracked:
+  they are the record behind RESULTS.md. The header logs commit, models,
+  endpoints, config and holdout hash, never keys. The first baseline's record
+  is marked RECONSTRUCTED (rebuilt from the DB and answer cache).
+- data/eval_cache/ is tracked: the recorded holdout answers behind every score,
+  and what Milestone 3's free CI eval will replay.
+- enrich(payload, text) gets the page too (owner role flags come from the
+  [X]/[ ] boxes). Bump Form4Domain.enrich_version whenever enrich's output
+  changes: it is in the cache label (`enrich2+json`), so answers from
+  different post-processing never share a file.
+- A change AFTER the model is a candidate scored by REPLAY:
+  `run_cycle.py --stage candidate --name X --replay-from <version>` re-runs
+  post-processing over that version's recorded answers, no model calls.
+  Refused if anything before the model (prompt, render) differs.
+- Rendering happens at SERVE time from data/form4/raw/<accession>.html
+  (Form4Domain.model_input, render_version in the cache label). documents.text
+  is render v1, kept frozen and reproduced byte for byte by
+  html_to_text(html, 1). Raw HTML is untracked but re-fetchable; a missing
+  file raises, never falls back to the stored text.
+- Incumbent is `enrich-v3` (model_version 7) = prompt v2 (b4955a08) +
+  enrich v3 + render v3: F1 0.9194, valid 96.3%.
+- CI (.github/workflows/eval.yml): pytest + scripts/ci_eval.py, which replays
+  the 30 recorded 7B answers in data/ci/form4_ci.jsonl (model_raw, BEFORE
+  enrich) through the current code; fails on a field drop > 0.5pt vs
+  data/ci/baseline.json, or if the prompt/render changed. After a promoted
+  change: `ci_eval.py --update-baseline`; after a prompt/render change:
+  `ci_eval.py --build` (calls the 7B). Prompt v3 was rejected and
+  reverted (commit 3b38eef has it).
+- Milestone 2 failure reading: `python scripts/failures_form4.py`
+  (http://127.0.0.1:8766) shows each failure's page, errors and a row-by-row
+  answer-vs-gold diff from the recorded answers. Theme guesses come from
+  evalgate/failures.py; the human's notes go to data/form4/failure_notes/
+  (tracked) and are what FAILURES.md is written from.
+- SEC fair-access: max 10 requests/sec and a `User-Agent` with a contact email.
+
 ## The loop
 serve (Baseten) -> verify (pydantic) -> failure buffer -> cluster ->
 repair -> train LoRA -> eval gate -> promote or reject -> deploy
@@ -15,14 +94,15 @@ holdout set. Rejected retrains are logged and shown in the dashboard.
 ## Layout
 /core       config, sqlite connection, schema DDL, repo helpers
 /serve      baseten client + extraction endpoint
-/verify     pydantic schema + validate()
+/verify     validate() + failure signatures (schema comes from the domain)
 /buffer     failure store, signatures, clustering
 /repair     mechanical fixes + large-model distillation
 /train      dataset builder (repairs + replay buffer, ~70/30)
 /evalgate   frozen holdout scorer + promotion gate
 /api        FastAPI app, read endpoints for the dashboard
 /dashboard  next.js
-/scripts    probe, synthetic data gen, freeze, cycle driver
+/domains    pluggable domains (form4); schema, rules, enrich, repair rules
+/scripts    fetch_form4, probe, freeze, cycle driver
 
 Named `evalgate`, not `eval`, to avoid shadowing the builtin.
 
@@ -33,29 +113,12 @@ Named `evalgate`, not `eval`, to avoid shadowing the builtin.
 - FastAPI, pydantic, sqlite
 
 ## The document domain
-Invoices. Chosen because the schema nests (line items), has enums (currency,
-payment terms), has format constraints (ISO dates), and has *arithmetic
-consistency* constraints that small models reliably get wrong.
-
-Documents are synthetic, generated by the large model with controlled
-messiness (OCR noise, rotated labels, multi-currency, missing totals,
-handwriting artifacts described in text, inconsistent date formats). We
-control the generator, so we control the failure distribution.
-
-## The schema (verify/schema.py)
-`Invoice` is deliberately strict. Failure sources, in rough order of yield:
-
-1. Cross-field arithmetic: `line_total == quantity * unit_price`,
-   `subtotal == sum(line_totals)`, `total == subtotal + tax - discount`.
-   Small models fail these constantly. This is our most reliable signal.
-2. Enums: `currency` (USD/EUR/GBP/CAD), `payment_terms` (NET_15/NET_30/
-   NET_45/NET_60/DUE_ON_RECEIPT).
-3. Formats: ISO-8601 dates, invoice number regex, 2-decimal money.
-4. Structural: `line_items` min_length 1, required nested `Party` fields.
-
-Target base failure rate: 25-45%. Measured by `scripts/probe.py`.
-If we are outside that band, tune schema strictness or model size FIRST.
-Nothing downstream works outside that band.
+SEC Form 4 insider-transaction filings (domains/form4.py). Input is the
+filing's rendered HTML/text; gold is the filing's official XML. Failure
+sources to expect: price pulled from a footnote, derivative vs non-derivative
+table confusion, wrong dates on amendments, multiple reporting owners. The
+schema and rule checks live in the domain, not in a shared verify/schema.py.
+Target base failure rate 25-45% still applies; measure it with scripts/probe.py.
 
 ## Failure clustering (buffer/)
 NO embeddings. `ValidationError.errors()` gives `(type, loc)` per error.
@@ -93,30 +156,17 @@ Because documents are generated from constructed gold, we have ground truth on
 every document including live traffic. Unverified repairs are recorded for the
 dashboard and NEVER enter a training set.
 
-## Corpus hygiene (learned the hard way)
-Template-rendered documents (scripts/gen_docs.py::render_offline) are FAR
-easier than model-rendered ones -- 0% failure rate in the hour-0 probe. They
-exist only for offline development.
-
-A rate-limited generation run once fell back to templates silently, and 49% of
-an 80-document holdout was trivial before anyone noticed. Every eval number
-measured against it was inflated and had to be thrown away.
-
-Three rules now enforce this:
-- gen_docs retries with exponential backoff (5 attempts) on rate limits
-- on final failure it DROPS the document rather than downgrading it; a smaller
-  honest corpus beats a larger contaminated one
-- core/freeze.py::freeze_holdout REFUSES to freeze a holdout containing any
-  TEMPLATE_MARKER document
-
-If a generation run reports drops, lower --workers and re-run to top up.
-Generation concurrency above ~6 workers rate-limits on Kimi-K2.6.
-
-## Offline mock mode
-`MOCK_LLM=1` swaps in serve/mock.py, which corrupts gold in the ways a small
-model actually fails. `DRY_RUN=1` skips the Baseten job. Together the entire
-loop runs with no API key and no GPU time -- use this for development and for
-teammates without credentials. Mock numbers are NEVER results.
+## Corpus hygiene
+Gold comes from the EDGAR XML, never from a model, and there is no template
+fallback. Hand-labelled filings (data/form4/labels/) mark genuinely ambiguous
+cases `ambiguous: true` rather than forcing a label.
+- Fetching retries with backoff and DROPS a filing on final failure; a smaller
+  honest corpus beats a contaminated one.
+- core/freeze.py::freeze_holdout still refuses a holdout containing any
+  TEMPLATE_MARKER document (legacy guard, kept as a cheap tripwire).
+- There is no offline mock mode any more (serve/mock.py was invoice-specific).
+  `DRY_RUN=1` still skips the Baseten job. CI will use recorded model
+  responses instead (docs/PLAN.md, Milestone 3).
 
 ## Training data policy (train/)
 - 70% repairs (newly fixed failures), 30% replay (previously-passing
@@ -130,8 +180,15 @@ teammates without credentials. Mock numbers are NEVER results.
 - Two metrics: `valid_rate` (schema-valid fraction) and `field_f1`
   (field-level F1 vs gold). Pass/fail alone is too coarse at n=100 -- noise
   swamps real movement and we would promote on coin flips.
-- Promotion requires beating the incumbent by a **margin of +2.0pp on
-  field_f1** and not regressing valid_rate. Margin lives in `PROMOTION_MARGIN`.
+- Gate policy (GATE_POLICY, default `bootstrap`, decided 2026-10-11): promote
+  only if the paired-bootstrap 95% interval of the field-F1 gain is above
+  zero (evalgate/stats.py, fixed seed, from the RECORDED answers of both
+  evals), no scored field drops more than GATE_FIELD_DROP (2.0) points, and
+  valid_rate does not drop. The original rule, +2.0pp field_f1
+  (`PROMOTION_MARGIN`), is `GATE_POLICY=margin`; it decided prompt-v2
+  (promoted) and prompt-v3 (rejected), and those records stand. Measured at
+  n=189 the fixed margin was miscalibrated (RESULTS.md). Never re-decide a
+  past candidate under a rule chosen after seeing its result.
 - Every decision is written to `promotions`, including rejections.
 
 ## Rules
@@ -141,20 +198,10 @@ teammates without credentials. Mock numbers are NEVER results.
   hash, and `build_dataset()` asserts no holdout id appears in training data
   and hard-fails otherwise.
 - The LLM does not do the failure scanning; validation is deterministic
-- Prefer small diffs, we are on a deadline
+- Prefer small diffs
 - Never let a transient API failure silently degrade data quality. Retry, or
   drop and say so. A silent fallback that produces *plausible* output is worse
   than a crash, because nothing downstream can tell it happened.
-
-## Demo constraints (drives architecture)
-- A LoRA fine-tune does NOT fit in a 3-minute demo slot. The promotion
-  decision must be a persisted record the dashboard renders from history,
-  never a live event.
-- The visible history MUST contain at least one REJECTED retrain. A system
-  that only ever succeeds looks like it has no gate. The rejection is what
-  proves the gate is real.
-- `scripts/demo.py` replays a scripted sequence against the live DB so the
-  narrative is reproducible.
 
 ## Baseten notes (verified against truss 0.18.30, 2026-09-19)
 A training job is a DIRECTORY, not a config file:

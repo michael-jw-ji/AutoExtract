@@ -1,0 +1,18 @@
+{
+  "accession": "0001437749-26-031787",
+  "theme": "owner checkboxes misread",
+  "fix_layer": "enrichment (code)",
+  "root_cause": "Director/officer/10% flags disagree with explicit [X]/[ ] boxes on the page; those boxes are machine-readable, so code can derive them.",
+  "other_themes": [
+    "row duplicated under another title"
+  ],
+  "auto_themes": [
+    "owner roles",
+    "extra row"
+  ],
+  "valid": true,
+  "f1": 0.75,
+  "answers": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__p4b5b159a.jsonl",
+  "assisted_by": "claude-opus-5-5 pre-review",
+  "human_reviewed": false
+}

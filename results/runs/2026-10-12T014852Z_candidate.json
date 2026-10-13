@@ -1,0 +1,69 @@
+{
+  "run": {
+    "stage": "candidate",
+    "started_utc": "2026-10-12T01:53:46+00:00",
+    "commit": "3b38eef",
+    "branch": "feature/sec-form4",
+    "argv": [
+      "--stage",
+      "candidate",
+      "--name",
+      "prompt-v3",
+      "--note",
+      "prompt v3: shares_owned_after can be 0; report every row (fixes v2's dropped rows)",
+      "--domain",
+      "form4"
+    ],
+    "small_model": "Qwen/Qwen2.5-7B-Instruct",
+    "small_endpoint": "https://michael-jw-ji--autoextract-small-serve.modal.run/v1",
+    "large_model": "Qwen/Qwen2.5-32B-Instruct",
+    "large_endpoint": "https://michael-jw-ji--autoextract-llm-serve.modal.run/v1",
+    "concurrency": 8,
+    "config": {
+      "enrich": true,
+      "json_mode": true,
+      "compact_prompt": false
+    },
+    "holdout_hash": "9789311604dce853",
+    "db": "form4.db"
+  },
+  "result": {
+    "score": {
+      "model_version_id": 3,
+      "eval_set_hash": "9789311604dce853",
+      "valid_rate": 0.7672,
+      "field_f1": 0.8729,
+      "n_docs": 189,
+      "per_field": {
+        "issuer_cik": 1.0,
+        "issuer_name": 0.9841,
+        "issuer_ticker": 0.9947,
+        "period_of_report": 1.0,
+        "reporting_owners.*.name": 1.0,
+        "reporting_owners.*.is_director": 0.8912,
+        "reporting_owners.*.is_officer": 0.9289,
+        "reporting_owners.*.is_ten_percent_owner": 0.9959,
+        "reporting_owners.*.officer_title": 0.9355,
+        "transactions.*.security_title": 0.9096,
+        "transactions.*.is_derivative": 0.8644,
+        "transactions.*.date": 0.9669,
+        "transactions.*.code": 0.9222,
+        "transactions.*.shares": 0.9191,
+        "transactions.*.price_per_share": 0.8662,
+        "transactions.*.acquired_disposed": 0.9458,
+        "transactions.*.shares_owned_after": 0.9512,
+        "transactions.*.direct_or_indirect": 0.9638
+      }
+    },
+    "gate": {
+      "decision": "rejected",
+      "candidate": "prompt-v3",
+      "incumbent": "prompt-v2",
+      "margin_pp": 1.23,
+      "required_pp": 2.0,
+      "reason": "field_f1 +1.23pp < required +2.00pp (0.8606 -> 0.8729)",
+      "candidate_f1": 0.8729,
+      "incumbent_f1": 0.8606
+    }
+  }
+}

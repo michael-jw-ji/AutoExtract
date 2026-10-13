@@ -12,6 +12,9 @@ data/generated/
 data/datasets/
 data/snapshots/
 data/probe.json
+# Form 4: raw EDGAR downloads are reproducible; hand labels in data/form4/labels/ are not.
+data/form4/raw/
+data/form4/xml/
 train/jobs/
 train/configs/
 .tools/
@@ -28,3 +31,6 @@ node_modules/
 out/
 dist/
 .DS_Store
+.venv-old/
+# data/eval_cache/ is TRACKED on purpose: recorded holdout answers are the
+# evidence behind every number in RESULTS.md, and Milestone 3's CI replays them.

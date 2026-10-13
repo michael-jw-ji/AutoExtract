@@ -1,0 +1,220 @@
+{
+  "accession": "0001193125-26-417976",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001571996",
+    "issuer_name": "Dell Technologies Inc.",
+    "issuer_ticker": "DELL",
+    "period_of_report": "2026-10-06",
+    "reporting_owners": [
+      {
+        "name": "Silver Lake Partners IV, L.P.",
+        "is_director": true,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "Silver Lake Technology Associates IV, L.P.",
+        "is_director": true,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "SLTA IV (GP), L.L.C.",
+        "is_director": true,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "Silver Lake Group, L.L.C.",
+        "is_director": true,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      },
+      {
+        "name": "Durban Egon",
+        "is_director": true,
+        "is_officer": false,
+        "is_ten_percent_owner": false,
+        "officer_title": null
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Class C Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-06",
+        "code": "M",
+        "shares": "70397",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "70397",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Class C Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-06",
+        "code": "S",
+        "shares": "4913",
+        "price_per_share": "571.90",
+        "acquired_disposed": "D",
+        "shares_owned_after": "65484",
+        "direct_or_indirect": "I",
+        "value": "2809744.70"
+      },
+      {
+        "security_title": "Class C Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-06",
+        "code": "S",
+        "shares": "5448",
+        "price_per_share": "572.50",
+        "acquired_disposed": "D",
+        "shares_owned_after": "60035",
+        "direct_or_indirect": "I",
+        "value": "3118980.00"
+      },
+      {
+        "security_title": "Class C Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-06",
+        "code": "S",
+        "shares": "6177",
+        "price_per_share": "573.77",
+        "acquired_disposed": "D",
+        "shares_owned_after": "53858",
+        "direct_or_indirect": "I",
+        "value": "3544177.29"
+      },
+      {
+        "security_title": "Class C Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-06",
+        "code": "S",
+        "shares": "7771",
+        "price_per_share": "574.66",
+        "acquired_disposed": "D",
+        "shares_owned_after": "46088",
+        "direct_or_indirect": "I",
+        "value": "4465682.86"
+      },
+      {
+        "security_title": "Class C Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-06",
+        "code": "S",
+        "shares": "8578",
+        "price_per_share": "575.59",
+        "acquired_disposed": "D",
+        "shares_owned_after": "37510",
+        "direct_or_indirect": "I",
+        "value": "4937411.02"
+      },
+      {
+        "security_title": "Class C Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-06",
+        "code": "S",
+        "shares": "6062",
+        "price_per_share": "576.68",
+        "acquired_disposed": "D",
+        "shares_owned_after": "31448",
+        "direct_or_indirect": "I",
+        "value": "3495834.16"
+      },
+      {
+        "security_title": "Class C Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-06",
+        "code": "S",
+        "shares": "2812",
+        "price_per_share": "577.84",
+        "acquired_disposed": "D",
+        "shares_owned_after": "28636",
+        "direct_or_indirect": "I",
+        "value": "1624886.08"
+      },
+      {
+        "security_title": "Class C Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-06",
+        "code": "S",
+        "shares": "4505",
+        "price_per_share": "578.66",
+        "acquired_disposed": "D",
+        "shares_owned_after": "24131",
+        "direct_or_indirect": "I",
+        "value": "2606863.30"
+      },
+      {
+        "security_title": "Class C Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-06",
+        "code": "S",
+        "shares": "3075",
+        "price_per_share": "579.63",
+        "acquired_disposed": "D",
+        "shares_owned_after": "21056",
+        "direct_or_indirect": "I",
+        "value": "1782362.25"
+      },
+      {
+        "security_title": "Class C Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-06",
+        "code": "S",
+        "shares": "736",
+        "price_per_share": "580.21",
+        "acquired_disposed": "D",
+        "shares_owned_after": "20320",
+        "direct_or_indirect": "I",
+        "value": "427034.56"
+      },
+      {
+        "security_title": "Class C Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-06",
+        "code": "S",
+        "shares": "559",
+        "price_per_share": "580.76",
+        "acquired_disposed": "D",
+        "shares_owned_after": "19761",
+        "direct_or_indirect": "I",
+        "value": "324644.84"
+      },
+      {
+        "security_title": "Class C Common Stock",
+        "is_derivative": false,
+        "date": "2026-10-06",
+        "code": "S",
+        "shares": "3600",
+        "price_per_share": "572.50",
+        "acquired_disposed": "D",
+        "shares_owned_after": "1401636",
+        "direct_or_indirect": "D",
+        "value": "2061000.00"
+      },
+      {
+        "security_title": "Class B Common Stock",
+        "is_derivative": true,
+        "date": "2026-10-06",
+        "code": "M",
+        "shares": "70397",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "16313354",
+        "direct_or_indirect": "I",
+        "value": "0.00"
+      }
+    ]
+  }
+}

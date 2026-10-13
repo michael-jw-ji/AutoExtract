@@ -1,0 +1,205 @@
+{
+  "accession": "0001193125-26-408064",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001802369",
+    "issuer_name": "ADARx Pharmaceuticals, Inc.",
+    "issuer_ticker": "ADRX",
+    "period_of_report": "2026-09-28",
+    "reporting_owners": [
+      {
+        "name": "SR ONE CAPITAL MANAGEMENT, LLC",
+        "is_director": false,
+        "is_officer": false,
+        "is_ten_percent_owner": true,
+        "officer_title": null
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "C",
+        "shares": "3334938",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "3334938",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "C",
+        "shares": "1113666",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "4448604",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "C",
+        "shares": "512897",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "4961501",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "P",
+        "shares": "592593",
+        "price_per_share": "17.00",
+        "acquired_disposed": "A",
+        "shares_owned_after": "5554094",
+        "direct_or_indirect": "I",
+        "value": "10074081.00"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "C",
+        "shares": "1538691",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "1538691",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "P",
+        "shares": "414814",
+        "price_per_share": "17",
+        "acquired_disposed": "A",
+        "shares_owned_after": "1953505",
+        "direct_or_indirect": "I",
+        "value": "7051838.00"
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "C",
+        "shares": "1667468",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "1667468",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "C",
+        "shares": "169001",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "1836469",
+        "direct_or_indirect": "I",
+        "value": null
+      },
+      {
+        "security_title": "Common Stock",
+        "is_derivative": false,
+        "date": "2026-09-28",
+        "code": "P",
+        "shares": "592593",
+        "price_per_share": "17",
+        "acquired_disposed": "A",
+        "shares_owned_after": "592593",
+        "direct_or_indirect": "I",
+        "value": "10074081.00"
+      },
+      {
+        "security_title": "Series B Preferred Stock",
+        "is_derivative": true,
+        "date": "2026-09-28",
+        "code": "C",
+        "shares": "3907547",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "I",
+        "value": "0.00"
+      },
+      {
+        "security_title": "Series B-1 Preferred Stock",
+        "is_derivative": true,
+        "date": "2026-09-28",
+        "code": "C",
+        "shares": "1304883",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "I",
+        "value": "0.00"
+      },
+      {
+        "security_title": "Series C Preferred Stock",
+        "is_derivative": true,
+        "date": "2026-09-28",
+        "code": "C",
+        "shares": "600962",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "I",
+        "value": "0.00"
+      },
+      {
+        "security_title": "Series C Preferred Stock",
+        "is_derivative": true,
+        "date": "2026-09-28",
+        "code": "C",
+        "shares": "1802885",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "I",
+        "value": "0.00"
+      },
+      {
+        "security_title": "Series B Preferred Stock",
+        "is_derivative": true,
+        "date": "2026-09-28",
+        "code": "C",
+        "shares": "1953773",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "I",
+        "value": "0.00"
+      },
+      {
+        "security_title": "Series B-1 Preferred Stock",
+        "is_derivative": true,
+        "date": "2026-09-28",
+        "code": "C",
+        "shares": "198019",
+        "price_per_share": "0",
+        "acquired_disposed": "D",
+        "shares_owned_after": "0",
+        "direct_or_indirect": "I",
+        "value": "0.00"
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}

@@ -1,0 +1,68 @@
+{
+  "run": {
+    "stage": "rescore",
+    "started_utc": "2026-10-12T17:26:23+00:00",
+    "commit": "8c965df+uncommitted",
+    "branch": "feature/sec-form4",
+    "argv": [
+      "--stage",
+      "rescore",
+      "--version",
+      "1"
+    ],
+    "small_model": "Qwen/Qwen2.5-7B-Instruct",
+    "small_endpoint": "https://michael-jw-ji--autoextract-small-serve.modal.run/v1",
+    "large_model": "Qwen/Qwen2.5-32B-Instruct",
+    "large_endpoint": "https://michael-jw-ji--autoextract-llm-serve.modal.run/v1",
+    "concurrency": 8,
+    "config": {
+      "enrich": true,
+      "json_mode": true,
+      "compact_prompt": false
+    },
+    "holdout_hash": "9789311604dce853",
+    "db": "form4.db"
+  },
+  "result": {
+    "score": {
+      "model_version_id": 1,
+      "eval_set_hash": "9789311604dce853",
+      "valid_rate": 0.545,
+      "field_f1": 0.8401,
+      "n_docs": 189,
+      "per_field": {
+        "issuer_cik": 0.9947,
+        "issuer_name": 0.9894,
+        "issuer_ticker": 0.9894,
+        "period_of_report": 0.9947,
+        "reporting_owners.*.name": 0.9836,
+        "reporting_owners.*.is_director": 0.8577,
+        "reporting_owners.*.is_officer": 0.8745,
+        "reporting_owners.*.is_ten_percent_owner": 0.9836,
+        "reporting_owners.*.officer_title": 1.0,
+        "transactions.*.security_title": 0.9494,
+        "transactions.*.is_derivative": 0.9096,
+        "transactions.*.date": 0.9926,
+        "transactions.*.code": 0.7414,
+        "transactions.*.shares": 0.9449,
+        "transactions.*.price_per_share": 0.9206,
+        "transactions.*.acquired_disposed": 0.9476,
+        "transactions.*.shares_owned_after": 0.9675,
+        "transactions.*.direct_or_indirect": 0.991
+      }
+    },
+    "previous_eval": {
+      "id": 3,
+      "model_version_id": 1,
+      "eval_set_hash": "9789311604dce853",
+      "valid_rate": 0.545,
+      "field_f1": 0.8395,
+      "metric": "field_f1",
+      "n_docs": 189,
+      "per_field_json": "{\"issuer_cik\": 0.9947, \"issuer_name\": 0.9894, \"issuer_ticker\": 0.9894, \"period_of_report\": 0.9947, \"reporting_owners.*.name\": 0.9836, \"reporting_owners.*.is_director\": 0.8577, \"reporting_owners.*.is_officer\": 0.8745, \"reporting_owners.*.is_ten_percent_owner\": 0.9836, \"reporting_owners.*.officer_title\": 0.9355, \"transactions.*.security_title\": 0.9494, \"transactions.*.is_derivative\": 0.9096, \"transactions.*.date\": 0.9926, \"transactions.*.code\": 0.7414, \"transactions.*.shares\": 0.9449, \"transactions.*.price_per_share\": 0.9206, \"transactions.*.acquired_disposed\": 0.9476, \"transactions.*.shares_owned_after\": 0.9675, \"transactions.*.direct_or_indirect\": 0.991}",
+      "created_at": "2026-10-12 01:29:30",
+      "config": "enrich+json",
+      "prompt": "4b5b159a"
+    }
+  }
+}

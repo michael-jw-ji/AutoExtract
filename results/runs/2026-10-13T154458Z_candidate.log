@@ -1,0 +1,16 @@
+# run {"stage": "candidate", "started_utc": "2026-10-13T15:44:58+00:00", "commit": "e5379c2+uncommitted", "branch": "feature/sec-form4", "argv": ["--stage", "candidate", "--name", "enrich-v3", "--replay-from", "6", "--note", "post-processing v3: footnote markers stripped from security titles. Prompt v2 and render v3 unchanged; replayed from render-v3's recorded answers"], "small_model": "Qwen/Qwen2.5-7B-Instruct", "small_endpoint": "https://michael-jw-ji--autoextract-small-serve.modal.run/v1", "large_model": "Qwen/Qwen2.5-32B-Instruct", "large_endpoint": "https://michael-jw-ji--autoextract-llm-serve.modal.run/v1", "concurrency": 8, "config": {"enrich": true, "json_mode": true, "compact_prompt": false}, "holdout_hash": "9789311604dce853", "db": "form4.db"}
+registered candidate 'enrich-v3' (model_version 7): post-processing v3: footnote markers stripped from security titles. Prompt v2 and render v3 unchanged; replayed from render-v3's recorded answers
+  replayed Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich2+render3+json__pb4955a08.jsonl
+        -> Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich3+render3+json__pb4955a08.jsonl (no model calls)
+scoring candidate enrich-v3 on the frozen holdout...
+  189 cached, 0 to run, 8 at a time -> Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich3+render3+json__pb4955a08.jsonl
+  valid_rate 96.3%   field_f1 0.9194
+
+==============================================================
+GATE: PROMOTED
+  candidate  enrich-v3  f1=0.9194
+  incumbent  render-v3  f1=0.9182
+  margin     +0.12pp (required +0.00pp)
+  reason     field_f1 +0.12pp, 95% CI [+0.03, +0.23] excludes zero; no field down more than 2.0pp; valid_rate +0.00pp
+==============================================================
+# end status=ok

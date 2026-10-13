@@ -1,0 +1,18 @@
+{
+  "accession": "0000079879-26-000300",
+  "theme": "amount misread",
+  "fix_layer": "model capability",
+  "root_cause": "A share amount is replaced by a different number with no marker or decimal explanation.",
+  "other_themes": [
+    "security title misread"
+  ],
+  "auto_themes": [
+    "wrong security_title",
+    "wrong amount"
+  ],
+  "valid": true,
+  "f1": 0.8889,
+  "answers": "Qwen_Qwen2.5-7B-Instruct__9789311604dce853__enrich+json__p4b5b159a.jsonl",
+  "assisted_by": "claude-opus-5-5 pre-review",
+  "human_reviewed": true
+}

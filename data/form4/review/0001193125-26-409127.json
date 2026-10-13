@@ -1,0 +1,15 @@
+{
+  "accession": "0001193125-26-409127",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "looks_right",
+  "points": [
+    "Script check: all 22 transaction row(s) match the page field by field (date, code, shares, A/D, price, owned-after, D/I, table).",
+    "Some prices carry a footnote (usually a weighted average with a range); the column value is the gold.",
+    "6 reporting owners; their box-5 checkboxes match the gold."
+  ],
+  "suggest": {
+    "status": "confirmed",
+    "ambiguous_fields": [],
+    "note": ""
+  }
+}

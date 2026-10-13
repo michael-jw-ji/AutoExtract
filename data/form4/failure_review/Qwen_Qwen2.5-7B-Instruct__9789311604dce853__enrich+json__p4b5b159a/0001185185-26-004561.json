@@ -1,0 +1,16 @@
+{
+  "accession": "0001185185-26-004561",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "holdings row extracted",
+  "themes": [
+    {
+      "theme": "holdings row extracted",
+      "fix_layer": "prompt",
+      "root_cause": "A holdings line (no date, no code) is reported as a transaction."
+    }
+  ],
+  "valid": false,
+  "f1": 0.9114
+}

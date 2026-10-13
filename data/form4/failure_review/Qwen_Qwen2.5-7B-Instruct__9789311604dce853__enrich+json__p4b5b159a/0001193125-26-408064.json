@@ -1,0 +1,28 @@
+{
+  "accession": "0001193125-26-408064",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "check",
+  "why_check": [
+    "conversion direction: A/D is wrong on a conversion (code C), where direction depends on the table."
+  ],
+  "primary": "owner checkboxes misread",
+  "themes": [
+    {
+      "theme": "owner checkboxes misread",
+      "fix_layer": "enrichment (code)",
+      "root_cause": "Director/officer/10% flags disagree with explicit [X]/[ ] boxes on the page; those boxes are machine-readable, so code can derive them."
+    },
+    {
+      "theme": "conversion direction",
+      "fix_layer": "prompt",
+      "root_cause": "A/D is wrong on a conversion (code C), where direction depends on the table."
+    },
+    {
+      "theme": "officer title from another box",
+      "fix_layer": "prompt",
+      "root_cause": "officer_title holds text from another part of the form (the 'Other (specify)' line or the ownership column) for someone who is not an officer."
+    }
+  ],
+  "valid": true,
+  "f1": 0.9455
+}

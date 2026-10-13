@@ -1,0 +1,16 @@
+{
+  "accession": "0001062993-26-005212",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "confirm",
+  "why_check": [],
+  "primary": "owner checkboxes misread",
+  "themes": [
+    {
+      "theme": "owner checkboxes misread",
+      "fix_layer": "enrichment (code)",
+      "root_cause": "Director/officer/10% flags disagree with explicit [X]/[ ] boxes on the page; those boxes are machine-readable, so code can derive them."
+    }
+  ],
+  "valid": true,
+  "f1": 0.9964
+}

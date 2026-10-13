@@ -1,0 +1,15 @@
+{
+  "accession": "0002117905-26-000044",
+  "reviewer": "claude-opus-5-5 pre-review",
+  "verdict": "check",
+  "points": [
+    "Row 3 code is rendered 'S/K' (sale with equity-swap flag); gold code S is right. A model copying 'S/K' would fail validation.",
+    "Script check: all 3 transaction row(s) match the page field by field (date, code, shares, A/D, price, owned-after, D/I, table).",
+    "Some prices carry a footnote (usually a weighted average with a range); the column value is the gold."
+  ],
+  "suggest": {
+    "status": "confirmed",
+    "ambiguous_fields": [],
+    "note": ""
+  }
+}

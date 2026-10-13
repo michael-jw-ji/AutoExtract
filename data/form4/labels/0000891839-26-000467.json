@@ -1,0 +1,49 @@
+{
+  "accession": "0000891839-26-000467",
+  "status": "confirmed",
+  "changed": false,
+  "ambiguous_fields": [],
+  "notes": "",
+  "gold": {
+    "issuer_cik": "0001104038",
+    "issuer_name": "OpenWorld, Inc.",
+    "issuer_ticker": "OPNW",
+    "period_of_report": "2026-09-30",
+    "reporting_owners": [
+      {
+        "name": "McMeekin Russel Harold",
+        "is_director": false,
+        "is_officer": true,
+        "is_ten_percent_owner": false,
+        "officer_title": "Global Corporate President"
+      }
+    ],
+    "transactions": [
+      {
+        "security_title": "Stock Option (Right to Buy)",
+        "is_derivative": true,
+        "date": "2026-09-30",
+        "code": "A",
+        "shares": "216355",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "216355",
+        "direct_or_indirect": "D",
+        "value": null
+      },
+      {
+        "security_title": "Stock Option (Right to Buy)",
+        "is_derivative": true,
+        "date": "2026-09-30",
+        "code": "A",
+        "shares": "469568",
+        "price_per_share": null,
+        "acquired_disposed": "A",
+        "shares_owned_after": "469568",
+        "direct_or_indirect": "D",
+        "value": null
+      }
+    ]
+  },
+  "assisted_by": "claude-opus-5-5 pre-review"
+}
