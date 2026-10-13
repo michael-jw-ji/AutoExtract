@@ -577,8 +577,9 @@ set should have left its titles out. Reported as built, not re-cut after
 seeing the result: without that filing, the judge agrees on all 201 items.
 
 The "See Remarks" truths were read off each page (listed in
-`scripts/judge_eval.py`, REMARKS_TITLES) and are pending confirmation; one
-of the seven is from a hand-labelled filing.
+`scripts/judge_eval.py`, REMARKS_TITLES) and then confirmed by a person
+against each filing's Remarks (2026-10-13), so every item's truth is
+human-confirmed. One of the seven is from a hand-labelled filing.
 
 ## Prompt v4 (rejected)
 

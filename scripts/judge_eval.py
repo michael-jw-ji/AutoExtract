@@ -9,7 +9,7 @@ from human-confirmed labels, never from a model:
               punctuation and spacing.
   remarks     persons whose box-5 title only says "See Remarks" (1 labelled +
               6 more holdout filings): the title stated in the Remarks
-              (REMARKS_TITLES, read off the page; listed for confirmation),
+              (REMARKS_TITLES, read off the page, human-confirmed),
               every recorded candidate, the pointer itself and null.
   paraphrase  the label rewritten with standard abbreviations (CEO, EVP...):
               synthetic, true PASS. Exact matching in code fails these.
@@ -44,8 +44,10 @@ from verify.compare import pair_rows  # noqa: E402
 from verify.validate import validate  # noqa: E402
 
 #: Titles stated in the Remarks for persons whose box 5 says "See Remarks".
-#: Read off the page; doc 471 is hand-labelled (its title marked ambiguous),
-#: the other six are holdout filings outside the labelled set.
+#: Read off the page by Claude, then checked against each filing's Remarks by
+#: a person (2026-10-13): all seven confirmed ("Title:" in doc 197 is the
+#: filer's label, not part of the title). Doc 471 is hand-labelled (its
+#: title marked ambiguous); the other six are outside the labelled set.
 REMARKS_TITLES = {
     (9, "Graff Jeremy R."): "President and Chief Development Officer",
     (10, "MARTINEZ MARIA D."): "SVP, Chief Human Resources Officer",
