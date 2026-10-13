@@ -67,6 +67,36 @@ transactions.*.shares              0.9220 -> 0.8865 -3.6  <-- REGRESSION
 transactions.*.shares_owned_after  0.9267 -> 0.8933 -3.3  <-- REGRESSION
 ```
 
+## MCP server
+
+`mcp_server.py` exposes the pipeline to AI agents (Claude Desktop, Claude
+Code, Cursor...) over stdio:
+
+| Tool | What it does |
+|---|---|
+| `extract_form4(url_or_text)` | Extracts one Form 4 with the served pipeline. Given an EDGAR filing URL, it also fetches the filing's XML and reports the field-level F1 and which fields differ, so every answer arrives checked. |
+| `get_eval_summary()` | The promoted pipeline's scores on the frozen holdout, every gate decision (promoted and rejected, with reasons), and cost and latency from the latest traced run. |
+
+**Claude Desktop:** add this to `claude_desktop_config.json` (Settings ->
+Developer -> Edit Config), with your own paths, then restart Claude Desktop:
+
+```json
+{
+  "mcpServers": {
+    "autoextract-form4": {
+      "command": "C:/path/to/AutoExtract/.venv/Scripts/python.exe",
+      "args": ["C:/path/to/AutoExtract/mcp_server.py"]
+    }
+  }
+}
+```
+
+On macOS/Linux the command is `/path/to/AutoExtract/.venv/bin/python`. The
+server reads `.env` from the repo (the 7B's `LLM_BASE_URL`/`LLM_API_KEY`, and
+`SEC_USER_AGENT` for URLs). Then ask, for example: *"Extract this Form 4 and
+tell me if it matches the filing:
+https://www.sec.gov/Archives/edgar/data/1969302/000110465926113258/"*.
+
 ## Layout
 
 | Path | Role |

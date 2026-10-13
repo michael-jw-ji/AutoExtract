@@ -69,7 +69,7 @@ This is the part that produces your interview story.
 
 ## Milestone 4: MCP server and polish (3 to 4 days)
 
-- [ ] `mcp_server.py` exposing `extract_form4(url_or_text)` and `get_eval_summary()`. Show it working from Claude Desktop in a short GIF.
+- [ ] `mcp_server.py` exposing `extract_form4(url_or_text)` and `get_eval_summary()`. Show it working from Claude Desktop in a short GIF. _(Server done and tested end to end over stdio: Pony AI's filing extracted and checked against its XML, F1 0.94. Still to do: the Claude Desktop GIF.)_
 - [ ] README: lead with the Form 4 result, architecture diagram, CI badge, "run in 30 seconds" on Mac/Linux.
 - [ ] Make sure no `.env` or keys are committed.
 
