@@ -16,8 +16,9 @@ data/probe.json
 data/form4/raw/
 data/form4/xml/
 .tools/
-# Built by scripts/build_site.py from results/runs/.
-site/
+# The results page: data.json is exported by scripts/site_data.py from results/runs/.
+web/src/data.json
+web/dist/
 # LoRA adapters are ~72MB each and are reproducible from a dataset + config.
 models/
 logs/

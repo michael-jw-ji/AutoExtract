@@ -1,10 +1,9 @@
-"""Build the one-page results site from the tracked run records.
+"""Export the results page's data from the tracked run records.
 
-    python scripts/build_site.py        # writes site/index.html; open it in a browser
+    python scripts/site_data.py         # writes web/src/data.json for the web/ app
 
 No model calls and no database: everything comes from results/runs/, so a
-fresh clone builds the same page. The page is web/index.html with the data
-embedded, so it works from file:// with no server.
+fresh clone builds the same page. The shape is `SiteData` in web/src/types.ts.
 """
 
 from __future__ import annotations
@@ -19,9 +18,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from trace_report import report  # noqa: E402
 
 RUNS = ROOT / "results" / "runs"
-TEMPLATE = ROOT / "web" / "index.html"
-OUT = ROOT / "site" / "index.html"
-PLACEHOLDER = "/*__DATA__*/null"
+OUT = ROOT / "web" / "src" / "data.json"
 
 
 def _load(p: Path) -> dict:
@@ -80,12 +77,8 @@ def collect() -> dict:
 
 
 def main() -> None:
-    data = json.dumps(collect()).replace("</", "<\\/")
-    page = TEMPLATE.read_text(encoding="utf-8")
-    if PLACEHOLDER not in page:
-        raise SystemExit(f"{TEMPLATE} has no {PLACEHOLDER} placeholder")
-    OUT.parent.mkdir(exist_ok=True)
-    OUT.write_text(page.replace(PLACEHOLDER, data), encoding="utf-8")
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    OUT.write_text(json.dumps(collect(), indent=1) + "\n", encoding="utf-8")
     print(f"wrote {OUT.relative_to(ROOT)}")
 
 
