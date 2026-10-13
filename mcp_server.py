@@ -152,9 +152,16 @@ def _summary_from_db() -> dict | None:
             "gate_decisions": [dict(d) for d in decisions]}
 
 
+def _gated_runs(suffix: str) -> list[Path]:
+    """Run records of the stages that go through the gate, oldest first."""
+    runs = ROOT / "results" / "runs"
+    return sorted([*runs.glob(f"*_candidate{suffix}"), *runs.glob(f"*_adapter{suffix}")],
+                  key=lambda p: p.name)
+
+
 def _summary_from_records() -> dict:
     """Fallback for a fresh clone (no database): the tracked run records."""
-    runs = sorted((ROOT / "results" / "runs").glob("*_candidate.json"))
+    runs = _gated_runs(".json")
     decisions, last = [], None
     for p in runs:
         r = json.loads(p.read_text(encoding="utf-8"))["result"]
@@ -175,7 +182,7 @@ def _summary_from_records() -> dict:
 def _cost_latency() -> dict | None:
     """From the most recent traced holdout run (scripts/trace_report.py)."""
     from trace_report import report
-    traces = sorted((ROOT / "results" / "runs").glob("*_candidate.traces.jsonl"))
+    traces = _gated_runs(".traces.jsonl")
     if not traces:
         return None
     r = report(traces[-1])

@@ -17,11 +17,11 @@ PY := $(if $(wildcard $(VENV_PY)),$(VENV_PY),$(SYS_PY))
 export PYTHONUTF8 := 1
 
 .PHONY: help setup test eval ci fetch load label failures baseline candidate replay \
-        rescore compare-large trace-report
+        rescore compare-large trace-report site site-build
 
 help:
 	@grep -E '^#   make' Makefile | sed 's/^#   //'
-	@echo "targets: setup test eval ci fetch load label failures baseline candidate replay rescore compare-large trace-report"
+	@echo "targets: setup test eval ci fetch load label failures baseline candidate replay rescore compare-large trace-report site site-build"
 
 setup:
 	$(SYS_PY) -m venv .venv
@@ -66,3 +66,11 @@ compare-large:    # the holdout through LARGE_MODEL (H100, a few dollars)
 
 trace-report:     # make trace-report T=results/runs/<stamp>_<stage>.traces.jsonl
 	$(PY) scripts/trace_report.py $(T)
+
+site:             # results page on http://localhost:5173 (needs Node)
+	$(PY) scripts/site_data.py
+	cd web && npm install && npm run dev
+
+site-build:       # static results page in web/dist/
+	$(PY) scripts/site_data.py
+	cd web && npm install && npm run build

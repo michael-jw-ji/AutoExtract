@@ -7,8 +7,7 @@ an MCP server, and a LoRA trained on the model's own verified failures.
 Results: RESULTS.md. Root causes: FAILURES.md. Milestones: docs/PLAN.md
 (keep it ticked). Walkthrough: docs/HOW_IT_WORKS.md.
 
-Started as AutoExtract (Hack the North 2026, invoices, Baseten). Renamed
-2026-10-13: repo michael-jw-ji/insider-reading; Modal apps
+Renamed 2026-10-13: repo michael-jw-ji/insider-reading; Modal apps
 insider-reading-{small,llm,train}, secret insider-reading-llm, volumes
 insider-reading-{hf-cache,vllm-cache,adapters}. The local folder is still
 called AutoExtract. The invoice code, API, dashboard and Baseten training
@@ -24,6 +23,7 @@ results/runs/ keep whatever names were current when they ran.
 - `scripts/`             fetch, load, label, failure tools, run_cycle, CI eval, LoRA dataset, reports
 - `infra/`               Modal: 7B server (+ LoRA), 32B server, LoRA training
 - `mcp_server.py`        MCP tools: extract_form4, get_eval_summary
+- `web/`                 results page (Vite + React + TypeScript); data from `scripts/site_data.py` -> web/src/data.json (untracked)
 - `results/runs/`, `data/eval_cache/`, `data/live_cache/`, `data/ci/`  the evidence (tracked)
 
 Named `evalgate`, not `eval`, to avoid shadowing the builtin.

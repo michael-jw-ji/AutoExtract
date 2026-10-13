@@ -5,8 +5,7 @@ exactly where it is wrong, and is built to retrain itself on its own verified
 corrections, shipping a new model only if it beats the old one on a frozen
 test set.
 
-It started as a Hack the North 2026 project on synthetic invoices. It now runs
-on **real SEC Form 4 filings** (insider stock transactions), using each
+It runs on **real SEC Form 4 filings** (insider stock transactions), using each
 filing's official XML as an exact answer key.
 
 > Numbers in this document are either **measured** (with the command or data
