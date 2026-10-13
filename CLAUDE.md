@@ -7,8 +7,7 @@ an MCP server, and a LoRA trained on the model's own verified failures.
 Results: RESULTS.md. Root causes: FAILURES.md. Milestones: docs/PLAN.md
 (keep it ticked). Walkthrough: docs/HOW_IT_WORKS.md.
 
-Started as AutoExtract (invoices, Baseten). Renamed
-2026-10-13: repo michael-jw-ji/insider-reading; Modal apps
+Renamed 2026-10-13: repo michael-jw-ji/insider-reading; Modal apps
 insider-reading-{small,llm,train}, secret insider-reading-llm, volumes
 insider-reading-{hf-cache,vllm-cache,adapters}. The local folder is still
 called AutoExtract. The invoice code, API, dashboard and Baseten training
