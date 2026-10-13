@@ -319,6 +319,11 @@ def _clean_row(row: dict) -> dict:
     for key in ("shares", "price_per_share", "shares_owned_after"):
         if key in out:
             out[key] = _fix_number(out[key])
+    # Share counts are whole numbers: round away float noise like 1000.0000001.
+    for key in ("shares", "shares_owned_after"):
+        d = _dec(out.get(key))
+        if d is not None:
+            out[key] = format(d.quantize(Decimal("1")), "f")
     if "code" in out:
         out["code"] = _fix_code(out["code"])
     if "acquired_disposed" in out:
